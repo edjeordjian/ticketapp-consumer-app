@@ -5,8 +5,8 @@ import {StyleSheet} from "react-native";
 const signInScreenContainer = {
     flex: 1,
     backgroundColor: '#f5f5f5',
-    paddingLeft: 15,
-    paddingRight: 15,
+    paddingTop: 80,
+    paddingLeft: 80,
 };
 
 const SignInStyle = StyleSheet.create( {

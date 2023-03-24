@@ -14,10 +14,12 @@
 
 
 ### Notas
-- Al igual que en React Native (con Create React App), todas las variables de ambiente deben empezar con REACT_APP, y se requiere el reincio de la aplicación para que las levante.
-- El equivalente del <div> de HTML o React es <View>, por lo que el style se puede definir ahí para contener componentes.
+- Al igual que en React Native (con Create React App), todas las variables de ambiente 
+  deben empezar con REACT_APP, y se requiere el reincio de la aplicación para que 
+  las levante, excepto que se importen con "@env" en vez de con "react-native-dotenv".
+- El equivalente del `<div>` de HTML o React es `<View>`, por lo que el style se puede definir ahí para contener componentes.
 - En vez de usar react-router-dom se usa react-navigator (por ejemplo). En vez de rutas se utiliza un stack de pantallas.
-- Para material design, en vez de MUI se puede usar paper o algunos componentes de react-navigator.
+- Para material design se usa paper o algunos componentes de react-navigator.
 
 - Si se quiere tomar un color de una página web, puede usarse la extensión de Chrome Eye Dropper (para obtener el código de color).
 

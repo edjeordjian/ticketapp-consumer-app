@@ -1,11 +1,10 @@
-import {REACT_APP_USERS_HOST_DEV,
-        REACT_APP_USERS_HOST_PROD} from "react-native-dotenv";
+import {REACT_APP_BACKEND_HOST_DEV,
+        REACT_APP_BACKEND_HOST_PROD} from "react-native-dotenv";
 
-/* Backend hosts */
-const USERS_HOST = (__DEV__)
-    ? REACT_APP_USERS_HOST_DEV
-    : REACT_APP_USERS_HOST_PROD;
+const BACKEND_HOST = (__DEV__)
+    ? REACT_APP_BACKEND_HOST_DEV
+    : REACT_APP_BACKEND_HOST_PROD;
 
 export {
-    USERS_HOST
+    BACKEND_HOST
 };
