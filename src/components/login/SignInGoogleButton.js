@@ -1,5 +1,4 @@
-import {View,
-        Text} from 'react-native';
+import {View, Text} from 'react-native';
 
 import React, {useEffect} from 'react'
 
@@ -15,65 +14,62 @@ import {SIGN_IN_URL} from "../../constants/URLs";
 
 import {postTo} from "../../services/helpers/RequestService";
 
-import {ANDROID_KEY} from "../../constants/dataConstants";
+import {ANDROID_KEY, EXPO_ID, WEB_KEY} from "../../constants/dataConstants";
 
-const {getAuth, signInWithCredential, GoogleAuthProvider} = require("firebase/auth");
+import {GOOGLE_AUTH_ERR_LBL, GOOGLE_LOG_IN_LBL} from "../../constants/logIn/logInConstants";
+
+import {getFirebaseUserData} from "../../services/helpers/FirebaseService";
 
 const SignInWithGoogle = (props) => {
-
-  const {signIn} = useMainContext();
+  const {logIn} = useMainContext();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: ANDROID_KEY
+    androidClientId: ANDROID_KEY,
+    webClientId: WEB_KEY,
+    expoClientId: EXPO_ID
   });
 
   let handleSignInWithGoogle = async (googleAuth) => {
-    const credential = GoogleAuthProvider.credential(googleAuth.idToken, googleAuth.accessToken);
-
-    const auth = getAuth();
-
-    const response = await signInWithCredential(auth, credential).catch(err => alert(err));
-
-    if (response.user === undefined) {
-      alert("No pudo autenticarse al usuario con Google");
-      return;
-    }
+    const userData = await getFirebaseUserData(googleAuth);
 
     const requestBody = {
-      token: response._tokenResponse.idToken,
+      token: googleAuth.accessToken,
 
-      id: response.user.uid,
+      id: userData.id,
 
-      email: response._tokenResponse.email,
+      email: userData.email,
 
-      firstName: response._tokenResponse.firstName,
+      firstName: userData.given_name,
 
-      lastName: response._tokenResponse.lastName,
+      lastName: userData.family_name,
 
-      isNew: response._tokenResponse.isNewUser,
+      pictureUrl: userData.picture,
+
+      isNew: false,
 
       link: "mobile"
     };
 
-    postTo(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody).then((res) => {
-      if (res.error === undefined) {
-        signIn(response._tokenResponse.idToken, response.user.uid);
-      } else {
-        alert(res.error);
-      }
-    });
+    //postTo(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody).then((res) => {
+    //  if (res.error === undefined) {
+    //    logIn(response._tokenResponse.idToken, response.user.uid);
+    //  } else {
+    //    alert(res.error);
+    //  }
+    // });
   };
 
   useEffect(() => {
     if (response?.type === 'success') {
-      props.setIsLoading(true);
       const {authentication} = response;
-      handleSignInWithGoogle(authentication)
-        .catch(e => {
-          props.setIsLoading(false);
-          alert(`Error al autenticarse con google: ${JSON.stringify(e)}`);
+
+      handleSignInWithGoogle(authentication).then(r => {
+        alert("OK");
+      })
+          .catch(e => {
+          alert(GOOGLE_AUTH_ERR_LBL);
         });
-    };
+    }
   }, [response]);
 
   return (
@@ -83,9 +79,12 @@ const SignInWithGoogle = (props) => {
         mode="contained"
         disabled={!request}
         onPress={() => promptAsync()}
-        style={{marginBottom: 10, marginTop: 30, borderRadius: 20}}>
+        style={{marginBottom: 10,
+                marginTop: 30,
+                marginRight: 75,
+                borderRadius: 20}}>
 
-        <Text>Ingrese con Google</Text>
+        <Text>{GOOGLE_LOG_IN_LBL}</Text>
       </Button>
     </View>
   );

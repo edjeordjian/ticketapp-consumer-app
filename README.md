@@ -89,7 +89,25 @@ y el package y los intent filters según corresponda.
 
 - Text strings must be rendered... Falto encerrar entre llaves un condicional del render
 
+Network request Failed -- Falta mandar el request por ngrok
+
+New Update, downloading… (y se queda trabado) -- Forze stop desde la configuración de Android
+(fijarse si no empieza a cargar un porcentaje)
+
+Synax Error: unexpected json input… -- hay un error que se está wrappeando mal después de un
+fetch y por eso se muestra eso. Se puede debuggear con la consola de chrome y la versión web
+
+Escaneas la app y no abre nada: abrirlo con expo -c, no con el IDE
+
+- el navigation se inyecta solo a todas las pantallas del stack
+  [*] En un useEffect no es hay que hacer un await de llamadas asincrónicas (es un caso
+  excepcional).
+  [*] En un useEffect, no hay que hacer un return de la función con async.
+  
 -Para bajar una app corriendo en un puerto (ejemplo: 4481)
 kill $(lsof -i :4481 | cut -d ' ' -f5)
 
 Para un nuevo proyecto, se recomienda copiar la configuración de index y metro.config (es molesta y hay que buscar cada cosa).
+
+- Un console log devuelve: {"_h":0,"_i":0,"_j":null,"_k":null}
+Es porque falta resolver la promesa.
