@@ -57,7 +57,6 @@ const SignInWithGoogle = (props) => {
     //    alert(res.error);
     //  }
     // });
-
   };
 
   useEffect(() => {
