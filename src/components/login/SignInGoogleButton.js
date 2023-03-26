@@ -50,23 +50,30 @@ const SignInWithGoogle = (props) => {
       link: "mobile"
     };
 
-    //postTo(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody).then((res) => {
-    //  if (res.error === undefined) {
-    //    logIn(response._tokenResponse.idToken, response.user.uid);
-    //  } else {
-    //    alert(res.error);
-    //  }
-    // });
+    postTo(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody).then((res) => {
+      if (res.error !== undefined) {
+        alert(res.error);
+
+        return
+      }
+
+      logIn({
+        token: googleAuth.accessToken,
+
+        id: userData.id,
+
+        email: userData.email,
+
+        firstName: userData.given_name
+      });
+    });
   };
 
   useEffect(() => {
     if (response?.type === 'success') {
       const {authentication} = response;
 
-      handleSignInWithGoogle(authentication).then(r => {
-        alert("OK");
-      })
-          .catch(e => {
+      handleSignInWithGoogle(authentication).catch(e => {
           alert(GOOGLE_AUTH_ERR_LBL);
         });
     }

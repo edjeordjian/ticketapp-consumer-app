@@ -8,8 +8,8 @@ const Drawer = createDrawerNavigator();
 const Menu = () => {
     return (
         <Drawer.Navigator
-            initialRouteName={"HomeScreen"}>
-            <Drawer.Screen name="HomeScreen"
+            initialRouteName={"TicketApp"}>
+            <Drawer.Screen name="Mis Eventos"
                            component={HomeScreen}/>
 
             <Drawer.Screen name='Salir'

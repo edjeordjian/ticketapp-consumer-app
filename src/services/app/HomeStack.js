@@ -16,14 +16,14 @@ export default function HomeStack() {
     return (
         <View style={HomeStackStyles.container}>
             <HomeStackNav.Navigator style={HomeStackStyles.homeStack}
-                                 screenOptions={ {
-                                     headerShown: false
-                                 } }>
+                                    screenOptions={ {
+                                        headerShown: false
+                                    } }>
                 <HomeStackNav.Screen name='Menu'
-                                  component={Menu} />
+                                     component={Menu} />
 
                 <HomeStackNav.Screen name="Inicio"
-                                  component={HomeScreen} />
+                                     component={HomeScreen} />
             </HomeStackNav.Navigator>
         </View>
     );

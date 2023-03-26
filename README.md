@@ -4,7 +4,10 @@
 - Usando la app Expo Go (de Playstore), escanear el QR para poder levantar la aplicación en el celular, o en un emulador, lo que sea más cómodo. En el caso de usar emulador, se recomienda usar el que viene con Android Studio. Expo Go debería tener hot reloading (igual que React y Nodemon).
 
 
-#### Importante: para las pegadas a backend, tunelear el puerto en el que está levantado el servicio con ngrok.
+#### Importante: para las pegadas a backend, tunelear el puerto en el que está levantado el servicio con ngrok:
+ngrok http 4481
+
+Recordar cambiar en el .env la url del backend por el túnel de ngrok.
 
 
 ### "Estructura"

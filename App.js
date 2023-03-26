@@ -1,4 +1,4 @@
-import React, {useMemo, useReducer} from "react";
+import React, {useMemo, useReducer, useEffect} from "react";
 
 import {MainContext} from "./src/services/contexts/MainContext";
 
@@ -17,7 +17,6 @@ import HomeStack from "./src/services/app/HomeStack";
 export default function App() {
     const initialState = () => {
         return {
-            isLoggedIn: false
         }
     };
 
@@ -35,12 +34,43 @@ export default function App() {
                     ...appState,
                     isLoggedIn: false
                 }
+
+
+            case 'RESTORE_TOKEN':
+                return {
+                    ...appState,
+                    isLoggedIn: true
+                };
         }
 
         return appState;
     };
 
     const [appState, dispatch] = useReducer(reducer, reducer());
+
+    useEffect(() => {
+        const bootstrapAsync = async () => {
+            let userData;
+
+            try {
+                userData = await SecureStore.getItemAsync("user-data");
+            } catch (err) {
+                alert(err);
+                return;
+            }
+
+            if (userData === null) {
+                await MainContext.signOut();
+            } else {
+                dispatch({
+                    type: 'RESTORE_TOKEN',
+                    userData: JSON.parse(userData)
+                });
+            }
+        }
+
+        bootstrapAsync().then();
+    }, []);
 
     const context = useMemo( () => {
             return ( {
@@ -49,18 +79,15 @@ export default function App() {
                 },
 
                 logOut: async () => {
-                    await SecureStore.setItemAsync("loggedIn",
-                        "");
+                    await SecureStore.setItemAsync("loggedIn", "");
 
-                    reducer( {type: 'LOG_OUT' } );
+                    dispatch( {type: 'LOG_OUT' } );
                 },
 
                 logIn: async (userData) => {
-                    await SecureStore.setItemAsync( "user-data",
-                        JSON.stringify(userData) );
+                    await SecureStore.setItemAsync("user-data", JSON.stringify(userData));
 
-                    await SecureStore.setItemAsync("loggedIn",
-                        "true");
+                    await SecureStore.setItemAsync("loggedIn", "true");
 
                     dispatch( {type: 'LOG_IN' } );
                 },

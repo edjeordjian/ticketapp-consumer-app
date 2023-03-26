@@ -1,14 +1,14 @@
 import {useMainContext} from "../../services/contexts/MainContext";
 
-import {useEffect} from "react/cjs/react.production.min";
+import React, {useEffect, useState} from 'react'
 
 import {View} from 'react-native';
 
 const Exit = () => {
-    const {signOut} = useMainContext();
+    const {logOut} = useMainContext();
 
     useEffect( () => {
-        signOut();
+        logOut();
     }, [] );
 
     return (

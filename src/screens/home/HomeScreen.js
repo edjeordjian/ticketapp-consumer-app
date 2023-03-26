@@ -10,8 +10,7 @@ const HomeScreen = () => {
     return (
             <View style={{backgroundColor: '#f5f5f5',
                 paddingTop: 10}}>
-                <Text style={homeText}>
-                    Bienvenido
+                <Text style={homeText}>Inicio
                 </Text>
             </View>
     );
