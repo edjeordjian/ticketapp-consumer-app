@@ -45,13 +45,11 @@ const SignInWithGoogle = (props) => {
 
       pictureUrl: userData.picture,
 
-      isNew: false,
-
-      link: "mobile"
+      isOrganizer: true
     };
 
     postTo(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody).then((res) => {
-      if (res.error !== undefined) {
+      if (res.error !== undefined || res.id !== userData.id) {
         alert(res.error);
 
         return

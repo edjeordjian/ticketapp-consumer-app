@@ -28,8 +28,16 @@ Recordar cambiar en el .env la url del backend por el túnel de ngrok.
 
 
 ### Para hacer un apk
-- El apk no tira warning minimizados. Se tira por línea de comando `expo build:android`.
+- El apk no tira warning minimizados. Se tira por línea de comando `eas build -p android`.
 
+Recordar instalar eas-cli:
+`npm install -g eas-cli`
+
+Por cada nuevo secret:
+`eas secret:push --scope project --env-file .env --force`
+
+(las credenciales de Firebase se crean una sola vez con:
+eas secret:create --scope project --name GOOGLE_SERVICES_JSON --type file --value google-services.json)
 
 ### Otras notas
 - Usando scrcpy (desde la terminal) se puede usar el celular desde la computadora (teniendo el debugging por USB activado). Puede ser útil para grabar un video mostrando algo o para la demo. Otra opción es unirse al meet desde el celular.
