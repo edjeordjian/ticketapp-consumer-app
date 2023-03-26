@@ -28,7 +28,7 @@ Recordar cambiar en el .env la url del backend por el túnel de ngrok.
 
 
 ### Para hacer un apk
-- El apk no tira warning minimizados. Se tira por línea de comando `eas build -p android`.
+- El apk no tira warning minimizados. Se tira por línea de comando `eas build --profile production --platform android`.
 
 Recordar instalar eas-cli:
 `npm install -g eas-cli`
