@@ -33,8 +33,11 @@ Recordar cambiar en el .env la url del backend por el túnel de ngrok.
 Recordar instalar eas-cli:
 `npm install -g eas-cli`
 
-Por cada nuevo secret:
+Por cada nuevo secret en el .env o cambio en el mismo:
 `eas secret:push --scope project --env-file .env --force`
+
+NOTA: aunque se pusheen las credenciales nuevas a la nube de expo igual hay que generar un apk NUEVO para
+probar
 
 (las credenciales de Firebase se crean una sola vez con:
 eas secret:create --scope project --name GOOGLE_SERVICES_JSON --type file --value google-services.json)
