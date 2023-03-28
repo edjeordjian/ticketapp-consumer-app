@@ -14,9 +14,9 @@ import {SIGN_IN_URL} from "../../constants/URLs";
 
 import {postTo} from "../../services/helpers/RequestService";
 
-import {ANDROID_KEY, EXPO_ID, WEB_KEY} from "../../constants/dataConstants";
+import {EXPO_ID, ANDROID_ID, WEB_KEY} from "../../constants/dataConstants";
 
-import {GOOGLE_AUTH_ERR_LBL, GOOGLE_LOG_IN_LBL} from "../../constants/logIn/logInConstants";
+import {GOOGLE_AUTH_ERR_LBL, GOOGLE_LOG_IN_ERR_LBL, GOOGLE_LOG_IN_LBL} from "../../constants/logIn/logInConstants";
 
 import {getFirebaseUserData} from "../../services/helpers/FirebaseService";
 
@@ -24,10 +24,10 @@ const SignInWithGoogle = (props) => {
   const {logIn} = useMainContext();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: ANDROID_KEY,
-    webClientId: WEB_KEY,
+    androidClientId: ANDROID_ID,
     expoClientId: EXPO_ID
   });
+
 
   let handleSignInWithGoogle = async (googleAuth) => {
     const userData = await getFirebaseUserData(googleAuth);
@@ -45,13 +45,11 @@ const SignInWithGoogle = (props) => {
 
       pictureUrl: userData.picture,
 
-      isNew: false,
-
-      link: "mobile"
+      isOrganizer: true
     };
 
     postTo(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody).then((res) => {
-      if (res.error !== undefined) {
+      if (res.error !== undefined || res.id !== userData.id) {
         alert(res.error);
 
         return
@@ -74,6 +72,8 @@ const SignInWithGoogle = (props) => {
       const {authentication} = response;
 
       handleSignInWithGoogle(authentication).catch(e => {
+          console.log(JSON.stringify(e));
+
           alert(GOOGLE_AUTH_ERR_LBL);
         });
     }

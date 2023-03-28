@@ -23,15 +23,12 @@
     },
     "android": {
       "googleServicesFile": "./google-services.json",
-
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-
       "package": "uba.tdp2",
-
-      "intentFilters":[
+      "intentFilters": [
         {
           "action": "VIEW",
           "autoVerify": true,
@@ -52,6 +49,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "tdp2-mobile"
+    "scheme": "tdp2-mobile",
+    "extra": {
+      "eas": {
+        "projectId": "8aecf97d-0eea-425b-b1ef-fb23b3b05e3d"
+      }
+    }
   }
 }

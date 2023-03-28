@@ -10,6 +10,8 @@ npm-debug.*
 *.mobileprovision
 *.orig.*
 web-build/
+eas.json
+package-lock.json
 
 # Firebase
 google-services.json
