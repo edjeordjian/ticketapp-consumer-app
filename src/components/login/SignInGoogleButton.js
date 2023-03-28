@@ -14,7 +14,7 @@ import {SIGN_IN_URL} from "../../constants/URLs";
 
 import {postTo} from "../../services/helpers/RequestService";
 
-import {ANDROID_KEY, EXPO_ID, WEB_KEY} from "../../constants/dataConstants";
+import {EXPO_ID, ANDROID_ID, WEB_KEY} from "../../constants/dataConstants";
 
 import {GOOGLE_AUTH_ERR_LBL, GOOGLE_LOG_IN_ERR_LBL, GOOGLE_LOG_IN_LBL} from "../../constants/logIn/logInConstants";
 
@@ -24,8 +24,8 @@ const SignInWithGoogle = (props) => {
   const {logIn} = useMainContext();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: EXPO_ID,
-    expoClientId: ANDROID_KEY
+    androidClientId: ANDROID_ID,
+    expoClientId: EXPO_ID
   });
 
 
