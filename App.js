@@ -1,18 +1,12 @@
 import React, {useMemo, useReducer, useEffect} from "react";
-
 import {MainContext} from "./src/services/contexts/MainContext";
-
 import {Provider as PaperProvider} from 'react-native-paper';
-
 import {NavigationContainer} from '@react-navigation/native';
-
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
 import * as SecureStore from 'expo-secure-store';
-
-import {SignInScreen} from "./src/screens/login/SignInScreen";
-
 import HomeStack from "./src/services/app/HomeStack";
+import LogInScreen from "./src/screens/LogInScreen";
+
 
 export default function App() {
     const initialState = () => {
@@ -113,8 +107,8 @@ export default function App() {
                                                       component={HomeStack}/>
                                 ) : (
                                     <>
-                                        <AuthStack.Screen name='SignInScreen'
-                                                          component={SignInScreen}/>
+                                        <AuthStack.Screen name='LogInScreen'
+                                                          component={LogInScreen}/>
                                     </>
                                 )
                             }
