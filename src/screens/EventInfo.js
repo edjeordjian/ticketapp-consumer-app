@@ -4,28 +4,11 @@ import { ScrollView, TouchableOpacity } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import apiClient from '../services/apiClient';
+import DisplayAgendaCard from '../components/DisplayAgendaCard';
 
-function DisplayCard(props) {
-    return (
-        <LinearGradient
-        colors={['#1A55D7', '#A8BB46']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.eventCardContainer}
-        >
-            <Text style={styles.eventTimeContainer}>
-                {props.time}
-            </Text>
-            <View style={styles.eventNameContainer}>
-                <Text style={styles.eventCardText}>{props.name}</Text>
-            </View>
-        </LinearGradient>
-    );
-}
 
-export default function EventInfo(props) {
+export default function EventInfo({ route, navigation }) {
     const [imageSelected, setImageToShow] = useState(0);
     const [event, setEvent] = useState({});
 
@@ -33,12 +16,12 @@ export default function EventInfo(props) {
 
     useEffect(() => {
         const onResponse = (response) => {
-            setEvent(response);
+            setEvent(response.event());
         }
         const onError = (error) => {
             console.log(error);
         }
-        client.getEventInfo(1, onResponse, onError);
+        client.getEventInfo(route.params.eventId, onResponse, onError);
     }, []);
 
     return (
@@ -59,7 +42,7 @@ export default function EventInfo(props) {
                 <></>
             }
             <Text style={styles.title}>
-                Paramore
+                {event.name}
             </Text>
             <View style={styles.infoContainer}>
                 <View style={styles.infoPlaceContainer}>
@@ -104,7 +87,7 @@ export default function EventInfo(props) {
                 <View style={styles.eventContainer}>
                     {event.agendaEntries.map((agenda,i) => {
                         return (
-                            <DisplayCard name={agenda.name} time={agenda.time}/>
+                            <DisplayAgendaCard key={agenda.id} name={agenda.name} time={agenda.time}/>
                         );
                     })}
                 </View>
@@ -132,7 +115,7 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         fontSize: 22,
         marginLeft: 15,
-        marginTop: 15
+        marginTop: 10
     },
     description: {
         marginLeft: 15,
@@ -211,38 +194,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 15
-    },
-    eventCardContainer: {
-        width: '90%',
-        height: 80,
-        backgroundColor: 'white',
-        marginBottom: 10,
-        borderRadius: 15,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'flex-end'
-    },
-    eventTimeContainer:{
-        width: '30%',
-        fontSize: 22,
-        fontWeight: '600',
-        color: 'white',
-        alignSelf: 'center',
-        textAlign: 'center'
-    },
-    eventNameContainer: {
-        backgroundColor: 'white',
-        padding: 15,
-        width: '70%',
-        height: '100%',
-        borderRadius: 15,
-        display: 'flex',
-        justifyContent: 'center',
-        elevation: 3,
-    },
-    eventCardText: {
-        color: '#565656',
-        fontWeight: '400',
-        fontSize: 18,
     }
 });

@@ -6,10 +6,9 @@ export default function EventBox(props) {
 
     return (
             <View style={styles.container}>
-                <TouchableOpacity onPress={() => {props.navigation.navigate('SeeEvent')}}>
-                    <Image 
-                    source={{uri:event.imageUri}} 
-                    style={styles.image}/>
+                <TouchableOpacity onPress={() => {props.navigation.navigate('SeeEvent', {'eventId': event.id})}}>
+                    <Image source={{uri:event.imageUri}} style={styles.image}/>
+                    <Text style={styles.nameTitle}>{event.name}</Text>
                     <View style={styles.infoContainer}>
                         <View style={styles.infoPlaceContainer}>
                             <View style={styles.infoRow}>
@@ -44,6 +43,13 @@ const styles = StyleSheet.create({
         display: 'flex',
         padding: 15,
         flexDirection: 'row'
+    },
+    nameTitle: {
+        marginLeft: 15,
+        marginTop: 10,
+        fontWeight: 600,
+        fontSize: 18,
+        color: '#565656',
     },
     infoPlaceContainer: {
         flex:1

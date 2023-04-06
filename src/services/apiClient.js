@@ -1,7 +1,9 @@
 import axios from "axios";
 import AppStorage from "../AppStorage";
 import { BACKEND_HOST } from "../constants/generalConstants";
-import { SIGN_IN_URL } from "../constants/URLs";
+import { SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL } from "../constants/URLs";
+import EventListResponse from "./responses/EventListResponse";
+import EventResponse from "./responses/EventResponse";
 
 export default class apiClient {
   constructor() {
@@ -99,52 +101,27 @@ export default class apiClient {
 
   // ==========================================USER SEARCH==========================================
 
-  getEventsList(query, onResponse, onError) {
-    // Sumar query
-    const anEvent = {
-      id: '234',
-      address : "Monumental",
-      hour : "20:00hs",
-      date : "24/12/2022",
-      imageUri : 'https://www.dfentertainment.com/wp-content/uploads/2022/06/LOLLA_1920x720-DF-1536x576.png'
+  getEventsList(onResponse, onError, query, owner) {
+    onResponse(new EventListResponse({'events': []}));
+    return;
+    const  _onResponse = (res) => {onResponse( new EventListResponse(res))}
+    let params = {}
+    if (query) {
+      params.q = query;
     }
-    onResponse([anEvent, anEvent]);
-    return
-    this.call_get(`${BACKEND_HOST}${SIGN_IN_URL}`, query, onResponse, onError);
+    if (owner) {
+      params.owner = owner;
+    }
+    this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
   }
 
   // ==========================================SEE EVENT==========================================
 
   getEventInfo(eventId, onResponse, onError) {
-    const anEvent = {
-      address : "Monumental",
-      hour : "20:00hs",
-      date : "24/12/2022",
-      labels : ['Musica', 'Diversion'],
-      agendaEntries: [{name: 'Cenar', time: '12:00'}],
-      imagesUri : ['https://www.dfentertainment.com/wp-content/uploads/2022/06/LOLLA_1920x720-DF-1536x576.png',
-      'https://resizer.glanacion.com/resizer/bHxdQrLXjonaGNlzDA3rUJzdFcc=/1200x800/smart/filters:format(webp):quality(80)/cloudfront-us-east-1.images.arcpublishing.com/lanacionar/45MJFALP6FCS3LDG2YHOOOW6WQ.jpg']
-    }
-    onResponse(anEvent);
+    onResponse(new EventResponse({}));
     return
-    this.call_get(`${BACKEND_HOST}${SIGN_IN_URL}`, {}, onResponse, onError);
+    const _onResponse = (res) => {onResponse( new EventResponse(res))}
+    this.call_get(`${BACKEND_HOST}${GET_EVENT_URL}`, {eventId: eventId}, _onResponse, onError);
   }
 
-  // ============================================PROFILE============================================
-  getUserDetail(onResponse, onError) {
-    AppStorage.retrieveData("token").then((token) => {
-      axios
-        .get(`${this._base_url}/usuarios/user/detail`, {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        })
-        .then((response) => {
-          onResponse(response);
-        })
-        .catch((err) => {
-          onError(err);
-        });
-    });
-  }
 }

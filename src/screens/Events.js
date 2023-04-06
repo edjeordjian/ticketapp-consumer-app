@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, Image, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
@@ -8,27 +8,6 @@ import { SearchBar } from '@rneui/themed';
 import { useContext, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 
-const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundColor: '#F4F4F4',
-      width: '100%',
-    },
-    searchBarContainer: {
-        backgroundColor: '#1A55D7',
-        width: '100%',
-        height: 200,
-        marginBottom: 25,
-        display: 'flex',
-        alignItems: 'center'
-    },
-    scrollContainer: {
-        width: '100%',
-        backgroundColor: '#F4F4F4',
-      },
-});
 
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
@@ -37,16 +16,17 @@ export default function Events({ navigation }) {
 
     useEffect(() => {
         const onResponse = (response) => {
-            setEvents(response);
+            setEvents(response.events());
         }
         const onError = (error) => {
             console.log(error);
         }
-        client.getEventsList(undefined, onResponse, onError);
+        client.getEventsList(onResponse, onError, search, undefined);
     }, []);
 
-    const updateSearch = (searchString) => {
-        setSearch(searchString);
+    const updateSearch = async (searchString) => {
+        await setSearch(searchString);
+        client.getEventsList(onResponse, onError, search, undefined);
     };
 
     return (
@@ -71,7 +51,7 @@ export default function Events({ navigation }) {
                 style={styles.scrollContainer}>
                 {events.map((event,i) => {
                     return (
-                        <EventBox eventInfo={event} navigation={navigation}/>
+                        <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
                     );
                 })}
             </ScrollView>
@@ -79,3 +59,26 @@ export default function Events({ navigation }) {
       </SafeAreaView>
     );
 }
+
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#F4F4F4',
+      width: '100%',
+    },
+    searchBarContainer: {
+        backgroundColor: '#1A55D7',
+        width: '100%',
+        height: 200,
+        marginBottom: 25,
+        display: 'flex',
+        alignItems: 'center'
+    },
+    scrollContainer: {
+        width: '100%',
+        backgroundColor: '#F4F4F4',
+      },
+});
