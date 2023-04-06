@@ -6,7 +6,8 @@ import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
 
 export default class apiClient {
-  constructor() {
+  constructor(token) {
+    this._token = token;
     this._base_url = 'http://localhost:5060/dispatch';
   }
 

@@ -40,9 +40,9 @@ export default function SignInWithGoogle(props) {
 
     const onError = (_error) => {
       let error = _error.toString();
-      console.log(error);
-      // if (res.error !== undefined || res.id !== userData.id) {
-      //   alert(res.error);
+      if (res.error !== undefined || res.id !== userData.id) {
+        alert(res.error);
+      }
     }
 
     apiClient().logIn(requestBody, onResponse, onError);
@@ -53,8 +53,6 @@ export default function SignInWithGoogle(props) {
       const {authentication} = response;
 
       handleSignInWithGoogle(authentication).catch(e => {
-          console.log(JSON.stringify(e));
-
           alert(GOOGLE_AUTH_ERR_LBL);
         });
     }
@@ -66,9 +64,9 @@ export default function SignInWithGoogle(props) {
         mode="contained"
         disabled={!request}
         onPress={() => promptAsync()}
-        style={{borderRadius: 20, marginTop: 5}}>
-
-        <Text>{GOOGLE_LOG_IN_LBL}</Text>
+        style={{borderRadius: 20, marginTop: 5}}
+    >
+        <Text style={{color: 'white'}}>{GOOGLE_LOG_IN_LBL}</Text>
     </Button>
   );
 }

@@ -2,7 +2,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import SignInWithGoogle from '../components/SignInGoogleButton';
+import Exit from '../components/app/Exit';
 
 
 export default function UserProfileScreen({ navigation }) {
@@ -13,6 +13,8 @@ export default function UserProfileScreen({ navigation }) {
             end={{ x: 1, y: 1 }}
             style={styles.container}
         >
+            {/* Este exit es solo por ahora */}
+            <Exit/> 
             <TouchableOpacity onPress={() => {
                 navigation.navigate("EventsList");
             }}>

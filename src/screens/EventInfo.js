@@ -6,13 +6,14 @@ import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
 import DisplayAgendaCard from '../components/DisplayAgendaCard';
+import { useMainContext } from '../services/contexts/MainContext';
 
 
 export default function EventInfo({ route, navigation }) {
     const [imageSelected, setImageToShow] = useState(0);
     const [event, setEvent] = useState({});
-
-    const client = new apiClient();
+    const [userData, setUserData] = useState({});
+    const { getUserData } = useMainContext();
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -21,8 +22,15 @@ export default function EventInfo({ route, navigation }) {
         const onError = (error) => {
             console.log(error);
         }
-        client.getEventInfo(route.params.eventId, onResponse, onError);
+
+        getUserData((data) => {
+            setUserData(data);
+            const client = new apiClient(data.token);
+            client.getEventInfo(route.params.eventId, onResponse, onError);
+        });
     }, []);
+
+    console.log(userData);
 
     return (
         <SafeAreaView style={styles.container}>
@@ -63,7 +71,7 @@ export default function EventInfo({ route, navigation }) {
                 Descripción
             </Text>
             <Text style={styles.description}>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+                {event.description} 
             </Text>
             {event.labels ? 
                 <View style={styles.labelsRow}>

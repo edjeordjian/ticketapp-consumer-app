@@ -10,8 +10,7 @@ import LogInScreen from "./src/screens/LogInScreen";
 
 export default function App() {
     const initialState = () => {
-        return {
-        }
+        return {}
     };
 
     const reducer = ( appState = initialState(),
@@ -52,7 +51,6 @@ export default function App() {
                 alert(err);
                 return;
             }
-
             if (userData === null) {
                 await MainContext.signOut();
             } else {
@@ -74,20 +72,19 @@ export default function App() {
 
                 logOut: async () => {
                     await SecureStore.setItemAsync("loggedIn", "");
-
                     dispatch( {type: 'LOG_OUT' } );
                 },
 
                 logIn: async (userData) => {
                     await SecureStore.setItemAsync("user-data", JSON.stringify(userData));
-
                     await SecureStore.setItemAsync("loggedIn", "true");
-
                     dispatch( {type: 'LOG_IN' } );
                 },
 
-                getUserData: async () => {
-                    return JSON.parse( await SecureStore.getItemAsync("user-data") );
+                getUserData: async (setData) => {
+                    const info = await SecureStore.getItemAsync("user-data");
+                    const jsonParse = JSON.parse(info);
+                    setData(jsonParse)
                 }
             } );
         },

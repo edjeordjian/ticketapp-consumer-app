@@ -7,12 +7,14 @@ import EventBox from '../components/EventBox';
 import { SearchBar } from '@rneui/themed';
 import { useContext, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
+import { useMainContext } from '../services/contexts/MainContext';
 
 
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
     const [search, setSearch] = useState(undefined);
-    const client = new apiClient();
+    const [userData, setUserData] = useState({});
+    const { getUserData } = useMainContext();
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -21,11 +23,17 @@ export default function Events({ navigation }) {
         const onError = (error) => {
             console.log(error);
         }
-        client.getEventsList(onResponse, onError, search, undefined);
+        getUserData((data) => {
+            setUserData(data);
+            const client = new apiClient(data.token);
+            client.getEventsList(onResponse, onError, search, undefined);
+        });
+
     }, []);
 
     const updateSearch = async (searchString) => {
         await setSearch(searchString);
+        const client = new apiClient(userData.token);
         client.getEventsList(onResponse, onError, search, undefined);
     };
 
