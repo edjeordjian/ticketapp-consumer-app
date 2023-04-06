@@ -5,8 +5,8 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
 import { SearchBar } from '@rneui/themed';
-import { useEffect, useState } from 'react';
-//import apiClient from '../apiClient';
+import { useContext, useEffect, useState } from 'react';
+import apiClient from '../services/apiClient';
 
 const styles = StyleSheet.create({
     container: {
@@ -33,17 +33,16 @@ const styles = StyleSheet.create({
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
     const [search, setSearch] = useState(undefined);
+    const client = new apiClient();
 
     useEffect(() => {
         const onResponse = (response) => {
-            console.log(response);
-            //setEvents(response);
+            setEvents(response);
         }
         const onError = (error) => {
             console.log(error);
         }
-        //client = new apiClient();
-        //client.getCreatorCourses(onResponse, onError);
+        client.getEventsList(undefined, onResponse, onError);
     }, []);
 
     const updateSearch = (searchString) => {
@@ -68,11 +67,13 @@ export default function Events({ navigation }) {
                 />
             </LinearGradient>
             <ScrollView 
-            contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
-            style={styles.scrollContainer}>
-                <EventBox navigation={navigation}/>
-                <EventBox navigation={navigation}/>
-                <EventBox navigation={navigation}/>
+                contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
+                style={styles.scrollContainer}>
+                {events.map((event,i) => {
+                    return (
+                        <EventBox eventInfo={event} navigation={navigation}/>
+                    );
+                })}
             </ScrollView>
             <StatusBar style="auto" />
       </SafeAreaView>

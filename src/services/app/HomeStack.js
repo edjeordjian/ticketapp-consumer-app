@@ -1,30 +1,41 @@
 import * as React from 'react';
-import {View} from 'react-native';
-import {HomeScreen} from "../../screens/home/HomeScreen";
-import {HomeStackStyles} from "../../styles/app/HomeStackStyles";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Feather } from '@expo/vector-icons';
 import Events from "../../screens/Events";
 import EventInfo from "../../screens/EventInfo";
+import UserProfileScreen from '../../screens/UserProfileScreen';
 
 const Tab = createBottomTabNavigator();
 
 //Screen names
 const detailsName = "EventsList";
-const settingsName = "SeeEvent";
+const eventInfoName = "SeeEvent";
+const settingsName = "settingsUser";
 
 export default function HomeStack() {
     return (
         <Tab.Navigator
                 initialRouteName={detailsName}
                 screenOptions={({ route }) => ({
+                tabBarActiveTintColor: "white",
+                tabBarInactiveTintColor: "grey",
+                tabBarLabelStyle: {
+                    paddingBottom: 10,
+                    fontSize: 10
+                },
+                tabBarHideOnKeyboard: true,
+                tabBarStyle: [
+                    {
+                    display: "flex"
+                    }, null
+                ],
                 tabBarShowLabel: false,
                 tabBarStyle:{backgroundColor: '#F4F4F4'},
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
                     let rn = route.name;
 
-                    if (rn === detailsName) {
+                    if (rn === detailsName || rn === eventInfoName) {
                     iconName = 'list'
                     } else if (rn === settingsName) {
                     iconName = 'user';
@@ -39,14 +50,12 @@ export default function HomeStack() {
                     headerShown: false,
                     headerBackTitleVisible: false,
                     })}
-                    tabBarOptions={{
-                    activeTintColor: 'white',
-                    inactiveTintColor: 'grey',
-                    labelStyle: { paddingBottom: 10, fontSize: 10 },
-                    style: { padding: 10, height: 10}
-                }}>
+                >
                     <Tab.Screen name={detailsName} component={Events} />
-                    <Tab.Screen name={settingsName} component={EventInfo} />
+                    <Tab.Screen  name={settingsName} component={UserProfileScreen} />
+                    <Tab.Screen name={eventInfoName} component={EventInfo} options={
+                        () => ({tabBarButton: () => null,})}
+                    />
             </Tab.Navigator>
     );
 };

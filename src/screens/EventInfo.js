@@ -2,33 +2,62 @@ import { StyleSheet, Text, Image, View } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient } from 'expo-linear-gradient';
+import apiClient from '../services/apiClient';
+
+function DisplayCard(props) {
+    return (
+        <LinearGradient
+        colors={['#1A55D7', '#A8BB46']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.eventCardContainer}
+        >
+            <Text style={styles.eventTimeContainer}>
+                {props.time}
+            </Text>
+            <View style={styles.eventNameContainer}>
+                <Text style={styles.eventCardText}>{props.name}</Text>
+            </View>
+        </LinearGradient>
+    );
+}
 
 export default function EventInfo(props) {
     const [imageSelected, setImageToShow] = useState(0);
+    const [event, setEvent] = useState({});
 
-    const address = "Monumental";
-    const hour = "20:00hs";
-    const date = "24/12/2022";
-    const imagesUri = ['https://www.dfentertainment.com/wp-content/uploads/2022/06/LOLLA_1920x720-DF-1536x576.png',
-    'https://resizer.glanacion.com/resizer/bHxdQrLXjonaGNlzDA3rUJzdFcc=/1200x800/smart/filters:format(webp):quality(80)/cloudfront-us-east-1.images.arcpublishing.com/lanacionar/45MJFALP6FCS3LDG2YHOOOW6WQ.jpg']
-    const labels = ['Musica', 'Diversion'];
+    const client = new apiClient();
+
+    useEffect(() => {
+        const onResponse = (response) => {
+            setEvent(response);
+        }
+        const onError = (error) => {
+            console.log(error);
+        }
+        client.getEventInfo(1, onResponse, onError);
+    }, []);
 
     return (
         <SafeAreaView style={styles.container}>
         <ScrollView>
-            <View style={styles.imageContainer}>
-                <Image 
-                source={{uri:imagesUri[imageSelected]}} 
-                style={styles.image}/>
-                <TouchableOpacity style={styles.viewNextImageBtn} onPress={(e) => {
-                    console.log(imageSelected)
-                    setImageToShow((imageSelected + 1) % imagesUri.length)
-                }}>
-                    <Entypo name="chevron-right" size={35} color="white" />
-                </TouchableOpacity>
-            </View>
+            {event.imagesUri ?
+                <View style={styles.imageContainer}>
+                    <Image 
+                    source={{uri:event.imagesUri[imageSelected]}} 
+                    style={styles.image}/>
+                    <TouchableOpacity style={styles.viewNextImageBtn} onPress={(e) => {
+                        setImageToShow((imageSelected + 1) % event.imagesUri.length)
+                    }}>
+                        <Entypo name="chevron-right" size={35} color="white" />
+                    </TouchableOpacity>
+                </View>
+                : 
+                <></>
+            }
             <Text style={styles.title}>
                 Paramore
             </Text>
@@ -36,15 +65,15 @@ export default function EventInfo(props) {
                 <View style={styles.infoPlaceContainer}>
                     <View style={styles.infoRow}>
                         <Feather name="map-pin" size={24} color="#747474" />
-                        <Text style={styles.infoTextRow}>{address}</Text>
+                        <Text style={styles.infoTextRow}>{event.address}</Text>
                     </View>
                     <View style={styles.infoRow}>
                         <Feather name="clock" size={24} color="#747474" />
-                        <Text style={styles.infoTextRow}>{hour}</Text>
+                        <Text style={styles.infoTextRow}>{event.hour}</Text>
                     </View>
                 </View>
                 <View style={styles.dateContainer}>
-                    <Text style={styles.date}>{date}</Text>
+                    <Text style={styles.date}>{event.date}</Text>
                 </View>
             </View>
             <Text style={styles.subtitle}>
@@ -53,31 +82,35 @@ export default function EventInfo(props) {
             <Text style={styles.description}>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
             </Text>
-            <View style={styles.labelsRow}>
-                <View style={styles.labelContainer}>
-                    <Text style={styles.label}>
-                        Musica
-                    </Text>
+            {event.labels ? 
+                <View style={styles.labelsRow}>
+                    {event.labels.map((e,i) => {
+                        return (
+                            <View style={styles.labelContainer}>
+                                <Text style={styles.label}>
+                                    {e}
+                                </Text>
+                            </View>
+                        );
+                    })}
                 </View>
-                <View style={styles.labelContainer}>
-                    <Text style={styles.label}>
-                        Musica
-                    </Text>
-                </View>
-            </View>
+                :
+                <></>
+            }
             <Text style={styles.subtitle}>
                 Agenda
             </Text>
-            <View style={styles.eventContainer}>
-                <View style={styles.eventCard}>
-                    <Text style={styles.eventCardText}>Fiesta Loca</Text>
-                    <Text>12:00hs</Text>
+            {event.agendaEntries ? 
+                <View style={styles.eventContainer}>
+                    {event.agendaEntries.map((agenda,i) => {
+                        return (
+                            <DisplayCard name={agenda.name} time={agenda.time}/>
+                        );
+                    })}
                 </View>
-                <View style={styles.eventCard}>
-                    <Text style={styles.eventCardText}>Asado</Text>
-                    <Text>13:00hs</Text>
-                </View>
-            </View>
+                :
+                <></>
+            }
         </ScrollView>
         </SafeAreaView>
     )
@@ -85,7 +118,6 @@ export default function EventInfo(props) {
 
 const styles = StyleSheet.create({
     container: {
-        //backgroundColor: '#ffffff',
         width: '100%',
     },
     title: {
@@ -180,19 +212,37 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 15
     },
-    eventCard: {
+    eventCardContainer: {
         width: '90%',
+        height: 80,
         backgroundColor: 'white',
-        borderColor: '#A5C91B',
-        borderStyle: 'solid',
-        borderRadius: 10,
         marginBottom: 10,
-        borderWidth: 3,
-        padding: 15
+        borderRadius: 15,
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'flex-end'
+    },
+    eventTimeContainer:{
+        width: '30%',
+        fontSize: 22,
+        fontWeight: '600',
+        color: 'white',
+        alignSelf: 'center',
+        textAlign: 'center'
+    },
+    eventNameContainer: {
+        backgroundColor: 'white',
+        padding: 15,
+        width: '70%',
+        height: '100%',
+        borderRadius: 15,
+        display: 'flex',
+        justifyContent: 'center',
+        elevation: 3,
     },
     eventCardText: {
         color: '#565656',
-        fontWeight: '500',
-        fontSize: 15,
+        fontWeight: '400',
+        fontSize: 18,
     }
 });
