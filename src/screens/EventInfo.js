@@ -1,4 +1,4 @@
-import { StyleSheet, Text, Image, View } from 'react-native';
+import { StyleSheet, Text, Image, View, useWindowDimensions } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { ScrollView, TouchableOpacity } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
@@ -8,6 +8,7 @@ import apiClient from '../services/apiClient';
 import DisplayAgendaCard from '../components/DisplayAgendaCard';
 import { useMainContext } from '../services/contexts/MainContext';
 import CarouselCards from '../components/Carousel';
+import RenderHtml from 'react-native-render-html';
 
 
 export default function EventInfo({ route, navigation }) {
@@ -15,6 +16,7 @@ export default function EventInfo({ route, navigation }) {
     const [event, setEvent] = useState({});
     const [userData, setUserData] = useState({});
     const { getUserData } = useMainContext();
+    const { width } = useWindowDimensions();
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -72,7 +74,10 @@ export default function EventInfo({ route, navigation }) {
                 Descripción
             </Text>
             <Text style={styles.description}>
-                {event.description} 
+                <RenderHtml 
+                    contentWidth={width}
+                    source={{html: event.description}}
+                    />
             </Text>
             {event.labels ? 
                 <View style={styles.labelsRow}>

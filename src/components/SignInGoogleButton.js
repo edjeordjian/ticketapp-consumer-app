@@ -46,18 +46,23 @@ export default function SignInWithGoogle(props) {
     }
 
     const onError = (_error) => {
+      console.log(_error.response);
+      console.log(_error.request);
+      console.log(_error.message);
       let error = _error.toString();
-      if (res.error !== undefined || res.id !== userData.id) {
-        alert(res.error);
+      if (_error !== undefined || _error.id !== userData.id) {
+        alert(error);
       }
     }
 
-    apiClient().logIn(requestBody, onResponse, onError);
+    const client = new apiClient();
+    client.logIn(requestBody, onResponse, onError);
   };
 
   useEffect(() => {
     if (response?.type === 'success') {
       const {authentication} = response;
+      console.log(authentication);
 
       handleSignInWithGoogle(authentication).catch(e => {
           alert(GOOGLE_AUTH_ERR_LBL);

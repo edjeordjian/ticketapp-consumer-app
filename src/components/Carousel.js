@@ -19,16 +19,7 @@ const CarouselCardItem = ({ item, index }) => {
   }
 
 export default function CarouselCards(props) {
-  const isCarousel = React.useRef(null)
-
-  const data = [
-    {
-        imgUrl: "https://picsum.photos/id/11/200/300",
-    },
-    {
-        imgUrl: "https://picsum.photos/id/11/200/300",
-    },
-  ]
+  const isCarousel = React.useRef(null);
 
   return (
     <View>

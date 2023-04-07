@@ -33,6 +33,12 @@ export default function Events({ navigation }) {
     }, []);
 
     const updateSearch = async (searchString) => {
+        const onResponse = (response) => {
+            setEvents(response.events());
+        }
+        const onError = (error) => {
+            console.log(error);
+        }
         await setSearch(searchString);
         const client = new apiClient(userData.token);
         client.getEventsList(onResponse, onError, search, undefined);

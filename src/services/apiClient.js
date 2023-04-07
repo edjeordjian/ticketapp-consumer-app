@@ -15,7 +15,7 @@ export default class apiClient {
     axios.get(url, {
           params: params,
           headers: {
-            'Authorization': `Token ${this._token}`,
+            //'Authorization': `Token ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -84,15 +84,28 @@ export default class apiClient {
   // ==========================================USER SEARCH==========================================
 
   logIn(requestBody, onResponse, onError) {
-    this.call_post(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody, onResponse, onError);
+    console.log(`${BACKEND_HOST}${SIGN_IN_URL}`);
+    axios.post(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      },
+    })
+    .then((response) => {
+      onResponse(response);
+    })
+    .catch((err) => {
+      onError(err);
+    });
   }
 
   // ==========================================USER SEARCH==========================================
 
   getEventsList(onResponse, onError, query, owner) {
-    onResponse(new EventListResponse({'events': []}));
-    return;
-    const  _onResponse = (res) => {onResponse( new EventListResponse(res))}
+    //onResponse(new EventListResponse({'events': []}));
+    //return;
+    const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
     let params = {}
     if (query) {
       params.q = query;
@@ -106,9 +119,8 @@ export default class apiClient {
   // ==========================================SEE EVENT==========================================
 
   getEventInfo(eventId, onResponse, onError) {
-    onResponse(new EventResponse({}));
-    return
-    const _onResponse = (res) => {onResponse( new EventResponse(res))}
+    //onResponse(new EventResponse({}));
+    const _onResponse = (res) => {onResponse( new EventResponse(res.data))}
     this.call_get(`${BACKEND_HOST}${GET_EVENT_URL}`, {eventId: eventId}, _onResponse, onError);
   }
 
