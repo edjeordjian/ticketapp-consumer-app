@@ -108,7 +108,7 @@ export default class apiClient {
     const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
     let params = {}
     if (query) {
-      params.q = query;
+      params.value = query;
     }
     if (owner) {
       params.owner = owner;
