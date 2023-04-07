@@ -5,10 +5,10 @@ import { Entypo } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
-import DisplayAgendaCard from '../components/DisplayAgendaCard';
 import { useMainContext } from '../services/contexts/MainContext';
 import CarouselCards from '../components/Carousel';
 import RenderHtml from 'react-native-render-html';
+import Agenda from '../components/Agenda';
 
 
 export default function EventInfo({ route, navigation }) {
@@ -105,17 +105,7 @@ export default function EventInfo({ route, navigation }) {
             <Text style={styles.subtitle}>
                 Agenda
             </Text>
-            {event.agendaEntries ? 
-                <View style={styles.eventContainer}>
-                    {event.agendaEntries.map((agenda,i) => {
-                        return (
-                            <DisplayAgendaCard key={agenda.id} name={agenda.name} time={agenda.time}/>
-                        );
-                    })}
-                </View>
-                :
-                <></>
-            }
+            <Agenda agendaEntries={event.agendaEntries}/>
         </ScrollView>
         </SafeAreaView>
     )
@@ -142,7 +132,7 @@ const styles = StyleSheet.create({
     description: {
         marginLeft: 15,
         fontSize: 15,
-        marginTop: 10,
+        marginTop: 15,
         lineHeight: 20
     },
     infoContainer: {
@@ -209,12 +199,5 @@ const styles = StyleSheet.create({
         marginTop: 15,
         display: 'flex',
         flexDirection: 'row'
-    },
-    eventContainer: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 15
     }
 });

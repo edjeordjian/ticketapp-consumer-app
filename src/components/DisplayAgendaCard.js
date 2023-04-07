@@ -9,9 +9,17 @@ export default function DisplayAgendaCard(props) {
         end={{ x: 1, y: 1 }}
         style={styles.eventCardContainer}
         >
-            <Text style={styles.eventTimeContainer}>
-                {props.time}
-            </Text>
+            <View style={styles.eventTimeContainer}>
+                <Text style={styles.eventTimeText}>
+                    {props.start} hs
+                </Text>
+                <Text style={styles.eventTimeText}>
+                    a
+                </Text>
+                <Text style={styles.eventTimeText}>
+                    {props.end} hs
+                </Text>
+            </View>
             <View style={styles.eventNameContainer}>
                 <Text style={styles.eventCardText}>{props.name}</Text>
             </View>
@@ -32,10 +40,12 @@ const styles = StyleSheet.create({
     },
     eventTimeContainer:{
         width: '30%',
-        fontSize: 22,
+        alignSelf: 'center'
+    },
+    eventTimeText: {
         fontWeight: '600',
         color: 'white',
-        alignSelf: 'center',
+        fontSize: 16,
         textAlign: 'center'
     },
     eventNameContainer: {

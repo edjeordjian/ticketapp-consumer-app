@@ -20,11 +20,10 @@ export default class EventResponse {
     }
 
     _parseAgendaEvents(agendaEvent, index) {
-        console.log(this.timeToString(new Date(agendaEvent.start)));
         return {
             id: 'agendaEvent' + index,
             name: agendaEvent.title,
-            time: this.timeToString(new Date(agendaEvent.start)),
+            start: this.timeToString(new Date(agendaEvent.start)),
             end: this.timeToString(new Date(agendaEvent.end)),
         }
     }
