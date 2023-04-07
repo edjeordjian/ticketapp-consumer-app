@@ -1,5 +1,4 @@
 import axios from "axios";
-import AppStorage from "../AppStorage";
 import { BACKEND_HOST } from "../constants/generalConstants";
 import { SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL } from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
@@ -13,12 +12,10 @@ export default class apiClient {
 
   // Get general
   call_get(url, params, onResponse, onError) {
-    AppStorage.retrieveData("token").then((token) => {
-      axios
-        .get(url, {
+    axios.get(url, {
           params: params,
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Token ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -30,16 +27,13 @@ export default class apiClient {
         .catch((err) => {
           onError(err);
         });
-    });
   }
 
   // Post general
   call_post(url, data, onResponse, onError) {
-    AppStorage.retrieveData("token").then((token) => {
-      axios
-        .post(url, data, {
+    axios.post(url, data, {
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Token ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -51,15 +45,12 @@ export default class apiClient {
         .catch((err) => {
           onError(err);
         });
-    });
   }
 
   call_delete(url, onResponse, onError) {
-    AppStorage.retrieveData("token").then((token) => {
-      axios
-        .delete(url, {
+    axios.delete(url, {
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Token ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -71,15 +62,12 @@ export default class apiClient {
         .catch((err) => {
           onError(err);
         });
-    });
   }
 
   call_patch(url, data, onResponse, onError) {
-    AppStorage.retrieveData("token").then((token) => {
-      axios
-        .patch(url, data, {
+    axios.patch(url, data, {
           headers: {
-            'Authorization': `Token ${token}`,
+            'Authorization': `Token ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -91,7 +79,6 @@ export default class apiClient {
         .catch((err) => {
           onError(err);
         });
-    });
   }
 
   // ==========================================USER SEARCH==========================================

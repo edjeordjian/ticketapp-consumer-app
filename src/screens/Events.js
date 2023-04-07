@@ -25,6 +25,7 @@ export default function Events({ navigation }) {
         }
         getUserData((data) => {
             setUserData(data);
+            console.log(data)
             const client = new apiClient(data.token);
             client.getEventsList(onResponse, onError, search, undefined);
         });

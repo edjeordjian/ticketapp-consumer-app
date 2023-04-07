@@ -7,6 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
 import DisplayAgendaCard from '../components/DisplayAgendaCard';
 import { useMainContext } from '../services/contexts/MainContext';
+import CarouselCards from '../components/Carousel';
 
 
 export default function EventInfo({ route, navigation }) {
@@ -85,6 +86,14 @@ export default function EventInfo({ route, navigation }) {
                         );
                     })}
                 </View>
+                :
+                <></>
+            }
+            <Text style={styles.subtitle}>
+                Galeria
+            </Text>
+            {event.imagesUri ? 
+                <CarouselCards images={event.imagesUri.map((url,_) => {return {imgUrl: url}})}/>
                 :
                 <></>
             }

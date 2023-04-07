@@ -29,6 +29,13 @@ export default function SignInWithGoogle(props) {
       isOrganizer: true
     };
 
+    // await logIn({
+    //   token: googleAuth.accessToken,
+    //   id: userData.id,
+    //   email: userData.email,
+    //   firstName: userData.given_name
+    // });
+
     const onResponse = (res) => {
       logIn({
         token: googleAuth.accessToken,
