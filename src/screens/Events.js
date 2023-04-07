@@ -5,7 +5,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
 import { SearchBar } from '@rneui/themed';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 
