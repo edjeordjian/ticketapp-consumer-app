@@ -1,23 +1,16 @@
 import React, {useMemo, useReducer, useEffect} from "react";
-
 import {MainContext} from "./src/services/contexts/MainContext";
-
 import {Provider as PaperProvider} from 'react-native-paper';
-
 import {NavigationContainer} from '@react-navigation/native';
-
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-
 import * as SecureStore from 'expo-secure-store';
-
-import {SignInScreen} from "./src/screens/login/SignInScreen";
-
 import HomeStack from "./src/services/app/HomeStack";
+import LogInScreen from "./src/screens/LogInScreen";
+
 
 export default function App() {
     const initialState = () => {
-        return {
-        }
+        return {}
     };
 
     const reducer = ( appState = initialState(),
@@ -58,7 +51,6 @@ export default function App() {
                 alert(err);
                 return;
             }
-
             if (userData === null) {
                 await MainContext.signOut();
             } else {
@@ -80,20 +72,19 @@ export default function App() {
 
                 logOut: async () => {
                     await SecureStore.setItemAsync("loggedIn", "");
-
                     dispatch( {type: 'LOG_OUT' } );
                 },
 
                 logIn: async (userData) => {
                     await SecureStore.setItemAsync("user-data", JSON.stringify(userData));
-
                     await SecureStore.setItemAsync("loggedIn", "true");
-
                     dispatch( {type: 'LOG_IN' } );
                 },
 
-                getUserData: async () => {
-                    return JSON.parse( await SecureStore.getItemAsync("user-data") );
+                getUserData: async (setData) => {
+                    const info = await SecureStore.getItemAsync("user-data");
+                    const jsonParse = JSON.parse(info);
+                    setData(jsonParse)
                 }
             } );
         },
@@ -113,8 +104,8 @@ export default function App() {
                                                       component={HomeStack}/>
                                 ) : (
                                     <>
-                                        <AuthStack.Screen name='SignInScreen'
-                                                          component={SignInScreen}/>
+                                        <AuthStack.Screen name='LogInScreen'
+                                                          component={LogInScreen}/>
                                     </>
                                 )
                             }

@@ -4,7 +4,7 @@ import React, {useEffect, useState} from 'react'
 
 import {View} from 'react-native';
 
-const Exit = () => {
+export default function Exit() {
     const {logOut} = useMainContext();
 
     useEffect( () => {
@@ -15,8 +15,4 @@ const Exit = () => {
         <View>
         </View>
     );
-};
-
-export {
-    Exit
 };
