@@ -28,7 +28,6 @@ export default function Events({ navigation }) {
         }
         getUserData((data) => {
             setUserData(data);
-            console.log(data)
             const client = new apiClient(data.token);
             client.getEventsList(onResponse, onError, search, undefined);
         });
@@ -43,10 +42,12 @@ export default function Events({ navigation }) {
         const onError = (error) => {
             console.log(error);
         }
+
         await setSearch(searchString);
+
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, search, undefined);
+        client.getEventsList(onResponse, onError, searchString, undefined);
     };
 
     return (
@@ -58,7 +59,7 @@ export default function Events({ navigation }) {
                 style={styles.searchBarContainer}
             >
                 <SearchBar
-                    placeholder="Type Here..."
+                    placeholder="Buscar"
                     onChangeText={updateSearch}
                     value={search}
                     lightTheme
@@ -96,7 +97,7 @@ const styles = StyleSheet.create({
     searchBarContainer: {
         backgroundColor: '#1A55D7',
         width: '100%',
-        height: 200,
+        height: 100,
         marginBottom: 25,
         display: 'flex',
         alignItems: 'center'

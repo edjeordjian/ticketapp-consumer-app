@@ -62,7 +62,6 @@ export default function SignInWithGoogle(props) {
   useEffect(() => {
     if (response?.type === 'success') {
       const {authentication} = response;
-      console.log(authentication);
 
       handleSignInWithGoogle(authentication).catch(e => {
           alert(GOOGLE_AUTH_ERR_LBL);

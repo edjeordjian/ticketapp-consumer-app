@@ -9,31 +9,42 @@ import CarouselCards from '../components/Carousel';
 import RenderHtml from 'react-native-render-html';
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
+import {BlankLine} from "../components/BlankLine";
 
 
 export default function EventInfo({ route, navigation }) {
     const [imageSelected, setImageToShow] = useState(0);
+
     const [event, setEvent] = useState({});
-    const [userData, setUserData] = useState({});
+
     const { getUserData } = useMainContext();
+
     const { width } = useWindowDimensions();
+
+    const [currentEventId, setCurrentEventId] = useState(-1);
 
     useEffect(() => {
         const onResponse = (response) => {
             setEvent(response.event());
+
+            setImageToShow(0);
+
+            setCurrentEventId(route.params.eventId);
         }
+
         const onError = (error) => {
             console.log(error);
         }
 
         getUserData((data) => {
-            setUserData(data);
             const client = new apiClient(data.token);
             client.getEventInfo(route.params.eventId, onResponse, onError);
         });
-    }, []);
 
-    if (event.id === undefined) {
+    }, [route.params.eventId]);
+
+
+    if (currentEventId !== route.params.eventId) {
         return <EventInfoLoading/>
     }
 
@@ -43,7 +54,7 @@ export default function EventInfo({ route, navigation }) {
             {event.imagesUri ?
                 <View style={styles.imageContainer}>
                     <Image 
-                    source={{uri:event.imagesUri[imageSelected]}} 
+                    source={{uri:event.imagesUri[imageSelected]}}
                     style={styles.image}/>
                     <TouchableOpacity style={styles.viewNextImageBtn} onPress={(e) => {
                         setImageToShow((imageSelected + 1) % event.imagesUri.length)
@@ -54,9 +65,11 @@ export default function EventInfo({ route, navigation }) {
                 : 
                 <></>
             }
+
             <Text style={styles.title}>
                 {event.name}
             </Text>
+
             <View style={styles.infoContainer}>
                 <View style={styles.infoPlaceContainer}>
                     <View style={styles.infoRow}>
@@ -72,20 +85,12 @@ export default function EventInfo({ route, navigation }) {
                     <Text style={styles.date}>{event.date}</Text>
                 </View>
             </View>
-            <Text style={styles.subtitle}>
-                Descripción
-            </Text>
-            <Text style={styles.description}>
-                <RenderHtml 
-                    contentWidth={width}
-                    source={{html: event.description}}
-                    />
-            </Text>
-            {event.labels ? 
+
+            {event.labels ?
                 <View style={styles.labelsRow}>
                     {event.labels.map((e,i) => {
                         return (
-                            <View style={styles.labelContainer}>
+                            <View style={styles.labelContainer} key={i}>
                                 <Text style={styles.label}>
                                     {e}
                                 </Text>
@@ -96,10 +101,35 @@ export default function EventInfo({ route, navigation }) {
                 :
                 <></>
             }
+
+            <BlankLine/>
+
+            <Text style={styles.subtitle}>
+                Descripción
+            </Text>
+
+            <Text style={styles.description}>
+                <RenderHtml 
+                    contentWidth={width}
+                    source={{html: event.description}}
+                    />
+            </Text>
+
+            <BlankLine/>
+
+            <Text style={styles.subtitle}>Organizador
+            </Text>
+
+            <Text>
+                {"     " + event.organizerName}
+            </Text>
+
+            <BlankLine/>
+
             {/* <Text style={styles.subtitle}>
                 Galeria
             </Text>
-            {event.imagesUri ? 
+            {event.imagesUri ?
                 <CarouselCards images={event.imagesUri.map((url,_) => {return {imgUrl: url}})}/>
                 :
                 <></>
@@ -107,6 +137,7 @@ export default function EventInfo({ route, navigation }) {
             <Text style={styles.subtitle}>
                 Agenda
             </Text>
+
             <Agenda agendaEntries={event.agendaEntries}/>
         </ScrollView>
         </SafeAreaView>
@@ -165,7 +196,6 @@ const styles = StyleSheet.create({
         display: 'flex',
         justifyContent: 'center',
         backgroundColor: '#A5C91B8C',
-        justifyContent: 'center',
         alignItems: 'center',
         marginLeft: '80%'
     },

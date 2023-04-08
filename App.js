@@ -53,12 +53,12 @@ export default function App() {
             }
             if (userData === null) {
                 await MainContext.signOut();
-            } else {
+            } /*else {
                 dispatch({
                     type: 'RESTORE_TOKEN',
                     userData: JSON.parse(userData)
                 });
-            }
+            }*/
         }
 
         bootstrapAsync().then();

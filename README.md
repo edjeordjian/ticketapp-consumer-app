@@ -1,6 +1,7 @@
 ### Como ejecutar
 - Las dependencias se instalan con `yarn`, NO con npm i.
-- Para ejecutar la aplicación, usar el comando `expo r -c`.
+- Para ejecutar la aplicación, usar el comando `expo -c`. Siempre se recomienda
+  ejecutar limipando el caché (con el flag -c).
 - Usando la app Expo Go (de Playstore), escanear el QR para poder levantar la aplicación en el celular, o en un emulador, lo que sea más cómodo. En el caso de usar emulador, se recomienda usar el que viene con Android Studio. Expo Go debería tener hot reloading (igual que React y Nodemon).
 
 
