@@ -1,6 +1,5 @@
-import { StyleSheet, Text, Image, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, Image, View, useWindowDimensions, ScrollView, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
-import { ScrollView, TouchableOpacity } from 'react-native';
 import { Entypo } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,6 +8,7 @@ import { useMainContext } from '../services/contexts/MainContext';
 import CarouselCards from '../components/Carousel';
 import RenderHtml from 'react-native-render-html';
 import Agenda from '../components/Agenda';
+import EventInfoLoading from './EventInfoLoading';
 
 
 export default function EventInfo({ route, navigation }) {
@@ -33,7 +33,9 @@ export default function EventInfo({ route, navigation }) {
         });
     }, []);
 
-    console.log(userData);
+    if (event.id === undefined) {
+        return <EventInfoLoading/>
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -94,14 +96,14 @@ export default function EventInfo({ route, navigation }) {
                 :
                 <></>
             }
-            <Text style={styles.subtitle}>
+            {/* <Text style={styles.subtitle}>
                 Galeria
             </Text>
             {event.imagesUri ? 
                 <CarouselCards images={event.imagesUri.map((url,_) => {return {imgUrl: url}})}/>
                 :
                 <></>
-            }
+            } */}
             <Text style={styles.subtitle}>
                 Agenda
             </Text>

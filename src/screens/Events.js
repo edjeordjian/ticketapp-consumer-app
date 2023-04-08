@@ -8,16 +8,19 @@ import { SearchBar } from '@rneui/themed';
 import { useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
+import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 
 
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
+    const [loading, setIsLoading] = useState(true);
     const [search, setSearch] = useState(undefined);
     const [userData, setUserData] = useState({});
     const { getUserData } = useMainContext();
 
     useEffect(() => {
         const onResponse = (response) => {
+            setIsLoading(false);
             setEvents(response.events());
         }
         const onError = (error) => {
@@ -34,12 +37,14 @@ export default function Events({ navigation }) {
 
     const updateSearch = async (searchString) => {
         const onResponse = (response) => {
+            setIsLoading(false);
             setEvents(response.events());
         }
         const onError = (error) => {
             console.log(error);
         }
         await setSearch(searchString);
+        await setIsLoading(true);
         const client = new apiClient(userData.token);
         client.getEventsList(onResponse, onError, search, undefined);
     };
@@ -64,11 +69,15 @@ export default function Events({ navigation }) {
             <ScrollView 
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
-                {events.map((event,i) => {
-                    return (
-                        <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
-                    );
-                })}
+                {loading ? 
+                    <EventBoxPlaceHolder/>
+                : 
+                    events.map((event,i) => {
+                        return (
+                            <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
+                        );
+                    })
+                }
             </ScrollView>
             <StatusBar style="auto" />
       </SafeAreaView>
