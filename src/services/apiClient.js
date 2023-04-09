@@ -7,7 +7,6 @@ import EventResponse from "./responses/EventResponse";
 export default class apiClient {
   constructor(token) {
     this._token = token;
-    this._base_url = 'http://localhost:5060/dispatch';
   }
 
   // Get general
@@ -15,7 +14,8 @@ export default class apiClient {
     axios.get(url, {
           params: params,
           headers: {
-            //'Authorization': `Token ${this._token}`,
+            'Expo': "true",
+            'Authorization': `Bearer ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -33,7 +33,8 @@ export default class apiClient {
   call_post(url, data, onResponse, onError) {
     axios.post(url, data, {
           headers: {
-            'Authorization': `Token ${this._token}`,
+            'Expo': "true",
+            'Authorization': `Bearer ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -50,7 +51,8 @@ export default class apiClient {
   call_delete(url, onResponse, onError) {
     axios.delete(url, {
           headers: {
-            'Authorization': `Token ${this._token}`,
+            'Expo': "true",
+            'Authorization': `Bearer ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -67,7 +69,8 @@ export default class apiClient {
   call_patch(url, data, onResponse, onError) {
     axios.patch(url, data, {
           headers: {
-            'Authorization': `Token ${this._token}`,
+            'Expo': "true",
+            'Authorization': `Bearer ${this._token}`,
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Origin': '*'
@@ -87,6 +90,7 @@ export default class apiClient {
     console.log(`${BACKEND_HOST}${SIGN_IN_URL}`);
     axios.post(`${BACKEND_HOST}${SIGN_IN_URL}`, requestBody, {
       headers: {
+        'Expo': "true",
         'Content-Type': 'application/json',
         'Accept': 'application/json',
         'Access-Control-Allow-Origin': '*'

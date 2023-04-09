@@ -64,20 +64,20 @@ export default function SignInWithGoogle(props) {
       const {authentication} = response;
 
       handleSignInWithGoogle(authentication).catch(e => {
-          alert(GOOGLE_AUTH_ERR_LBL);
-        });
+        alert(GOOGLE_AUTH_ERR_LBL);
+      });
     }
   }, [response]);
 
   return (
-    <Button
-        icon='google'
-        mode="contained"
-        disabled={!request}
-        onPress={() => promptAsync()}
-        style={{borderRadius: 20, marginTop: 5}}
-    >
+      <Button
+          icon='google'
+          mode="contained"
+          disabled={!request}
+          onPress={() => promptAsync()}
+          style={{borderRadius: 20, marginTop: 5}}
+      >
         <Text style={{color: 'white'}}>{GOOGLE_LOG_IN_LBL}</Text>
-    </Button>
+      </Button>
   );
 }

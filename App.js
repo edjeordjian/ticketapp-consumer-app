@@ -84,7 +84,7 @@ export default function App() {
                 getUserData: async (setData) => {
                     const info = await SecureStore.getItemAsync("user-data");
                     const jsonParse = JSON.parse(info);
-                    setData(jsonParse)
+                    setData(jsonParse);
                 }
             } );
         },
