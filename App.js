@@ -53,12 +53,12 @@ export default function App() {
             }
             if (userData === null) {
                 await MainContext.signOut();
-            } else {
+            } /*else {
                 dispatch({
                     type: 'RESTORE_TOKEN',
                     userData: JSON.parse(userData)
                 });
-            }
+            }*/
         }
 
         bootstrapAsync().then();
@@ -84,7 +84,7 @@ export default function App() {
                 getUserData: async (setData) => {
                     const info = await SecureStore.getItemAsync("user-data");
                     const jsonParse = JSON.parse(info);
-                    setData(jsonParse)
+                    setData(jsonParse);
                 }
             } );
         },

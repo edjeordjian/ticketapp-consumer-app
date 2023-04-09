@@ -26,11 +26,12 @@ export default function HomeStack() {
                 tabBarHideOnKeyboard: true,
                 tabBarStyle: [
                     {
-                    display: "flex"
-                    }, null
+                        display: "flex",
+                        backgroundColor: '#F4F4F4'
+                    },
+                    null,
                 ],
                 tabBarShowLabel: false,
-                tabBarStyle:{backgroundColor: '#F4F4F4'},
                 tabBarIcon: ({ focused, color, size }) => {
                     let iconName;
                     let rn = route.name;
