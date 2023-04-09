@@ -26,7 +26,7 @@ export default function SignInWithGoogle(props) {
       firstName: userData.given_name,
       lastName: userData.family_name,
       pictureUrl: userData.picture,
-      isOrganizer: true
+      isConsumer: true
     };
 
     // await logIn({
