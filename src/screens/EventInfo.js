@@ -10,6 +10,7 @@ import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
 import {BlankLine} from "../components/BlankLine";
 import ModalGetEvent from '../components/ModalGetEvent';
+import { Button } from 'react-native-paper';
 
 
 export default function EventInfo({ route, navigation }) {
@@ -45,6 +46,33 @@ export default function EventInfo({ route, navigation }) {
         });
     }
 
+    const navigateToQR = () => {
+        navigation.navigate('GetQR', {
+            'ticketId': event.ticket.id
+        });
+    }
+
+    const qrBtn = () => {
+        if (event.ticket.wasUsed) {
+            return (
+                <Button 
+                    style={styles.btnUsedEvent} 
+                    onPress={navigateToQR}
+                    disabled={true}
+                    textColor={'white'}>
+                    Entrada utilizada
+                </Button>
+            )
+        }
+        return (
+            <Button 
+                style={styles.btnGetEvent} 
+                onPress={navigateToQR}
+                textColor={'white'}>
+                Obtener QR
+            </Button>
+        )
+    }
 
     if (event.id === undefined) {
         return <EventInfoLoading/>
@@ -121,23 +149,17 @@ export default function EventInfo({ route, navigation }) {
             <Text>
                 {"     " + event.organizerName}
             </Text>
-
-            <BlankLine/>
-
-            {/* <Text style={styles.subtitle}>
-                Galeria
-            </Text>
-            {event.imagesUri ?
-                <CarouselCards images={event.imagesUri.map((url,_) => {return {imgUrl: url}})}/>
-                :
-                <></>
-            } */}
+            
             <Text style={styles.subtitle}>
                 Agenda
             </Text>
             <Agenda agendaEntries={event.agendaEntries}/>
 
-            <ModalGetEvent getEventTicket={getEventTicket}/>
+            {event.ticket && event.ticket.id ? 
+                qrBtn()
+                :
+                <ModalGetEvent getEventTicket={getEventTicket}/>
+            }
         </ScrollView>
     </SafeAreaView>
     )
@@ -231,5 +253,21 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         display: 'flex',
         flexDirection: 'row'
-    }
+    },
+    btnGetEvent: {
+        backgroundColor: '#1A55D7',
+        width: '90%',
+        alignSelf: 'center',
+        padding: 2,
+        marginTop: 15,
+        marginBottom: 15
+    },
+    btnUsedEvent: {
+        backgroundColor: '#A3A3A3',
+        width: '90%',
+        alignSelf: 'center',
+        padding: 2,
+        marginTop: 15,
+        marginBottom: 15
+    },
 });

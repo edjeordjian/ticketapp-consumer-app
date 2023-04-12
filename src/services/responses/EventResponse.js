@@ -39,6 +39,10 @@ export default class EventResponse {
             hour: event.time + "hs",
             date: event.date,
             labels:  event.types_names,
+            ticket: {
+                wasUsed: false,
+                id: '123123123123'
+            },
             imagesUri: event.pictures,
             organizerName: event.organizerName,
             agendaEntries: event.agenda.map((e, i) => {

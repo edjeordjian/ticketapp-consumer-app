@@ -4,12 +4,16 @@ import { Feather } from '@expo/vector-icons';
 import Events from "../../screens/Events";
 import EventInfo from "../../screens/EventInfo";
 import UserProfileScreen from '../../screens/UserProfileScreen';
+import QRScreen from '../../screens/QRScreen';
+import UsersEvents from '../../screens/UsersEvents';
 
 const Tab = createBottomTabNavigator();
 
 //Screen names
 const detailsName = "EventsList";
+const userEventsName = "userEventsName";
 const eventInfoName = "SeeEvent";
+const qrScreenName = "GetQR";
 const settingsName = "settingsUser";
 
 export default function HomeStack() {
@@ -37,9 +41,9 @@ export default function HomeStack() {
                     let rn = route.name;
 
                     if (rn === detailsName || rn === eventInfoName) {
-                    iconName = 'list'
-                    } else if (rn === settingsName) {
-                    iconName = 'user';
+                        iconName = 'list'
+                    } else if (rn === userEventsName) {
+                        iconName = 'user';
                     }
 
                     if (!focused) {
@@ -53,8 +57,12 @@ export default function HomeStack() {
                     })}
                 >
                     <Tab.Screen name={detailsName} component={Events} />
-                    <Tab.Screen  name={settingsName} component={UserProfileScreen} />
+                    <Tab.Screen name={userEventsName} component={UsersEvents} />
+                    {/* <Tab.Screen  name={settingsName} component={UserProfileScreen} /> */}
                     <Tab.Screen name={eventInfoName} component={EventInfo} options={
+                        () => ({tabBarButton: () => null,})}
+                    />
+                    <Tab.Screen name={qrScreenName} component={QRScreen} options={
                         () => ({tabBarButton: () => null,})}
                     />
             </Tab.Navigator>
