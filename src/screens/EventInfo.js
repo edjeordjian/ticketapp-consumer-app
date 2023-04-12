@@ -5,46 +5,48 @@ import { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
-import CarouselCards from '../components/Carousel';
 import RenderHtml from 'react-native-render-html';
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
 import {BlankLine} from "../components/BlankLine";
+import ModalGetEvent from '../components/ModalGetEvent';
 
 
 export default function EventInfo({ route, navigation }) {
     const [imageSelected, setImageToShow] = useState(0);
-
     const [event, setEvent] = useState({});
-
     const { getUserData } = useMainContext();
-
     const { width } = useWindowDimensions();
 
-    const [currentEventId, setCurrentEventId] = useState(-1);
+    const onResponseGetEvent = (response) => {
+        setEvent(response.event());
+        setImageToShow(0);
+    }
+
+    const onError = (error) => {
+        console.log(error);
+    }
 
     useEffect(() => {
-        const onResponse = (response) => {
-            setEvent(response.event());
-
-            setImageToShow(0);
-
-            setCurrentEventId(route.params.eventId);
-        }
-
-        const onError = (error) => {
-            console.log(error);
-        }
-
         getUserData((data) => {
             const client = new apiClient(data.token);
-            client.getEventInfo(route.params.eventId, onResponse, onError);
+            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
         });
 
     }, [route.params.eventId]);
 
+    const getEventTicket = async () => {
+        getUserData(async (data) => {
+            await setEvent({});
+            const client = new apiClient(data.token);
+            console.log('getting ticket');
+            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
+            //client.getEventTicket(route.params.eventId, onResponse, onError);
+        });
+    }
 
-    if (currentEventId !== route.params.eventId) {
+
+    if (event.id === undefined) {
         return <EventInfoLoading/>
     }
 
@@ -102,8 +104,6 @@ export default function EventInfo({ route, navigation }) {
                 <></>
             }
 
-            <BlankLine/>
-
             <Text style={styles.subtitle}>
                 Descripción
             </Text>
@@ -114,8 +114,6 @@ export default function EventInfo({ route, navigation }) {
                     source={{html: event.description}}
                     />
             </Text>
-
-            <BlankLine/>
 
             <Text style={styles.subtitle}>Organizador
             </Text>
@@ -137,10 +135,11 @@ export default function EventInfo({ route, navigation }) {
             <Text style={styles.subtitle}>
                 Agenda
             </Text>
-
             <Agenda agendaEntries={event.agendaEntries}/>
+
+            <ModalGetEvent getEventTicket={getEventTicket}/>
         </ScrollView>
-        </SafeAreaView>
+    </SafeAreaView>
     )
 }
 
@@ -228,7 +227,8 @@ const styles = StyleSheet.create({
     },
     labelsRow: {
         marginLeft: 15,
-        marginTop: 15,
+        marginTop: 5,
+        marginBottom: 10,
         display: 'flex',
         flexDirection: 'row'
     }

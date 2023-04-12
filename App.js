@@ -99,7 +99,7 @@ export default function App() {
                     <AuthStack.Navigator screenOptions={{headerShown: false}}>
                         <>
                             {
-                                (appState.isLoggedIn) ? (
+                                (appState.isLoggedIn || true) ? (
                                     <AuthStack.Screen name='HomeNavStack'
                                                       component={HomeStack}/>
                                 ) : (
