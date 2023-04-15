@@ -1,13 +1,14 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
 import { useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
+import CarouselCards from '../components/CarouselCards';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function UsersEvents({ navigation }) {
@@ -33,7 +34,20 @@ export default function UsersEvents({ navigation }) {
 
     }, []);
 
+    const _getLinksToNextEvents = () => {
+        return [{imgUrl: events[0].imageUri}, {imgUrl: events[0].imageUri}]
+    }
+
+    const onCardSelected = (index) => {
+        //const id = events[index].id;
+        console.log(events[index]);
+        // navigation.navigate('SeeEvent', {
+        //     'eventId': 2
+        // });
+    }
+
     const event = loading || (events[0] === undefined) ? {} : events[0]
+    const nextEvents = loading || (events[0] === undefined) ? [] : _getLinksToNextEvents();
 
     return (
         <SafeAreaView style={styles.container}>
@@ -46,19 +60,8 @@ export default function UsersEvents({ navigation }) {
                 <Text style={styles.nextEventText}>Próximo evento</Text>
                 <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
             </LinearGradient>
-            {/* <ScrollView 
-                contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
-                style={styles.scrollContainer}>
-                {loading ? 
-                    <EventBoxPlaceHolder/>
-                : 
-                    events.map((event,i) => {
-                        return (
-                            <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
-                        );
-                    })
-                }
-            </ScrollView> */}
+            <Text style={styles.allEventsText}>Eventos reservados</Text>
+             <CarouselCards images={nextEvents} onCardSelected={onCardSelected}/>
             <StatusBar style="auto" />
       </SafeAreaView>
     );
@@ -82,6 +85,14 @@ const styles = StyleSheet.create({
     },
     nextEventText: {
         color: 'white', 
+        fontWeight: '700', 
+        alignSelf: 'flex-start',
+        fontSize: 18,
+        marginBottom: 15,
+        marginLeft: '5%'
+    },
+    allEventsText: {
+        color: '#4D4D4D', 
         fontWeight: '700', 
         alignSelf: 'flex-start',
         fontSize: 18,
