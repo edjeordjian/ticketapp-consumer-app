@@ -8,9 +8,9 @@ import { useMainContext } from '../services/contexts/MainContext';
 import RenderHtml from 'react-native-render-html';
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
-import {BlankLine} from "../components/BlankLine";
 import ModalGetEvent from '../components/ModalGetEvent';
 import { Button } from 'react-native-paper';
+import { StatusBar } from 'expo-status-bar';
 
 
 export default function EventInfo({ route, navigation }) {
@@ -49,6 +49,13 @@ export default function EventInfo({ route, navigation }) {
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
             'ticketId': event.ticket.id
+        });
+    }
+
+    const navigateToFAQ = () => {
+        navigation.navigate('FAQScreen', {
+            eventFAQ: event.faq,
+            eventId: event.id
         });
     }
 
@@ -96,9 +103,17 @@ export default function EventInfo({ route, navigation }) {
                 <></>
             }
 
-            <Text style={styles.title}>
-                {event.name}
-            </Text>
+            <View style={styles.headerContainer}>
+                <Text style={styles.title}>
+                    {event.name}
+                </Text>
+                <Button 
+                    onPress={navigateToFAQ}
+                    buttonColor={'#A5C91B'} 
+                    textColor={'white'}>
+                    FAQ
+                </Button>
+            </View>
 
             <View style={styles.infoContainer}>
                 <View style={styles.infoPlaceContainer}>
@@ -161,6 +176,7 @@ export default function EventInfo({ route, navigation }) {
                 <ModalGetEvent getEventTicket={getEventTicket}/>
             }
         </ScrollView>
+        <StatusBar style="auto" />
     </SafeAreaView>
     )
 }
@@ -169,12 +185,20 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
     },
+    headerContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignContent: 'center',
+        alignItems: 'center',
+        marginTop: 15,
+        paddingLeft: 15,
+        paddingRight: 15
+    },
     title: {
         color: '#565656',
         fontWeight: '700',
         fontSize: 32,
-        marginLeft: 15,
-        marginTop: 15
     },
     subtitle: {
         color: '#565656',

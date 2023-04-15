@@ -43,6 +43,10 @@ export default class EventResponse {
                 wasUsed: false,
                 id: '123123123123'
             },
+            faq: [
+                {question: 'Como andas?', answer: 'asdfsdf'},
+                {question: 'Estás contento?', answer: 'asdfsdf'}
+            ],
             imagesUri: event.pictures,
             organizerName: event.organizerName,
             agendaEntries: event.agenda.map((e, i) => {

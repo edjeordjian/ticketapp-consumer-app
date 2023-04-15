@@ -6,6 +6,7 @@ import EventInfo from "../../screens/EventInfo";
 import UserProfileScreen from '../../screens/UserProfileScreen';
 import QRScreen from '../../screens/QRScreen';
 import UsersEvents from '../../screens/UsersEvents';
+import FAQScreen from '../../screens/FAQScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -14,6 +15,7 @@ const detailsName = "EventsList";
 const userEventsName = "userEventsName";
 const eventInfoName = "SeeEvent";
 const qrScreenName = "GetQR";
+const FAQScreenName = "FAQScreen";
 const settingsName = "settingsUser";
 
 export default function HomeStack() {
@@ -63,6 +65,9 @@ export default function HomeStack() {
                         () => ({tabBarButton: () => null,})}
                     />
                     <Tab.Screen name={qrScreenName} component={QRScreen} options={
+                        () => ({tabBarButton: () => null,})}
+                    />
+                    <Tab.Screen name={FAQScreenName} component={FAQScreen} options={
                         () => ({tabBarButton: () => null,})}
                     />
             </Tab.Navigator>

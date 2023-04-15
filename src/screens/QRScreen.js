@@ -30,8 +30,8 @@ export default function QRScreen({ route, navigation }) {
                 <Text style={styles.text}>
                     Recordá que este código QR tendrá validez una única vez.
                 </Text>
-                    <StatusBar style="auto" />
                 </LinearGradient>
+                <StatusBar style="auto" />
             </SafeAreaView>
     );
   }
