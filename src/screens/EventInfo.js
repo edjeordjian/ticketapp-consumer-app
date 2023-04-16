@@ -1,25 +1,26 @@
-import { StyleSheet, Text, Image, View, useWindowDimensions, ScrollView, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {StyleSheet, Text, Image, View, useWindowDimensions, ScrollView, TouchableOpacity} from 'react-native';
+import {Feather} from '@expo/vector-icons';
+import {Entypo} from '@expo/vector-icons';
+import {useEffect, useState} from 'react';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
-import { useMainContext } from '../services/contexts/MainContext';
+import {useMainContext} from '../services/contexts/MainContext';
 import CarouselCards from '../components/Carousel';
 import RenderHtml from 'react-native-render-html';
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
 import {BlankLine} from "../components/BlankLine";
+import MapView, {Marker} from "react-native-maps";
 
 
-export default function EventInfo({ route, navigation }) {
+export default function EventInfo({route, navigation}) {
     const [imageSelected, setImageToShow] = useState(0);
 
     const [event, setEvent] = useState({});
 
-    const { getUserData } = useMainContext();
+    const {getUserData} = useMainContext();
 
-    const { width } = useWindowDimensions();
+    const {width} = useWindowDimensions();
 
     const [currentEventId, setCurrentEventId] = useState(-1);
 
@@ -50,83 +51,113 @@ export default function EventInfo({ route, navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-        <ScrollView>
-            {event.imagesUri ?
-                <View style={styles.imageContainer}>
-                    <Image 
-                    source={{uri:event.imagesUri[imageSelected]}}
-                    style={styles.image}/>
-                    <TouchableOpacity style={styles.viewNextImageBtn} onPress={(e) => {
-                        setImageToShow((imageSelected + 1) % event.imagesUri.length)
-                    }}>
-                        <Entypo name="chevron-right" size={35} color="white" />
-                    </TouchableOpacity>
-                </View>
-                : 
-                <></>
-            }
-
-            <Text style={styles.title}>
-                {event.name}
-            </Text>
-
-            <View style={styles.infoContainer}>
-                <View style={styles.infoPlaceContainer}>
-                    <View style={styles.infoRow}>
-                        <Feather name="map-pin" size={24} color="#747474" />
-                        <Text style={styles.infoTextRow}>{event.address}</Text>
+            <ScrollView>
+                {event.imagesUri ?
+                    <View style={styles.imageContainer}>
+                        <Image
+                            source={{uri: event.imagesUri[imageSelected]}}
+                            style={styles.image}/>
+                        <TouchableOpacity style={styles.viewNextImageBtn} onPress={(e) => {
+                            setImageToShow((imageSelected + 1) % event.imagesUri.length)
+                        }}>
+                            <Entypo name="chevron-right" size={35} color="white"/>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Feather name="clock" size={24} color="#747474" />
-                        <Text style={styles.infoTextRow}>{event.hour}</Text>
+                    :
+                    <></>
+                }
+
+                <Text style={styles.title}>
+                    {event.name}
+                </Text>
+
+                <View style={styles.infoContainer}>
+                    <View style={styles.infoPlaceContainer}>
+                        <View style={styles.infoRow}>
+                            <Feather name="map-pin" size={24} color="#747474"/>
+                            <Text style={styles.infoTextRow}>{event.address}</Text>
+                        </View>
+
+
+                        <View style={styles.infoRow}>
+                            <Feather name="clock" size={24} color="#747474"/>
+                            <Text style={styles.infoTextRow}>{event.hour}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.dateContainer}>
+                        <Text style={styles.date}>{event.date}</Text>
                     </View>
                 </View>
-                <View style={styles.dateContainer}>
-                    <Text style={styles.date}>{event.date}</Text>
-                </View>
-            </View>
 
-            {event.labels ?
-                <View style={styles.labelsRow}>
-                    {event.labels.map((e,i) => {
-                        return (
-                            <View style={styles.labelContainer} key={i}>
-                                <Text style={styles.label}>
-                                    {e}
-                                </Text>
-                            </View>
-                        );
-                    })}
-                </View>
-                :
-                <></>
-            }
 
-            <BlankLine/>
+                { (event.latitude) ? (
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        <MapView
+                            style={{
+                                width: 300,
+                                height: 200,
+                            }}
+                            initialRegion={{
+                                latitude: event.latitude,
+                                longitude: event.longitude,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01
+                            }}
+                        >
+                            <Marker coordinate={{
+                                latitude: event.latitude,
+                                longitude: event.longitude
+                            }}/>
+                        </MapView>
+                    </View>)
+                    :
+                    <></>
+                }
 
-            <Text style={styles.subtitle}>
-                Descripción
-            </Text>
+                <BlankLine/>
 
-            <Text style={styles.description}>
-                <RenderHtml 
-                    contentWidth={width}
-                    source={{html: event.description}}
-                    />
-            </Text>
+                <View>
+                    {event.labels ?
+                        <View style={styles.labelsRow}>
+                            {event.labels.map((e, i) => {
+                                return (
+                                    <View style={styles.labelContainer} key={i}>
+                                        <Text style={styles.label}>
+                                            {e}
+                                        </Text>
+                                    </View>
+                                );
+                            })}
+                        </View>
+                        :
+                        <></>
+                    }
 
-            <BlankLine/>
+                    <BlankLine/>
 
-            <Text style={styles.subtitle}>Organizador
-            </Text>
+                    <Text style={styles.subtitle}>
+                        Descripción
+                    </Text>
 
-            <Text>
-                {"     " + event.organizerName}
-            </Text>
+                    <Text style={styles.description}>
+                        <RenderHtml
+                            contentWidth={width}
+                            source={{html: event.description}}
+                        />
+                    </Text>
 
-            <BlankLine/>
+                    <BlankLine/>
 
-            {/* <Text style={styles.subtitle}>
+                    <Text style={styles.subtitle}>Organizador
+                    </Text>
+
+                    <Text>
+                        {"     " + event.organizerName}
+                    </Text>
+
+                    <BlankLine/>
+
+                    {/* <Text style={styles.subtitle}>
                 Galeria
             </Text>
             {event.imagesUri ?
@@ -134,12 +165,13 @@ export default function EventInfo({ route, navigation }) {
                 :
                 <></>
             } */}
-            <Text style={styles.subtitle}>
-                Agenda
-            </Text>
+                    <Text style={styles.subtitle}>
+                        Agenda
+                    </Text>
 
-            <Agenda agendaEntries={event.agendaEntries}/>
-        </ScrollView>
+                    <Agenda agendaEntries={event.agendaEntries}/>
+                </View>
+            </ScrollView>
         </SafeAreaView>
     )
 }
@@ -174,10 +206,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     infoPlaceContainer: {
-        flex:1
+        flex: 1
     },
     dateContainer: {
-        flex:1,
+        flex: 1,
     },
     imageContainer: {
         marginBottom: 15,
