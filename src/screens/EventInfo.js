@@ -1,19 +1,20 @@
-import { StyleSheet, Text, Image, View, useWindowDimensions, ScrollView, TouchableOpacity } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { Entypo } from '@expo/vector-icons';
-import { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {StyleSheet, Text, Image, View, useWindowDimensions, ScrollView, TouchableOpacity} from 'react-native';
+import {Feather} from '@expo/vector-icons';
+import {Entypo} from '@expo/vector-icons';
+import {useEffect, useState} from 'react';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
-import RenderHtml from 'react-native-render-html';
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
 import ModalGetEvent from '../components/ModalGetEvent';
 import { Button } from 'react-native-paper';
-import { StatusBar } from 'expo-status-bar';
+import RenderHtml from 'react-native-render-html';
+import {BlankLine} from "../components/BlankLine";
+import MapView, {Marker} from "react-native-maps";
 
 
-export default function EventInfo({ route, navigation }) {
+export default function EventInfo({route, navigation}) {
     const [imageSelected, setImageToShow] = useState(0);
     const [event, setEvent] = useState({});
     const { getUserData } = useMainContext();
@@ -87,97 +88,130 @@ export default function EventInfo({ route, navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-        <ScrollView>
-            {event.imagesUri ?
-                <View style={styles.imageContainer}>
-                    <Image 
-                    source={{uri:event.imagesUri[imageSelected]}}
-                    style={styles.image}/>
-                    <TouchableOpacity style={styles.viewNextImageBtn} onPress={(e) => {
-                        setImageToShow((imageSelected + 1) % event.imagesUri.length)
-                    }}>
-                        <Entypo name="chevron-right" size={35} color="white" />
-                    </TouchableOpacity>
-                </View>
-                : 
-                <></>
-            }
-
-            <View style={styles.headerContainer}>
-                <Text style={styles.title}>
-                    {event.name}
-                </Text>
-                <Button 
-                    onPress={navigateToFAQ}
-                    buttonColor={'#A5C91B'} 
-                    textColor={'white'}>
-                    FAQ
-                </Button>
-            </View>
-
-            <View style={styles.infoContainer}>
-                <View style={styles.infoPlaceContainer}>
-                    <View style={styles.infoRow}>
-                        <Feather name="map-pin" size={24} color="#747474" />
-                        <Text style={styles.infoTextRow}>{event.address}</Text>
+            <ScrollView>
+                {event.imagesUri ?
+                    <View style={styles.imageContainer}>
+                        <Image
+                            source={{uri: event.imagesUri[imageSelected]}}
+                            style={styles.image}/>
+                        <TouchableOpacity style={styles.viewNextImageBtn} onPress={(e) => {
+                            setImageToShow((imageSelected + 1) % event.imagesUri.length)
+                        }}>
+                            <Entypo name="chevron-right" size={35} color="white"/>
+                        </TouchableOpacity>
                     </View>
-                    <View style={styles.infoRow}>
-                        <Feather name="clock" size={24} color="#747474" />
-                        <Text style={styles.infoTextRow}>{event.hour}</Text>
+                    :
+                    <></>
+                }
+
+                <View style={styles.headerContainer}>
+                    <Text style={styles.title}>
+                        {event.name}
+                    </Text>
+                    <Button 
+                        onPress={navigateToFAQ}
+                        buttonColor={'#A5C91B'} 
+                        textColor={'white'}>
+                        FAQ
+                    </Button>
+                </View>
+
+                <View style={styles.infoContainer}>
+                    <View style={styles.infoPlaceContainer}>
+                        <View style={styles.infoRow}>
+                            <Feather name="map-pin" size={24} color="#747474"/>
+                            <Text style={styles.infoTextRow}>{event.address}</Text>
+                        </View>
+
+
+                        <View style={styles.infoRow}>
+                            <Feather name="clock" size={24} color="#747474"/>
+                            <Text style={styles.infoTextRow}>{event.hour}</Text>
+                        </View>
+                    </View>
+                    <View style={styles.dateContainer}>
+                        <Text style={styles.date}>{event.date}</Text>
                     </View>
                 </View>
-                <View style={styles.dateContainer}>
-                    <Text style={styles.date}>{event.date}</Text>
+                { (event.latitude) ? (
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        <MapView
+                            style={{
+                                width: '90%',
+                                height: 200,
+                                marginBottom: 15
+                            }}
+                            initialRegion={{
+                                latitude: event.latitude,
+                                longitude: event.longitude,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01
+                            }}
+                        >
+                            <Marker coordinate={{
+                                latitude: event.latitude,
+                                longitude: event.longitude
+                            }}/>
+                        </MapView>
+                    </View>)
+                    :
+                    <></>
+                }
+
+                <View>
+                    {event.labels ?
+                        <View style={styles.labelsRow}>
+                            {event.labels.map((e, i) => {
+                                return (
+                                    <View style={styles.labelContainer} key={i}>
+                                        <Text style={styles.label}>
+                                            {e}
+                                        </Text>
+                                    </View>
+                                );
+                            })}
+                        </View>
+                        :
+                        <></>
+                    }
+
+
+                    <Text style={styles.subtitle}>
+                        Descripción
+                    </Text>
+
+                    <Text style={styles.description}>
+                        <RenderHtml
+                            contentWidth={width}
+                            source={{html: event.description}}
+                        />
+                    </Text>
+
+
+                    <Text style={styles.subtitle}>Organizador
+                    </Text>
+
+                    <Text>
+                        {"     " + event.organizerName}
+                    </Text>
+
+                    <BlankLine/>
+
+                    <Text style={styles.subtitle}>
+                        Agenda
+                    </Text>
+
+                    <Agenda agendaEntries={event.agendaEntries}/>
+
+                    {
+                        event.ticket && event.ticket.id ? 
+                        qrBtn()
+                        :
+                        <ModalGetEvent getEventTicket={getEventTicket}/>
+                    }
                 </View>
-            </View>
-
-            {event.labels ?
-                <View style={styles.labelsRow}>
-                    {event.labels.map((e,i) => {
-                        return (
-                            <View style={styles.labelContainer} key={i}>
-                                <Text style={styles.label}>
-                                    {e}
-                                </Text>
-                            </View>
-                        );
-                    })}
-                </View>
-                :
-                <></>
-            }
-
-            <Text style={styles.subtitle}>
-                Descripción
-            </Text>
-
-            <Text style={styles.description}>
-                <RenderHtml 
-                    contentWidth={width}
-                    source={{html: event.description}}
-                    />
-            </Text>
-
-            <Text style={styles.subtitle}>Organizador
-            </Text>
-
-            <Text>
-                {"     " + event.organizerName}
-            </Text>
-            
-            <Text style={styles.subtitle}>
-                Agenda
-            </Text>
-            <Agenda agendaEntries={event.agendaEntries}/>
-
-            {event.ticket && event.ticket.id ? 
-                qrBtn()
-                :
-                <ModalGetEvent getEventTicket={getEventTicket}/>
-            }
-        </ScrollView>
-        <StatusBar style="auto" />
-    </SafeAreaView>
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 
@@ -219,10 +253,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     infoPlaceContainer: {
-        flex:1
+        flex: 1
     },
     dateContainer: {
-        flex:1,
+        flex: 1,
     },
     imageContainer: {
         marginBottom: 15,
