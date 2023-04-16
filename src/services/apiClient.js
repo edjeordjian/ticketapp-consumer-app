@@ -120,6 +120,10 @@ export default class apiClient {
     this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
   }
 
+  getUsersEventsList(onResponse, onError) {
+    this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, {}, _onResponse, onError);
+  }
+
   // ==========================================SEE EVENT==========================================
 
   getEventInfo(eventId, onResponse, onError) {

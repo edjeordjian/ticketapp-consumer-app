@@ -29,7 +29,7 @@ export default function UsersEvents({ navigation }) {
             setUserData(data);
             const client = new apiClient(data.token);
             client.getEventsList(onResponse, onError, undefined, undefined);
-            //client.getUsersEventsList(onResponse, onError, undefined);
+            //client.getUsersEventsList(onResponse, onError);
         });
 
     }, []);
