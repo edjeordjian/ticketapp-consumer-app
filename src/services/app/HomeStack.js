@@ -46,6 +46,8 @@ export default function HomeStack() {
                         iconName = 'list'
                     } else if (rn === userEventsName) {
                         iconName = 'user';
+                    } else if (rn === settingsName) {
+                        iconName = 'log-out';
                     }
 
                     if (!focused) {
@@ -60,7 +62,8 @@ export default function HomeStack() {
                 >
                     <Tab.Screen name={detailsName} component={Events} />
                     <Tab.Screen name={userEventsName} component={UsersEvents} />
-                    {/* <Tab.Screen  name={settingsName} component={UserProfileScreen} /> */}
+                    <Tab.Screen  name={settingsName} component={UserProfileScreen} />
+
                     <Tab.Screen name={eventInfoName} component={EventInfo} options={
                         () => ({tabBarButton: () => null,})}
                     />

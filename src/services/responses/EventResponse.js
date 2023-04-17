@@ -40,7 +40,6 @@ export default class EventResponse {
             longitude = Number(event.longitude);
         }
 
-
         return {
             id: event.id,
             name: event.name,
@@ -49,13 +48,10 @@ export default class EventResponse {
             hour: event.time + "hs",
             date: event.date,
             labels:  event.types_names,
-            ticket: {
-                wasUsed: false,
-                id: '123123123123'
-            },
+            ticket: event.ticket ?? null,
             faq: [
-                {question: 'Como andas?', answer: 'asdfsdf'},
-                {question: 'Estás contento?', answer: 'asdfsdf'}
+                {question: 'Como andas?', answer: 'A'},
+                {question: 'Estás contento?', answer: 'B'}
             ],
             imagesUri: event.pictures,
             organizerName: event.organizerName,

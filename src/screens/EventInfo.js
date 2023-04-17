@@ -5,7 +5,6 @@ import {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
 import {useMainContext} from '../services/contexts/MainContext';
-import CarouselCards from '../components/Carousel';
 import RenderHtml from 'react-native-render-html';
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
