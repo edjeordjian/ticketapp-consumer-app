@@ -103,12 +103,11 @@ export default class apiClient {
 
   // ==========================================SEE EVENT==========================================
 
-  getEventInfo(userId, eventId, onResponse, onError) {
+  getEventInfo(eventId, onResponse, onError) {
     //onResponse(new EventResponse({}));
     const _onResponse = (res) => {onResponse( new EventResponse(res.data))}
     this.call_get(`${BACKEND_HOST}${GET_EVENT_URL}`, {
-            eventId: eventId,
-            userId: userId
+            eventId: eventId
         },
         _onResponse,
         onError);

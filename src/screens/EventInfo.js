@@ -36,7 +36,7 @@ export default function EventInfo({route, navigation}) {
     useEffect(() => {
         getUserData((data) => {
             const client = new apiClient(data.token);
-            client.getEventInfo(data.id, route.params.eventId, onResponseGetEvent, onError);
+            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
         });
 
     }, [route.params.eventId]);
@@ -46,7 +46,7 @@ export default function EventInfo({route, navigation}) {
             await setEvent({});
             const client = new apiClient(data.token);
             console.log('getting ticket');
-            client.getEventInfo(data.id, route.params.eventId, onResponseGetEvent, onError);
+            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
             //client.getEventTicket(route.params.eventId, onResponse, onError);
         });
     }
@@ -59,7 +59,6 @@ export default function EventInfo({route, navigation}) {
             const client = new apiClient(data.token);
             console.log('Signing up in a event');
             const body = {
-                userId: data.id,
                 eventId: event.id
             }
             client.signUpInEvent(body, onResponse, onError);
