@@ -10,6 +10,16 @@ import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 
+import * as Notifications from 'expo-notifications';
+import * as React from "react";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
+});
 
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
@@ -31,8 +41,32 @@ export default function Events({ navigation }) {
             const client = new apiClient(data.token);
             client.getEventsList(onResponse, onError, search, undefined);
         });
-
     }, []);
+
+    useEffect(() => {
+        const subcriptionNotificationReceived = Notifications.addNotificationReceivedListener(
+            async notification => {
+                const {params} = notification.request.content.data;
+                // idEmissor: params.idEmissor
+                // idReceptor: params.idReceptor
+            } );
+
+        const subcriptionNotificationClicked = Notifications.addNotificationResponseReceivedListener(notification => {
+            const {type,
+                params,
+                screenName} = notification.notification
+                                          .request
+                                          .content
+                                          .data;
+
+            navigation.navigate(screenName, params);
+        });
+
+        return () => {
+            subcriptionNotificationClicked.remove();
+            subcriptionNotificationReceived.remove();
+        };
+    }, [navigation]);
 
     const updateSearch = async (searchString) => {
         const onResponse = (response) => {

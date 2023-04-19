@@ -49,10 +49,7 @@ export default class EventResponse {
             date: event.date,
             labels:  event.types_names,
             ticket: event.ticket ?? null,
-            faq: [
-                {question: 'Como andas?', answer: 'A'},
-                {question: 'Estás contento?', answer: 'B'}
-            ],
+            faq: event.faq,
             imagesUri: event.pictures,
             organizerName: event.organizerName,
             agendaEntries: event.agenda.map((e, i) => {
