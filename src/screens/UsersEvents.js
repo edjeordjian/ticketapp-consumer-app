@@ -22,14 +22,20 @@ export default function UsersEvents({ navigation }) {
             setIsLoading(false);
             setEvents(response.events());
         }
+
+        const onResponseTags = (response) => {
+            setTags(response.tags());
+        }
+
         const onError = (error) => {
             console.log(error);
         }
+
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getEventsList(onResponse, onError, undefined, undefined);
-            //client.getUsersEventsList(onResponse, onError);
+            client.getUsersEventsList(onResponse, onError, data.id);
+            client.getTagsList(onResponseTags, onError);
         });
 
     }, []);

@@ -86,6 +86,8 @@ export default function EventInfo({route, navigation}) {
         return <EventInfoLoading/>
     }
 
+    const capacityText = event.capacity === 0 ? "Ya no quedan lugares" :  "Quedan " + event.capacity + " lugares"
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -99,6 +101,11 @@ export default function EventInfo({route, navigation}) {
                         }}>
                             <Entypo name="chevron-right" size={35} color="white"/>
                         </TouchableOpacity>
+                        <View style={styles.capacityBox}>
+                            <Text style={styles.capacityBoxText}>
+                                {capacityText}
+                            </Text>
+                        </View>
                     </View>
                     :
                     <></>
@@ -207,7 +214,7 @@ export default function EventInfo({route, navigation}) {
                         event.ticket && event.ticket.id ? 
                         qrBtn()
                         :
-                        <ModalGetEvent getEventTicket={getEventTicket}/>
+                        <ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>
                     }
                 </View>
             </ScrollView>
@@ -278,6 +285,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: '80%'
     },
+    capacityBox: {
+        backgroundColor: 'black',
+        position: 'absolute',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        right: 0,
+        marginBottom: 10,
+        borderBottomLeftRadius: 20,
+        borderTopLeftRadius: 20,
+        marginTop: 270,
+        zIndex: 100, 
+    },
+    capacityBoxText: {
+        color: 'white'
+    },
     infoRow: {
         display: 'flex',
         flexDirection: 'row',
@@ -285,7 +307,7 @@ const styles = StyleSheet.create({
     },
     infoTextRow: {
         color: '#747474',
-        marginLeft: 5
+        marginLeft: 5, 
     },
     date: {
         backgroundColor: '#E6A0FF',
