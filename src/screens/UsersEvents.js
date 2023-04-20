@@ -23,10 +23,6 @@ export default function UsersEvents({ navigation }) {
             setEvents(response.events());
         }
 
-        const onResponseTags = (response) => {
-            setTags(response.tags());
-        }
-
         const onError = (error) => {
             console.log(error);
         }
@@ -35,7 +31,6 @@ export default function UsersEvents({ navigation }) {
             setUserData(data);
             const client = new apiClient(data.token);
             client.getUsersEventsList(onResponse, onError, data.id);
-            client.getTagsList(onResponseTags, onError);
         });
 
     }, []);

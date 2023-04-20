@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BACKEND_HOST } from "../constants/generalConstants";
-import { SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL } from "../constants/URLs";
+import { SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL } from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
 import TagsResponse from "./responses/TagsResponse";
@@ -130,7 +130,7 @@ export default class apiClient {
     const _onResponse = (res) => {
       onResponse( new TagsResponse(res.data));
     }
-    this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, {asistant:userId}, _onResponse, onError);
+    this.call_get(`${BACKEND_HOST}${GET_TAGS_URL}`, {asistant:userId}, _onResponse, onError);
   }
 
   // ==========================================SEE EVENT==========================================
