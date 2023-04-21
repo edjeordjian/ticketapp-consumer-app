@@ -37,7 +37,7 @@ export default function Events({ navigation }) {
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getEventsList(onResponse, onError, search, undefined);
+            client.getEventsList(onResponse, onError, search, selectedTags);
             client.getTagsList(onResponseTags, onError);
         });
 
@@ -56,8 +56,22 @@ export default function Events({ navigation }) {
 
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, searchString, undefined);
+        client.getEventsList(onResponse, onError, searchString, selectedTags);
     };
+
+    const updateTagSearch = async (tagsSelected) => {
+        const onResponse = (response) => {
+            setIsLoading(false);
+            setEvents(response.events());
+        }
+        const onError = (error) => {
+            console.log(error);
+        }
+        setSelectedTags(tagsSelected);
+        await setIsLoading(true);
+        const client = new apiClient(userData.token);
+        client.getEventsList(onResponse, onError, search, selectedTags);
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -75,16 +89,20 @@ export default function Events({ navigation }) {
                     inputContainerStyle={{backgroundColor:'white'}}
                     containerStyle={{backgroundColor: 'white', width: '90%', marginTop: 15, borderRadius:15}}
                 />
-                <Dropdown
-                    label="Eventos"
-                    placeholder="Select an option..."
-                    options={tags}
-                    optionLabel={'name'}
-                    optionValue={'id'}
-                    selectedValue={selectedTags}
-                    onValueChange={(value) => setSelectedTags(value)}
-                    primaryColor={'green'}
-                />
+                <View style={{width: '90%', marginTop: 10}}>
+                    <Dropdown
+                        isMultiple
+                        placeholder="Etiquetas..."
+                        options={tags}
+                        optionLabel={'name'}
+                        optionValue={'id'}
+                        selectedValue={selectedTags}
+                        onValueChange={(value) => {
+                            updateTagSearch(value);
+                        }}
+                        primaryColor={'green'}
+                    />
+                </View>
             </LinearGradient>
             <ScrollView 
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}

@@ -114,8 +114,9 @@ export default class apiClient {
       params.value = query;
     }
     if (tags) {
-      params.tags = tags;
+      params.tags = tags.join(',')
     }
+    console.log(params)
     this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
   }
 
