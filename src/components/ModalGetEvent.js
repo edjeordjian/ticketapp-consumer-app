@@ -17,9 +17,15 @@ export default function ModalGetEvent(props) {
 
   return (
     <View style={{ flex: 1}}>
-      <Button style={styles.btnGetEvent} textColor={'white'} onPress={toggleModal}>
+      { props.capacity === 0 ?
+        <Button style={styles.btnSoldEvent} disabled>
+          Entradas agotadas
+        </Button>
+        :
+        <Button style={styles.btnGetEvent} textColor={'white'} onPress={toggleModal}>
          Obtener entrada
       </Button>
+      }
 
       <Modal isVisible={isModalVisible}>
         <View style={{ flex: 1, backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
@@ -65,6 +71,14 @@ const styles = StyleSheet.create ({
       marginTop: 15,
       marginBottom: 15
   },
+  btnSoldEvent: {
+    backgroundColor: 'grey',
+    width: '90%',
+    alignSelf: 'center',
+    padding: 2,
+    marginTop: 15,
+    marginBottom: 15
+},
   btnsRow: {
    display: 'flex', 
    flexDirection: 'row', 

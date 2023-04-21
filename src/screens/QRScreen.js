@@ -27,6 +27,12 @@ export default function QRScreen({ route, navigation }) {
                             value={route.params.ticketId}
                         />
                 </View>
+                <Text style={styles.textManual}>
+                    Código manual:
+                </Text>
+                <Text style={styles.textManual}>
+                    {route.params.ticketId}
+                </Text>
                 <Text style={styles.text}>
                     Recordá que este código QR tendrá validez una única vez.
                 </Text>
@@ -60,6 +66,12 @@ const styles = StyleSheet.create({
         marginTop: 55,
         fontSize: 15,
         width: '70%',
+        textAlign: 'center'
+    },
+    textManual: {
+        color: 'white',
+        width: '70%',
+        marginTop: 15,
         textAlign: 'center'
     }
 });

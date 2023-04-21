@@ -4,14 +4,18 @@ import {Entypo} from '@expo/vector-icons';
 import {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
-import {useMainContext} from '../services/contexts/MainContext';
+
 import CarouselCards from '../components/Carousel';
-import RenderHtml from 'react-native-render-html';
+
+import {StatusBar} from 'expo-status-bar';
+
+import { useMainContext } from '../services/contexts/MainContext';
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
 import ModalGetEvent from '../components/ModalGetEvent';
-import {Button} from 'react-native-paper';
-import {StatusBar} from 'expo-status-bar';
+import { Button } from 'react-native-paper';
+import RenderHtml from 'react-native-render-html';
+
 import {BlankLine} from "../components/BlankLine";
 import MapView, {Marker} from "react-native-maps";
 
@@ -21,9 +25,9 @@ export default function EventInfo({route, navigation}) {
 
     const [event, setEvent] = useState({});
 
-    const {getUserData} = useMainContext();
+    const { getUserData } = useMainContext();
 
-    const {width} = useWindowDimensions();
+    const { width } = useWindowDimensions();
 
     const onResponseGetEvent = (response) => {
         setEvent(response.event());
@@ -91,6 +95,8 @@ export default function EventInfo({route, navigation}) {
         return <EventInfoLoading/>
     }
 
+    const capacityText = event.capacity === 0 ? "Ya no quedan lugares" :  "Quedan " + event.capacity + " lugares"
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -104,6 +110,11 @@ export default function EventInfo({route, navigation}) {
                         }}>
                             <Entypo name="chevron-right" size={35} color="white"/>
                         </TouchableOpacity>
+                        <View style={styles.capacityBox}>
+                            <Text style={styles.capacityBoxText}>
+                                {capacityText}
+                            </Text>
+                        </View>
                     </View>
                     :
                     <></>
@@ -113,7 +124,8 @@ export default function EventInfo({route, navigation}) {
                     <Text style={styles.title}>
                         {event.name}
                     </Text>
-                    <Button
+
+                    <Button 
                         onPress={navigateToFAQ}
                         buttonColor={'#A5C91B'}
                         textColor={'white'}>
@@ -139,27 +151,27 @@ export default function EventInfo({route, navigation}) {
                     </View>
                 </View>
 
-
-                {(event.latitude) ? (
-                        <View style={{justifyContent: 'center', alignItems: 'center'}}>
-                            <MapView
-                                style={{
-                                    width: 300,
-                                    height: 200,
-                                }}
-                                initialRegion={{
-                                    latitude: event.latitude,
-                                    longitude: event.longitude,
-                                    latitudeDelta: 0.01,
-                                    longitudeDelta: 0.01
-                                }}
-                            >
-                                <Marker coordinate={{
-                                    latitude: event.latitude,
-                                    longitude: event.longitude
-                                }}/>
-                            </MapView>
-                        </View>)
+                { (event.latitude) ? (
+                    <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                        <MapView
+                            style={{
+                                width: '90%',
+                                height: 200,
+                                marginBottom: 15
+                            }}
+                            initialRegion={{
+                                latitude: event.latitude,
+                                longitude: event.longitude,
+                                latitudeDelta: 0.01,
+                                longitudeDelta: 0.01
+                            }}
+                        >
+                            <Marker coordinate={{
+                                latitude: event.latitude,
+                                longitude: event.longitude
+                            }}/>
+                        </MapView>
+                    </View>)
                     :
                     <></>
                 }
@@ -183,7 +195,6 @@ export default function EventInfo({route, navigation}) {
                         <></>
                     }
 
-                    <BlankLine/>
 
                     <Text style={styles.subtitle}>
                         Descripción
@@ -196,7 +207,6 @@ export default function EventInfo({route, navigation}) {
                         />
                     </Text>
 
-                    <BlankLine/>
 
                     <Text style={styles.subtitle}>Organizador
                     </Text>
@@ -207,14 +217,6 @@ export default function EventInfo({route, navigation}) {
 
                     <BlankLine/>
 
-                    {/* <Text style={styles.subtitle}>
-                Galeria
-            </Text>
-            {event.imagesUri ?
-                <CarouselCards images={event.imagesUri.map((url,_) => {return {imgUrl: url}})}/>
-                :
-                <></>
-            } */}
                     <Text style={styles.subtitle}>
                         Agenda
                     </Text>
@@ -224,7 +226,7 @@ export default function EventInfo({route, navigation}) {
                     {event.ticket && event.ticket.id ?
                         qrBtn()
                         :
-                        <ModalGetEvent getEventTicket={getEventTicket}/>
+                        <ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>
                     }
                 </View>
             </ScrollView>
@@ -297,6 +299,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginLeft: '80%'
     },
+    capacityBox: {
+        backgroundColor: 'black',
+        position: 'absolute',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        right: 0,
+        marginBottom: 10,
+        borderBottomLeftRadius: 20,
+        borderTopLeftRadius: 20,
+        marginTop: 270,
+        zIndex: 100, 
+    },
+    capacityBoxText: {
+        color: 'white'
+    },
     infoRow: {
         display: 'flex',
         flexDirection: 'row',
@@ -304,7 +321,7 @@ const styles = StyleSheet.create({
     },
     infoTextRow: {
         color: '#747474',
-        marginLeft: 5
+        marginLeft: 5, 
     },
     date: {
         backgroundColor: '#E6A0FF',
