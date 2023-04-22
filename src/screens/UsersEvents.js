@@ -7,8 +7,6 @@ import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
-import CarouselCards from '../components/CarouselCards';
-import * as React from "react";
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
 
@@ -17,15 +15,8 @@ export default function UsersEvents({ navigation }) {
     const [loading, setIsLoading] = useState(true);
     const [userData, setUserData] = useState({});
     const { getUserData } = useMainContext();
+    const [refreshing, setRefreshing] = useState(false);
 
-    const [refreshing, setRefreshing] = React.useState(false);
-
-    const onRefresh = useCallback(() => {
-      setRefreshing(true);
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 2000);
-    }, []);
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -45,24 +36,29 @@ export default function UsersEvents({ navigation }) {
 
     }, []);
 
-    const _getLinksToNextEvents = () => {
-        return [{imgUrl: events[0].imageUri}, {imgUrl: events[0].imageUri}]
-    }
+    const onRefresh = useCallback(() => {
+        const onResponse = (response) => {
+            setEvents(response.events());
+            setRefreshing(false);
+        }
 
-    const onCardSelected = (index) => {
-        //const id = events[index].id;
-        console.log(events[index]);
-        // navigation.navigate('SeeEvent', {
-        //     'eventId': 2
-        // });
-    }
+        const onError = (error) => {
+            console.log(error);
+        }
 
-    const event = loading || (events[0] === undefined) ? {} : events[0]
-    const nextEvents = loading || (events[0] === undefined) ? [] : _getLinksToNextEvents();
+        setRefreshing(true);
+        getUserData((data) => {
+            setUserData(data);
+            const client = new apiClient(data.token);
+            client.getUsersEventsList(onResponse, onError, data.id);
+        });
+
+      }, []);
+
+    const event = loading || (events[0] === undefined) ? {} : events[0];
 
     return (
         <SafeAreaView style={styles.container}>
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             <LinearGradient
                 colors={['#1A55D7', '#A8BB46']}
                 start={{ x: 0, y: 0 }}
@@ -73,7 +69,25 @@ export default function UsersEvents({ navigation }) {
                 <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
             </LinearGradient>
             <Text style={styles.allEventsText}>Eventos reservados</Text>
-             <CarouselCards images={nextEvents} onCardSelected={onCardSelected}/>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    />
+                }
+                contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
+                style={styles.scrollContainer}>
+                {loading ?
+                    <EventBoxPlaceHolder/>
+                :
+                    events.map((event,i) => {
+                        return (
+                            <EventBox key={event.id} showImage={false} eventInfo={event} navigation={navigation}/>
+                        );
+                    })
+                }
+            </ScrollView>
             <StatusBar style="auto" />
       </SafeAreaView>
     );

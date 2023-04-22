@@ -76,7 +76,7 @@ export default function HomeStack() {
                     <Tab.Screen  name={settingsName} component={UserProfileScreen} />
 
                     <Tab.Screen name={eventInfoName} component={EventInfo} options={
-                        () => ({tabBarButton: () => null,})}
+                        () => ({tabBarButton: () => null, unmountOnBlur: true})}
                     />
                     <Tab.Screen name={qrScreenName} component={QRScreen} options={
                         () => ({tabBarButton: () => null,})}

@@ -28,23 +28,25 @@ export default function ModalGetEvent(props) {
       }
 
       <Modal isVisible={isModalVisible}>
-        <View style={{ flex: 1, backgroundColor: 'white', display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
-          <Text style={styles.text}>Obtener entrada?</Text>
+        <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
+          <View style={styles.modalBodyContainer}>
+            <Text style={styles.text}>Obtener entrada?</Text>
 
-          <View style={styles.btnsRow}>
-            <Button mode="outlined" 
-                    textColor={'black'} 
-                    style={styles.optionsBtn}
-                    onPress={toggleModal}>
-               Cancelar
-            </Button>
-            <Button mode="contained" 
-                     buttonColor={'#1A55D7'} 
-                     textColor={'white'} 
-                     style={styles.optionsBtn}
-                     onPress={getEvent}>
-               Obtener
-            </Button>
+            <View style={styles.btnsRow}>
+              <Button mode="outlined" 
+                      textColor={'black'} 
+                      style={styles.optionsBtn}
+                      onPress={toggleModal}>
+                Cancelar
+              </Button>
+              <Button mode="contained" 
+                      buttonColor={'#1A55D7'} 
+                      textColor={'white'} 
+                      style={styles.optionsBtn}
+                      onPress={getEvent}>
+                Obtener
+              </Button>
+            </View>
           </View>
         </View>
       </Modal>
@@ -87,5 +89,12 @@ const styles = StyleSheet.create ({
   },
   optionsBtn: {
      width: '40%'
+  },
+  modalBodyContainer: {
+    display: 'flex',
+    height: 300, 
+    backgroundColor: 'white',
+    justifyContent: "space-around",
+    padding: 15
   }
 })

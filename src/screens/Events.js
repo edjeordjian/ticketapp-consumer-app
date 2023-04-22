@@ -83,11 +83,23 @@ export default function Events({ navigation }) {
     }, [navigation]);
 
     const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        setTimeout(() => {
+        const onResponse = (response) => {
+            setEvents(response.events());
             setRefreshing(false);
-        }, 2000);
-    }, []);
+        }
+
+        const onError = (error) => {
+            console.log(error);
+        }
+
+        setRefreshing(true);
+        getUserData((data) => {
+            setUserData(data);
+            const client = new apiClient(data.token);
+            client.getEventsList(onResponse, onError, search, selectedTags);
+        });
+
+      }, []);
 
     const updateSearch = async (searchString) => {
         const onResponse = (response) => {
@@ -129,7 +141,6 @@ export default function Events({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             <LinearGradient
                 colors={['#1A55D7', '#A8BB46']}
                 start={{ x: 0, y: 0 }}
@@ -159,6 +170,12 @@ export default function Events({ navigation }) {
                 </View>
             </LinearGradient>
             <ScrollView 
+                refreshControl={
+                    <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    />
+                }
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
                 {loading ? 
