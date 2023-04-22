@@ -107,7 +107,7 @@ export default function Events({ navigation }) {
         setSelectedTags(tagsSelected);
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, search, selectedTags);
+        client.getEventsList(onResponse, onError, search, tagsSelected);
     }
 
     const getLocation = () => {
