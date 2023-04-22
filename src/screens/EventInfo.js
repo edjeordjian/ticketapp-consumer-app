@@ -11,7 +11,7 @@ import ModalGetEvent from '../components/ModalGetEvent';
 import { Button } from 'react-native-paper';
 import RenderHtml from 'react-native-render-html';
 import {BlankLine} from "../components/BlankLine";
-import MapView, {Marker} from "react-native-maps";
+//import MapView, {Marker} from "react-native-maps";
 
 
 export default function EventInfo({route, navigation}) {
@@ -39,17 +39,16 @@ export default function EventInfo({route, navigation}) {
 
     const getEventTicket = async () => {
         getUserData(async (data) => {
-            await setEvent({});
             const client = new apiClient(data.token);
-            console.log('getting ticket');
-            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
-            //client.getEventTicket(route.params.eventId, onResponse, onError);
+            console.log(route.params);
+            client.getEventTicket(onResponseGetEvent, onError, data.id, route.params.eventId);
         });
     }
 
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
-            'ticketId': event.ticket.id
+            'ticketId': event.ticket.id,
+            eventName: event.name
         });
     }
 
@@ -140,7 +139,7 @@ export default function EventInfo({route, navigation}) {
                         <Text style={styles.date}>{event.date}</Text>
                     </View>
                 </View>
-                { (event.latitude) ? (
+                {/* { (event.latitude) ? (
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         <MapView
                             style={{
@@ -163,7 +162,7 @@ export default function EventInfo({route, navigation}) {
                     </View>)
                     :
                     <></>
-                }
+                } */}
 
                 <View>
                     {event.labels ?

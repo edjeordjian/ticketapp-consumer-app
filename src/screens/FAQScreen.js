@@ -24,7 +24,7 @@ export default function FAQScreen({ route, navigation }) {
 
     return (
         <SafeAreaView>
-            <ScrollView  style={{padding: 25, flexGrow: 1}}>
+            <ScrollView style={{padding: 25, flexGrow: 1}}>
                 <Text style={styles.title}>
                     Preguntas Frecuentes
                 </Text>

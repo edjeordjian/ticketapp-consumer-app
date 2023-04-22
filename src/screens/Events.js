@@ -1,11 +1,11 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
 import { SearchBar } from '@rneui/themed';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
@@ -20,6 +20,7 @@ export default function Events({ navigation }) {
     const [search, setSearch] = useState(undefined);
     const [userData, setUserData] = useState({});
     const { getUserData } = useMainContext();
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -42,6 +43,15 @@ export default function Events({ navigation }) {
         });
 
     }, []);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+          setRefreshing(false);
+        }, 2000);
+      }, []);
+
+    console.log(userData);
 
     const updateSearch = async (searchString) => {
         const onResponse = (response) => {
@@ -75,6 +85,7 @@ export default function Events({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             <LinearGradient
                 colors={['#1A55D7', '#A8BB46']}
                 start={{ x: 0, y: 0 }}

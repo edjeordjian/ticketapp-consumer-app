@@ -3,12 +3,12 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 import CarouselCards from '../components/CarouselCards';
-import { ScrollView } from 'react-native-gesture-handler';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 
 
 export default function UsersEvents({ navigation }) {
@@ -16,6 +16,15 @@ export default function UsersEvents({ navigation }) {
     const [loading, setIsLoading] = useState(true);
     const [userData, setUserData] = useState({});
     const { getUserData } = useMainContext();
+
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }, []);
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -52,6 +61,7 @@ export default function UsersEvents({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             <LinearGradient
                 colors={['#1A55D7', '#A8BB46']}
                 start={{ x: 0, y: 0 }}
