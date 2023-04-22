@@ -5,8 +5,6 @@ import {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
 
-import CarouselCards from '../components/Carousel';
-
 import {StatusBar} from 'expo-status-bar';
 
 import { useMainContext } from '../services/contexts/MainContext';
