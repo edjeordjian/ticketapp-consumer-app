@@ -3,6 +3,7 @@ import { Feather } from '@expo/vector-icons';
 
 export default function EventBox(props) {
     let event = props.eventInfo;
+    let showImage = props.showImage === undefined ? true : props.showImage;
 
     const navigateToEvent = () => {
         props.navigation.navigate('SeeEvent', {
@@ -13,7 +14,9 @@ export default function EventBox(props) {
     return (
             <View style={styles.container}>
                 <TouchableOpacity onPress={navigateToEvent}>
-                    <Image source={{uri:event.imageUri}} style={styles.image}/>
+                    {showImage ? 
+                        <Image source={{uri:event.imageUri}} style={styles.image}/>
+                        : <></>}
                     <Text style={styles.nameTitle}>{event.name}</Text>
                     <View style={styles.infoContainer}>
                         <View style={styles.infoPlaceContainer}>
@@ -44,6 +47,7 @@ const styles = StyleSheet.create({
         shadowColor: '#171717',  
         shadowOpacity: 0.2,  
         shadowRadius: 3,  
+        marginBottom: 15
     },
     infoContainer: {
         display: 'flex',

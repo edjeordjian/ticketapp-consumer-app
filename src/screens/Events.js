@@ -45,10 +45,22 @@ export default function Events({ navigation }) {
     }, []);
 
     const onRefresh = useCallback(() => {
+        const onResponse = (response) => {
+            setEvents(response.events());
+            setRefreshing(false);
+        }
+
+        const onError = (error) => {
+            console.log(error);
+        }
+
         setRefreshing(true);
-        setTimeout(() => {
-          setRefreshing(false);
-        }, 2000);
+        getUserData((data) => {
+            setUserData(data);
+            const client = new apiClient(data.token);
+            client.getEventsList(onResponse, onError, search, selectedTags);
+        });
+
       }, []);
 
     console.log(userData);
@@ -85,7 +97,6 @@ export default function Events({ navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             <LinearGradient
                 colors={['#1A55D7', '#A8BB46']}
                 start={{ x: 0, y: 0 }}
@@ -116,6 +127,12 @@ export default function Events({ navigation }) {
                 </View>
             </LinearGradient>
             <ScrollView 
+                refreshControl={
+                    <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    />
+                }
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
                 {loading ? 
