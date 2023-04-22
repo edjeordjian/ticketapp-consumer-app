@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
+import Dropdown from 'react-native-input-select';
 
 import * as Notifications from 'expo-notifications';
 import * as React from "react";
@@ -23,6 +24,8 @@ Notifications.setNotificationHandler({
 
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
+    const [tags, setTags] = useState([]);    
+    const [selectedTags, setSelectedTags] = useState(undefined);
     const [loading, setIsLoading] = useState(true);
     const [search, setSearch] = useState(undefined);
     const [userData, setUserData] = useState({});
@@ -33,13 +36,19 @@ export default function Events({ navigation }) {
             setIsLoading(false);
             setEvents(response.events());
         }
+
+        const onResponseTags = (response) => {
+            setTags(response.tags());
+        }
+
         const onError = (error) => {
             console.log(error);
         }
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getEventsList(onResponse, onError, search, undefined);
+            client.getEventsList(onResponse, onError, search, selectedTags);
+            client.getTagsList(onResponseTags, onError);
         });
     }, []);
 
@@ -81,8 +90,22 @@ export default function Events({ navigation }) {
 
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, searchString, undefined);
+        client.getEventsList(onResponse, onError, searchString, selectedTags);
     };
+
+    const updateTagSearch = async (tagsSelected) => {
+        const onResponse = (response) => {
+            setIsLoading(false);
+            setEvents(response.events());
+        }
+        const onError = (error) => {
+            console.log(error);
+        }
+        setSelectedTags(tagsSelected);
+        await setIsLoading(true);
+        const client = new apiClient(userData.token);
+        client.getEventsList(onResponse, onError, search, selectedTags);
+    }
 
     return (
         <SafeAreaView style={styles.container}>
@@ -100,6 +123,20 @@ export default function Events({ navigation }) {
                     inputContainerStyle={{backgroundColor:'white'}}
                     containerStyle={{backgroundColor: 'white', width: '90%', marginTop: 15, borderRadius:15}}
                 />
+                <View style={{width: '90%', marginTop: 10}}>
+                    <Dropdown
+                        isMultiple
+                        placeholder="Etiquetas..."
+                        options={tags}
+                        optionLabel={'name'}
+                        optionValue={'id'}
+                        selectedValue={selectedTags}
+                        onValueChange={(value) => {
+                            updateTagSearch(value);
+                        }}
+                        primaryColor={'green'}
+                    />
+                </View>
             </LinearGradient>
             <ScrollView 
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
@@ -131,12 +168,14 @@ const styles = StyleSheet.create({
     searchBarContainer: {
         backgroundColor: '#1A55D7',
         width: '100%',
-        height: 100,
+        height: 200,
         marginBottom: 25,
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 100
     },
     scrollContainer: {
+        zIndex: 1,
         width: '100%',
         backgroundColor: '#F4F4F4',
       },

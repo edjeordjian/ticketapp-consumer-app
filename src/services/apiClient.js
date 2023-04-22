@@ -1,8 +1,9 @@
 import axios from "axios";
 import { BACKEND_HOST } from "../constants/generalConstants";
-import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, EVENT_SIGN_UP_URL} from "../constants/URLs";
+import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, EVENT_SIGN_UP_URL} from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
+import TagsResponse from "./responses/TagsResponse";
 
 const getHeader = (token) => {
     return{
@@ -87,9 +88,7 @@ export default class apiClient {
 
   // ==========================================USER SEARCH==========================================
 
-  getEventsList(onResponse, onError, query, owner) {
-    //onResponse(new EventListResponse({'events': []}));
-    //return;
+  getEventsList(onResponse, onError, query, tags) {
     const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
     let params = {}
     if (query) {
@@ -98,7 +97,26 @@ export default class apiClient {
     if (owner) {
       params.owner = owner;
     }
+      if (tags) {
+          params.tags = tags.join(',')
+      }
+      console.log(params)
+
     this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
+  }
+
+  getUsersEventsList(onResponse, onError, userId) {
+    const _onResponse = (res) => {
+      onResponse( new EventListResponse(res.data))
+    }
+    this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, {asistant:userId}, _onResponse, onError);
+  }
+
+  getTagsList(onResponse, onError, userId) {
+    const _onResponse = (res) => {
+      onResponse( new TagsResponse(res.data));
+    }
+    this.call_get(`${BACKEND_HOST}${GET_TAGS_URL}`, {asistant:userId}, _onResponse, onError);
   }
 
   // ==========================================SEE EVENT==========================================

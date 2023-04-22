@@ -30,15 +30,14 @@ export default class EventResponse {
 
     _parseEvent() {
         const event = this._response;
-        console.log(event);
 
         let latitude, longitude;
 
         if (event.latitude && event.longitude) {
             latitude = Number(event.latitude);
-
             longitude = Number(event.longitude);
         }
+
 
         return {
             id: event.id,
@@ -56,7 +55,8 @@ export default class EventResponse {
                 return this._parseAgendaEvents(e, i)
             }),
             latitude: latitude,
-            longitude: longitude
+            longitude: longitude,
+            capacity: event.capacity
         }
     }
 
