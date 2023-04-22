@@ -9,7 +9,7 @@ import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 import CarouselCards from '../components/CarouselCards';
 import { ScrollView } from 'react-native-gesture-handler';
-
+import * as React from "react";
 
 export default function UsersEvents({ navigation }) {
     const [events, setEvents] = useState([]);

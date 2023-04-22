@@ -88,19 +88,22 @@ export default class apiClient {
 
   // ==========================================USER SEARCH==========================================
 
-  getEventsList(onResponse, onError, query, tags) {
+  getEventsList(onResponse, onError, query, tags, owner) {
     const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
     let params = {}
     if (query) {
       params.value = query;
     }
+
     if (owner) {
       params.owner = owner;
     }
-      if (tags) {
-          params.tags = tags.join(',')
-      }
-      console.log(params)
+
+    if (tags) {
+        params.tags = tags.join(',')
+    }
+
+    // console.log(params)
 
     this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
   }

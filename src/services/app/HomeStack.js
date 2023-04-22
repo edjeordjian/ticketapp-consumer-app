@@ -27,14 +27,7 @@ const settingsName = "settingsUser";
 
 export default function HomeStack() {
     React.useEffect(() => {
-        registerForPushNotifications().then()
-
-        requestLocation().then(location => {
-            if (location && true) {
-                alert(`Latitud y longitud: ${location.latitude} ${location.longitude}`);
-            }
-        })
-
+        registerForPushNotifications().then();
     }, []);
 
     return (

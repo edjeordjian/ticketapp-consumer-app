@@ -13,6 +13,9 @@ import Dropdown from 'react-native-input-select';
 
 import * as Notifications from 'expo-notifications';
 import * as React from "react";
+import {registerForPushNotifications} from "../services/helpers/NotificationHelper";
+import {requestLocation} from "../services/helpers/LocationHelper";
+import {Button} from "react-native-paper";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -107,6 +110,14 @@ export default function Events({ navigation }) {
         client.getEventsList(onResponse, onError, search, selectedTags);
     }
 
+    const getLocation = () => {
+        requestLocation().then(location => {
+            if (location) {
+                alert(`Latitud y longitud: ${location.latitude} ${location.longitude}`);
+            }
+        })
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <LinearGradient
@@ -124,17 +135,16 @@ export default function Events({ navigation }) {
                     containerStyle={{backgroundColor: 'white', width: '90%', marginTop: 15, borderRadius:15}}
                 />
                 <View style={{width: '90%', marginTop: 10}}>
-                    <Dropdown
-                        isMultiple
-                        placeholder="Etiquetas..."
-                        options={tags}
-                        optionLabel={'name'}
-                        optionValue={'id'}
-                        selectedValue={selectedTags}
-                        onValueChange={(value) => {
-                            updateTagSearch(value);
-                        }}
-                        primaryColor={'green'}
+                    <Dropdown isMultiple
+                              placeholder="Tipo de evento"
+                              options={tags}
+                              optionLabel={'name'}
+                              optionValue={'id'}
+                              selectedValue={selectedTags}
+                              onValueChange={(value) => {
+                                updateTagSearch(value).then();
+                            }}
+                            primaryColor={'green'}
                     />
                 </View>
             </LinearGradient>
