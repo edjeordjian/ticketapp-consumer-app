@@ -47,7 +47,10 @@ export default class EventResponse {
             hour: event.time + "hs",
             date: event.date,
             labels:  event.types_names,
-            ticket: event.ticket ?? null,
+            ticket: event.ticket ? {
+                wasUsed: event.ticket.wasUsed,
+                id: event.ticket.id
+            } : null,
             faq: event.faq,
             imagesUri: event.pictures,
             organizerName: event.organizerName,

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BACKEND_HOST } from "../constants/generalConstants";
-import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, EVENT_SIGN_UP_URL} from "../constants/URLs";
+import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, EVENT_SIGN_UP_URL, GET_TICKET_URL} from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
 import TagsResponse from "./responses/TagsResponse";
@@ -112,20 +112,27 @@ export default class apiClient {
     const _onResponse = (res) => {
       onResponse( new EventListResponse(res.data))
     }
-    this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, {asistant:userId}, _onResponse, onError);
+    this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, {consumer:userId}, _onResponse, onError);
   }
 
   getTagsList(onResponse, onError, userId) {
     const _onResponse = (res) => {
       onResponse( new TagsResponse(res.data));
     }
-    this.call_get(`${BACKEND_HOST}${GET_TAGS_URL}`, {asistant:userId}, _onResponse, onError);
+    this.call_get(`${BACKEND_HOST}${GET_TAGS_URL}`, {}, _onResponse, onError);
+  }
+
+  getEventTicket(onResponse, onError, userId, eventId) {
+    const _onResponse = (res) => {
+      onResponse( new EventResponse(res.data));
+    }
+    const data = {userId: userId, eventId: eventId}
+    this.call_post(`${BACKEND_HOST}${GET_TICKET_URL}`, data, _onResponse, onError);
   }
 
   // ==========================================SEE EVENT==========================================
 
   getEventInfo(eventId, onResponse, onError) {
-    //onResponse(new EventResponse({}));
     const _onResponse = (res) => {onResponse( new EventResponse(res.data))}
     this.call_get(`${BACKEND_HOST}${GET_EVENT_URL}`, {
             eventId: eventId

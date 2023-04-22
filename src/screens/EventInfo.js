@@ -46,11 +46,9 @@ export default function EventInfo({route, navigation}) {
 
     const getEventTicket = async () => {
         getUserData(async (data) => {
-            await setEvent({});
             const client = new apiClient(data.token);
-            console.log('getting ticket');
-            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
-            //client.getEventTicket(route.params.eventId, onResponse, onError);
+            console.log(route.params);
+            client.getEventTicket(onResponseGetEvent, onError, data.id, route.params.eventId);
         });
     }
 
@@ -237,7 +235,8 @@ export default function EventInfo({route, navigation}) {
 
                     <Agenda agendaEntries={event.agendaEntries}/>
 
-                    {event.ticket && event.ticket.id ?
+                    {
+                        event.ticket && event.ticket.id ? 
                         qrBtn()
                         :
                         <ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>
@@ -323,7 +322,7 @@ const styles = StyleSheet.create({
         borderBottomLeftRadius: 20,
         borderTopLeftRadius: 20,
         marginTop: 270,
-        zIndex: 100,
+        zIndex: 100, 
     },
     capacityBoxText: {
         color: 'white'
@@ -335,7 +334,7 @@ const styles = StyleSheet.create({
     },
     infoTextRow: {
         color: '#747474',
-        marginLeft: 5
+        marginLeft: 5, 
     },
     date: {
         backgroundColor: '#E6A0FF',

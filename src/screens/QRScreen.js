@@ -16,6 +16,9 @@ export default function QRScreen({ route, navigation }) {
                     style={styles.container}
                 >
                 <Text style={styles.title}>
+                    {route.params.eventName}
+                </Text>
+                <Text style={styles.title}>
                     Mostrá el QR
                 </Text>
                 <View style={styles.qrContainer}>
