@@ -1,18 +1,28 @@
 import React from 'react'
 import { View, StyleSheet, Dimensions, Image } from "react-native"
+import { TouchableOpacity } from 'react-native-gesture-handler'
 import Carousel from 'react-native-snap-carousel'
 
 export const SLIDER_WIDTH = Dimensions.get('window').width + 80
 export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.8)
 
 const CarouselCardItem = ({ item, index }) => {
+  return (
+    <TouchableOpacity onPress={() => console.log('asdf')} style={styles.internalContainer}>
+                    <Image
+                    source={{ uri: item.imgUrl }}
+                    style={styles.image}
+                  />
+    </TouchableOpacity>
+  )
     return (
         <View style={styles.externalContainer}>
-            <View style={styles.internalContainer} key={index}>
-                <Image
-                source={{ uri: item.imgUrl }}
-                style={styles.image}
-                />
+            <View style={styles.internalContainer} 
+                key={index}>
+                    <Image
+                    source={{ uri: item.imgUrl }}
+                    style={styles.image}
+                  />
             </View>
         </View>
     )
@@ -20,6 +30,10 @@ const CarouselCardItem = ({ item, index }) => {
 
 export default function CarouselCards(props) {
   const isCarousel = React.useRef(null);
+
+  const onOptionSelected = (index) => {
+    props.onCardSelected(index);
+  }
 
   return (
     <View>
@@ -30,8 +44,9 @@ export default function CarouselCards(props) {
         renderItem={CarouselCardItem}
         sliderWidth={SLIDER_WIDTH}
         itemWidth={ITEM_WIDTH}
-        inactiveSlideShift={0}
         useScrollView={true}
+        //onMagicTap={onOptionSelected}
+        //onSnapToItem={onOptionSelected}
       />
     </View>
   )
@@ -47,8 +62,8 @@ const styles = StyleSheet.create({
         height: 250,
     },
     internalContainer: {
-        height: 200,
-        borderRadius: 8,
+        //height: 200,
+        //borderRadius: 8,
         width: ITEM_WIDTH,
         shadowColor: "#000",
         shadowOffset: {

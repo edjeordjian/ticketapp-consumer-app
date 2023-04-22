@@ -30,15 +30,6 @@ export default class EventResponse {
 
     _parseEvent() {
         const event = this._response;
-        console.log(event);
-
-        let latitude, longitude;
-
-        if (event.latitude && event.longitude) {
-            latitude = Number(event.latitude);
-
-            longitude = Number(event.longitude);
-        }
 
 
         return {
@@ -49,13 +40,19 @@ export default class EventResponse {
             hour: event.time + "hs",
             date: event.date,
             labels:  event.types_names,
+            ticket: {
+                wasUsed: event.ticket.wasUsed,
+                id: event.ticket.id
+            },
+            faq: event.faq,
             imagesUri: event.pictures,
             organizerName: event.organizerName,
             agendaEntries: event.agenda.map((e, i) => {
                 return this._parseAgendaEvents(e, i)
             }),
-            latitude: latitude,
-            longitude: longitude
+            latitude: event.latitude,
+            longitude: event.longitude,
+            capacity: event.capacity
         }
     }
 

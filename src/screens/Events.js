@@ -1,38 +1,57 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
 import { SearchBar } from '@rneui/themed';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
+import Dropdown from 'react-native-input-select';
 
 
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
+    const [tags, setTags] = useState([]);    
+    const [selectedTags, setSelectedTags] = useState(undefined);
     const [loading, setIsLoading] = useState(true);
     const [search, setSearch] = useState(undefined);
     const [userData, setUserData] = useState({});
     const { getUserData } = useMainContext();
+    const [refreshing, setRefreshing] = useState(false);
 
     useEffect(() => {
         const onResponse = (response) => {
             setIsLoading(false);
             setEvents(response.events());
         }
+
+        const onResponseTags = (response) => {
+            setTags(response.tags());
+        }
+
         const onError = (error) => {
             console.log(error);
         }
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getEventsList(onResponse, onError, search, undefined);
+            client.getEventsList(onResponse, onError, search, selectedTags);
+            client.getTagsList(onResponseTags, onError);
         });
 
     }, []);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+          setRefreshing(false);
+        }, 2000);
+      }, []);
+
+    console.log(userData);
 
     const updateSearch = async (searchString) => {
         const onResponse = (response) => {
@@ -47,11 +66,26 @@ export default function Events({ navigation }) {
 
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, searchString, undefined);
+        client.getEventsList(onResponse, onError, searchString, selectedTags);
     };
+
+    const updateTagSearch = async (tagsSelected) => {
+        const onResponse = (response) => {
+            setIsLoading(false);
+            setEvents(response.events());
+        }
+        const onError = (error) => {
+            console.log(error);
+        }
+        setSelectedTags(tagsSelected);
+        await setIsLoading(true);
+        const client = new apiClient(userData.token);
+        client.getEventsList(onResponse, onError, search, selectedTags);
+    }
 
     return (
         <SafeAreaView style={styles.container}>
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             <LinearGradient
                 colors={['#1A55D7', '#A8BB46']}
                 start={{ x: 0, y: 0 }}
@@ -66,6 +100,20 @@ export default function Events({ navigation }) {
                     inputContainerStyle={{backgroundColor:'white'}}
                     containerStyle={{backgroundColor: 'white', width: '90%', marginTop: 15, borderRadius:15}}
                 />
+                <View style={{width: '90%', marginTop: 10}}>
+                    <Dropdown
+                        isMultiple
+                        placeholder="Etiquetas..."
+                        options={tags}
+                        optionLabel={'name'}
+                        optionValue={'id'}
+                        selectedValue={selectedTags}
+                        onValueChange={(value) => {
+                            updateTagSearch(value);
+                        }}
+                        primaryColor={'green'}
+                    />
+                </View>
             </LinearGradient>
             <ScrollView 
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
@@ -97,12 +145,14 @@ const styles = StyleSheet.create({
     searchBarContainer: {
         backgroundColor: '#1A55D7',
         width: '100%',
-        height: 100,
+        height: 200,
         marginBottom: 25,
         display: 'flex',
-        alignItems: 'center'
+        alignItems: 'center',
+        zIndex: 100
     },
     scrollContainer: {
+        zIndex: 1,
         width: '100%',
         backgroundColor: '#F4F4F4',
       },
