@@ -140,21 +140,4 @@ export default class apiClient {
         _onResponse,
         onError);
   }
-
-  // ==========================================SIGN UP IN EVENT==========================================
-
-  signUpInEvent(requestBody, onResponse, onError) {
-      console.log(`${BACKEND_HOST}${EVENT_SIGN_UP_URL}`);
-      axios.post(`${BACKEND_HOST}${EVENT_SIGN_UP_URL}`,
-          requestBody, {
-          headers: getHeader(this._token),
-      })
-          .then((response) => {
-              onResponse(response);
-          })
-          .catch((err) => {
-              onError(err);
-          });
-  }
-
 }

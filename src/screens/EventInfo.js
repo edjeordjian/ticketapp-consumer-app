@@ -16,6 +16,7 @@ import { Button } from 'react-native-paper';
 
 import {BlankLine} from "../components/BlankLine";
 import MapView, {Marker} from "react-native-maps";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 
 export default function EventInfo({route, navigation}) {
@@ -27,14 +28,9 @@ export default function EventInfo({route, navigation}) {
 
     const { width } = useWindowDimensions();
 
-    const onResponseGetEvent = (response) => {
-        setEvent(response.event());
-        setImageToShow(0);
-    }
+    const [alertText, setAlertText] = useState("");
 
-    const onError = (error) => {
-        console.log(error);
-    }
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
         getUserData((data) => {
@@ -42,33 +38,38 @@ export default function EventInfo({route, navigation}) {
             client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
         });
 
+        return () => {
+          setEvent({});
+        };
     }, [route.params.eventId]);
+
+    const onResponseGetEvent = (response) => {
+        setEvent(response.event());
+        setImageToShow(0);
+    }
+
+    const onError = (error) => {
+        setAlertText(error.response.data.error);
+
+        setShowAlert(true);
+    }
+
+    const hideAlert = () => {
+        setShowAlert(false);
+
+        navigation.goBack();
+    }
 
     const getEventTicket = async () => {
         getUserData(async (data) => {
             const client = new apiClient(data.token);
-            console.log(route.params);
             client.getEventTicket(onResponseGetEvent, onError, data.id, route.params.eventId);
         });
     }
-
-    const signUpInEvent = async () => {
-        const onResponse = (response) => {
-        }
-
-        getUserData(async (data) => {
-            const client = new apiClient(data.token);
-            console.log('Signing up in a event');
-            const body = {
-                eventId: event.id
-            }
-            client.signUpInEvent(body, onResponse, onError);
-        });
-    }
-
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
-            'ticketId': event.ticket.id
+            'ticketId': event.ticket.id,
+            eventName: event.name
         });
     }
 
@@ -86,22 +87,21 @@ export default function EventInfo({route, navigation}) {
                     style={styles.btnUsedEvent}
                     onPress={navigateToQR}
                     disabled={true}
-                    textColor={'white'}>
-                    Entrada utilizada
+                    textColor={'white'}>Entrada usada
                 </Button>
             )
         }
+
         return (
             <Button
                 style={styles.btnGetEvent}
                 onPress={navigateToQR}
-                textColor={'white'}>
-                Obtener QR
+                textColor={'white'}>Ver entrada
             </Button>
         )
     }
 
-    if (event.id === undefined) {
+    if (event.id === undefined && ! showAlert) {
         return <EventInfoLoading/>
     }
 
@@ -236,12 +236,27 @@ export default function EventInfo({route, navigation}) {
                     <Agenda agendaEntries={event.agendaEntries}/>
 
                     {
-                        event.ticket && event.ticket.id ? 
-                        qrBtn()
-                        :
-                        <ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>
+                        (event.ticket && event.ticket.id) ?
+                            (qrBtn())
+                            :
+                            (<ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>)
                     }
                 </View>
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title={alertText}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    cancelText="Cancelar"
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={hideAlert}
+                    onConfirmPressed={hideAlert}
+                />
             </ScrollView>
             <StatusBar style="auto"/>
         </SafeAreaView>

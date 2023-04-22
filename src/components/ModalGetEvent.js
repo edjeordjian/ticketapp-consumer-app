@@ -12,7 +12,7 @@ export default function ModalGetEvent(props) {
 
   const getEvent = async () => {
      toggleModal();
-     props.signUpInEvent();
+     props.getEventTicket();
   }
 
   return (
