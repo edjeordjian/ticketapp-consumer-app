@@ -9,13 +9,14 @@ import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
-import Dropdown from 'react-native-input-select';
+import Dropdown from '../components/events/Dropdown';
 
 import * as Notifications from 'expo-notifications';
 import * as React from "react";
 import {registerForPushNotifications} from "../services/helpers/NotificationHelper";
 import {requestLocation} from "../services/helpers/LocationHelper";
 import {Button} from "react-native-paper";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -35,19 +36,31 @@ export default function Events({ navigation }) {
     const { getUserData } = useMainContext();
     const [refreshing, setRefreshing] = useState(false);
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertText, setAlertText] = useState("");
+
+    const onResponse = (response) => {
+        setIsLoading(false);
+        setEvents(response.events());
+    }
+
+    const onResponseTags = (response) => {
+        setTags(response.tags());
+    }
+
+    const onError = (error) => {
+        setAlertText(error.response.data.error);
+
+        setShowAlert(true);
+    }
+
+    const hideAlert = () => {
+        setShowAlert(false);
+
+        navigation.goBack();
+    }
+
     useEffect(() => {
-        const onResponse = (response) => {
-            setIsLoading(false);
-            setEvents(response.events());
-        }
-
-        const onResponseTags = (response) => {
-            setTags(response.tags());
-        }
-
-        const onError = (error) => {
-            console.log(error);
-        }
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
@@ -187,6 +200,21 @@ export default function Events({ navigation }) {
                         );
                     })
                 }
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title={alertText}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    cancelText="Cancelar"
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={hideAlert}
+                    onConfirmPressed={hideAlert}
+                />
             </ScrollView>
             <StatusBar style="auto" />
       </SafeAreaView>
