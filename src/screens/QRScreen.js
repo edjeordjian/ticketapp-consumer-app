@@ -35,10 +35,13 @@ export default function QRScreen({ route, navigation }) {
                     style={styles.container}
                 >
                 <Text style={styles.title}>
-                    {route.params.eventName}{`\n`}{route.params.date} - {route.params.hour}
+                    {route.params.eventName}
+                    {`\n`}{route.params.date} - {route.params.hour}
+                    {`\n\n`}{route.params.address.split(",")[0]}
+                    {`\n`}{route.params.address.split(",")[1]}
                 </Text>
 
-                    <Text style={styles.subtitle}>{userName}
+                    <Text style={styles.subtitle}>Usuario: {userName}
                     </Text>
 
                     <View style={styles.qrContainer}>

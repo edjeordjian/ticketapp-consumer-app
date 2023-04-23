@@ -72,6 +72,7 @@ export default function EventInfo({route, navigation}) {
             ticketId: event.ticket.id,
             date: event.date,
             hour: event.hour,
+            address: event.address,
             eventName: event.name
         });
     }

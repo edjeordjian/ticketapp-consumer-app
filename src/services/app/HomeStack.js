@@ -79,10 +79,10 @@ export default function HomeStack() {
                         () => ({tabBarButton: () => null, unmountOnBlur: true})}
                     />
                     <Tab.Screen name={qrScreenName} component={QRScreen} options={
-                        () => ({tabBarButton: () => null,})}
+                        () => ({tabBarButton: () => null})}
                     />
                     <Tab.Screen name={FAQScreenName} component={FAQScreen} options={
-                        () => ({tabBarButton: () => null,})}
+                        () => ({tabBarButton: () => null})}
                     />
             </Tab.Navigator>
     );
