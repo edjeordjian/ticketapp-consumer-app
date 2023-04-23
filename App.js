@@ -28,7 +28,6 @@ export default function App() {
                     isLoggedIn: false
                 }
 
-
             case 'RESTORE_TOKEN':
                 return {
                     ...appState,

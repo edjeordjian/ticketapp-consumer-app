@@ -9,8 +9,22 @@ import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
-import Dropdown from 'react-native-input-select';
+import Dropdown from '../components/events/Dropdown';
 
+import * as Notifications from 'expo-notifications';
+import * as React from "react";
+import {registerForPushNotifications} from "../services/helpers/NotificationHelper";
+import {requestLocation} from "../services/helpers/LocationHelper";
+import {Button} from "react-native-paper";
+import AwesomeAlert from "react-native-awesome-alerts";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
+});
 
 export default function Events({ navigation }) {
     const [events, setEvents] = useState([]);
@@ -22,19 +36,31 @@ export default function Events({ navigation }) {
     const { getUserData } = useMainContext();
     const [refreshing, setRefreshing] = useState(false);
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertText, setAlertText] = useState("");
+
+    const onResponse = (response) => {
+        setIsLoading(false);
+        setEvents(response.events());
+    }
+
+    const onResponseTags = (response) => {
+        setTags(response.tags());
+    }
+
+    const onError = (error) => {
+        setAlertText(error.response.data.error);
+
+        setShowAlert(true);
+    }
+
+    const hideAlert = () => {
+        setShowAlert(false);
+
+        navigation.goBack();
+    }
+
     useEffect(() => {
-        const onResponse = (response) => {
-            setIsLoading(false);
-            setEvents(response.events());
-        }
-
-        const onResponseTags = (response) => {
-            setTags(response.tags());
-        }
-
-        const onError = (error) => {
-            console.log(error);
-        }
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
@@ -43,6 +69,31 @@ export default function Events({ navigation }) {
         });
 
     }, []);
+
+    useEffect(() => {
+        const subcriptionNotificationReceived = Notifications.addNotificationReceivedListener(
+            async notification => {
+                const {params} = notification.request.content.data;
+                // idEmissor: params.idEmissor
+                // idReceptor: params.idReceptor
+            } );
+
+        const subcriptionNotificationClicked = Notifications.addNotificationResponseReceivedListener(notification => {
+            const {type,
+                params,
+                screenName} = notification.notification
+                                          .request
+                                          .content
+                                          .data;
+
+            navigation.navigate(screenName, params);
+        });
+
+        return () => {
+            subcriptionNotificationClicked.remove();
+            subcriptionNotificationReceived.remove();
+        };
+    }, [navigation]);
 
     const onRefresh = useCallback(() => {
         const onResponse = (response) => {
@@ -62,8 +113,6 @@ export default function Events({ navigation }) {
         });
 
       }, []);
-
-    console.log(userData);
 
     const updateSearch = async (searchString) => {
         const onResponse = (response) => {
@@ -92,7 +141,15 @@ export default function Events({ navigation }) {
         setSelectedTags(tagsSelected);
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, search, selectedTags);
+        client.getEventsList(onResponse, onError, search, tagsSelected);
+    }
+
+    const getLocation = () => {
+        requestLocation().then(location => {
+            if (location) {
+                alert(`Latitud y longitud: ${location.latitude} ${location.longitude}`);
+            }
+        })
     }
 
     return (
@@ -112,17 +169,16 @@ export default function Events({ navigation }) {
                     containerStyle={{backgroundColor: 'white', width: '90%', marginTop: 15, borderRadius:15}}
                 />
                 <View style={{width: '90%', marginTop: 10}}>
-                    <Dropdown
-                        isMultiple
-                        placeholder="Etiquetas..."
-                        options={tags}
-                        optionLabel={'name'}
-                        optionValue={'id'}
-                        selectedValue={selectedTags}
-                        onValueChange={(value) => {
-                            updateTagSearch(value);
-                        }}
-                        primaryColor={'green'}
+                    <Dropdown isMultiple
+                              placeholder="Tipo de evento"
+                              options={tags}
+                              optionLabel={'name'}
+                              optionValue={'id'}
+                              selectedValue={selectedTags}
+                              onValueChange={(value) => {
+                                updateTagSearch(value).then();
+                            }}
+                            primaryColor={'green'}
                     />
                 </View>
             </LinearGradient>
@@ -144,6 +200,21 @@ export default function Events({ navigation }) {
                         );
                     })
                 }
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title={alertText}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    cancelText="Cancelar"
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={hideAlert}
+                    onConfirmPressed={hideAlert}
+                />
             </ScrollView>
             <StatusBar style="auto" />
       </SafeAreaView>

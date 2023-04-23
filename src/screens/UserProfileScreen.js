@@ -3,6 +3,8 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Image, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Exit from '../components/app/Exit';
+import {useEffect} from "react";
+import {useMainContext} from "../services/contexts/MainContext";
 
 
 export default function UserProfileScreen({ navigation }) {
@@ -13,8 +15,8 @@ export default function UserProfileScreen({ navigation }) {
             end={{ x: 1, y: 1 }}
             style={styles.container}
         >
-            {/* Este exit es solo por ahora */}
-            <Exit/> 
+            <Exit/>
+
             <TouchableOpacity onPress={() => {
                 navigation.navigate("EventsList");
             }}>

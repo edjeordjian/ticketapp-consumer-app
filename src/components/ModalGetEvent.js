@@ -30,21 +30,19 @@ export default function ModalGetEvent(props) {
       <Modal isVisible={isModalVisible}>
         <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
           <View style={styles.modalBodyContainer}>
-            <Text style={styles.text}>Obtener entrada?</Text>
+            <Text style={styles.text}>¿Obtener entrada?</Text>
 
             <View style={styles.btnsRow}>
               <Button mode="outlined" 
                       textColor={'black'} 
                       style={styles.optionsBtn}
-                      onPress={toggleModal}>
-                Cancelar
+                      onPress={toggleModal}>Cancelar
               </Button>
               <Button mode="contained" 
                       buttonColor={'#1A55D7'} 
                       textColor={'white'} 
                       style={styles.optionsBtn}
-                      onPress={getEvent}>
-                Obtener
+                      onPress={getEvent}>Obtener
               </Button>
             </View>
           </View>
@@ -88,7 +86,7 @@ const styles = StyleSheet.create ({
    justifyContent: 'space-around'
   },
   optionsBtn: {
-     width: '40%'
+     width: '45%'
   },
   modalBodyContainer: {
     display: 'flex',

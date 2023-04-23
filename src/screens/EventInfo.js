@@ -4,30 +4,33 @@ import {Entypo} from '@expo/vector-icons';
 import {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import apiClient from '../services/apiClient';
-import { useMainContext } from '../services/contexts/MainContext';
+import {useMainContext} from '../services/contexts/MainContext';
+import RenderHtml from 'react-native-render-html';
+
+import {StatusBar} from 'expo-status-bar';
+
 import Agenda from '../components/Agenda';
 import EventInfoLoading from './EventInfoLoading';
 import ModalGetEvent from '../components/ModalGetEvent';
 import { Button } from 'react-native-paper';
-import RenderHtml from 'react-native-render-html';
+
 import {BlankLine} from "../components/BlankLine";
-//import MapView, {Marker} from "react-native-maps";
+import MapView, {Marker} from "react-native-maps";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 
 export default function EventInfo({route, navigation}) {
     const [imageSelected, setImageToShow] = useState(0);
+
     const [event, setEvent] = useState({});
+
     const { getUserData } = useMainContext();
+
     const { width } = useWindowDimensions();
 
-    const onResponseGetEvent = (response) => {
-        setEvent(response.event());
-        setImageToShow(0);
-    }
+    const [alertText, setAlertText] = useState("");
 
-    const onError = (error) => {
-        console.log(error);
-    }
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
         getUserData((data) => {
@@ -35,19 +38,41 @@ export default function EventInfo({route, navigation}) {
             client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
         });
 
+        return () => {
+          setEvent({});
+        };
     }, [route.params.eventId]);
+
+    const onResponseGetEvent = (response) => {
+        setEvent(response.event());
+        setImageToShow(0);
+    }
+
+    const onError = (error) => {
+        setAlertText(error.response.data.error);
+
+        setShowAlert(true);
+    }
+
+    const hideAlert = () => {
+        setShowAlert(false);
+
+        navigation.goBack();
+    }
 
     const getEventTicket = async () => {
         getUserData(async (data) => {
             const client = new apiClient(data.token);
-            console.log(route.params);
             client.getEventTicket(onResponseGetEvent, onError, data.id, route.params.eventId);
         });
     }
 
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
-            'ticketId': event.ticket.id,
+            ticketId: event.ticket.id,
+            date: event.date,
+            hour: event.hour,
+            address: event.address,
             eventName: event.name
         });
     }
@@ -62,26 +87,25 @@ export default function EventInfo({route, navigation}) {
     const qrBtn = () => {
         if (event.ticket.wasUsed) {
             return (
-                <Button 
-                    style={styles.btnUsedEvent} 
+                <Button
+                    style={styles.btnUsedEvent}
                     onPress={navigateToQR}
                     disabled={true}
-                    textColor={'white'}>
-                    Entrada utilizada
+                    textColor={'white'}>Entrada usada
                 </Button>
             )
         }
+
         return (
-            <Button 
-                style={styles.btnGetEvent} 
+            <Button
+                style={styles.btnGetEvent}
                 onPress={navigateToQR}
-                textColor={'white'}>
-                Obtener QR
+                textColor={'white'}>Ver entrada
             </Button>
         )
     }
 
-    if (event.id === undefined) {
+    if (event.id === undefined && ! showAlert) {
         return <EventInfoLoading/>
     }
 
@@ -114,9 +138,10 @@ export default function EventInfo({route, navigation}) {
                     <Text style={styles.title}>
                         {event.name}
                     </Text>
-                    <Button 
+
+                    <Button
                         onPress={navigateToFAQ}
-                        buttonColor={'#A5C91B'} 
+                        buttonColor={'#A5C91B'}
                         textColor={'white'}>
                         FAQ
                     </Button>
@@ -139,7 +164,8 @@ export default function EventInfo({route, navigation}) {
                         <Text style={styles.date}>{event.date}</Text>
                     </View>
                 </View>
-                {/* { (event.latitude) ? (
+
+                { (event.latitude) ? (
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
                         <MapView
                             style={{
@@ -162,7 +188,9 @@ export default function EventInfo({route, navigation}) {
                     </View>)
                     :
                     <></>
-                } */}
+                }
+
+                <BlankLine/>
 
                 <View>
                     {event.labels ?
@@ -181,6 +209,7 @@ export default function EventInfo({route, navigation}) {
                         <></>
                     }
 
+                    <BlankLine/>
 
                     <Text style={styles.subtitle}>
                         Descripción
@@ -193,6 +222,7 @@ export default function EventInfo({route, navigation}) {
                         />
                     </Text>
 
+                    <BlankLine/>
 
                     <Text style={styles.subtitle}>Organizador
                     </Text>
@@ -210,16 +240,33 @@ export default function EventInfo({route, navigation}) {
                     <Agenda agendaEntries={event.agendaEntries}/>
 
                     {
-                        event.ticket && event.ticket.id ? 
-                        qrBtn()
-                        :
-                        <ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>
+                        (event.ticket && event.ticket.id) ?
+                            (qrBtn())
+                            :
+                            (<ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>)
                     }
                 </View>
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title={alertText}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    cancelText="Cancelar"
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={hideAlert}
+                    onConfirmPressed={hideAlert}
+                />
             </ScrollView>
+            <StatusBar style="auto"/>
         </SafeAreaView>
     )
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -259,10 +306,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     infoPlaceContainer: {
-        flex: 1
+        flex:1
     },
     dateContainer: {
-        flex: 1,
+        flex:1,
     },
     imageContainer: {
         marginBottom: 15,

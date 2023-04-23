@@ -29,12 +29,15 @@ Recordar cambiar en el .env la url del backend por el túnel de ngrok.
 
 
 ### Para hacer un apk
+RECORDAR:
+- GOOGLE_MAPS_API_KEY
+- Node 18 (o uno reciente, `nvm use 18`)
+
+
 - El apk no tira warning minimizados. Se tira por línea de comando `eas build --profile production --platform android`.
 
 Recordar instalar eas-cli:
 `npm install -g eas-cli`
-
-(y usar Node 18, o uno reciente, `nvm use 18`)
 
 Por cada nuevo secret en el .env o cambio en el mismo:
 `eas secret:push --scope project --env-file .env --force`

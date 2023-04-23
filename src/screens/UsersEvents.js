@@ -8,6 +8,7 @@ import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
+import EventInfoLoading from "./EventInfoLoading";
 
 
 export default function UsersEvents({ navigation }) {
@@ -57,6 +58,10 @@ export default function UsersEvents({ navigation }) {
 
     const event = loading || (events[0] === undefined) ? {} : events[0];
 
+    if (loading) {
+        return <EventInfoLoading/>
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <LinearGradient
@@ -69,7 +74,7 @@ export default function UsersEvents({ navigation }) {
                 <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
             </LinearGradient>
             <Text style={styles.allEventsText}>Eventos reservados</Text>
-            <ScrollView 
+            <ScrollView
                 refreshControl={
                     <RefreshControl
                     refreshing={refreshing}
@@ -78,9 +83,9 @@ export default function UsersEvents({ navigation }) {
                 }
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
-                {loading ? 
+                {loading ?
                     <EventBoxPlaceHolder/>
-                : 
+                :
                     events.map((event,i) => {
                         return (
                             <EventBox key={event.id} showImage={false} eventInfo={event} navigation={navigation}/>
