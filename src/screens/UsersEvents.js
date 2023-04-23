@@ -8,6 +8,7 @@ import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
+import EventInfoLoading from "./EventInfoLoading";
 
 
 export default function UsersEvents({ navigation }) {
@@ -56,6 +57,10 @@ export default function UsersEvents({ navigation }) {
       }, []);
 
     const event = loading || (events[0] === undefined) ? {} : events[0];
+
+    if (loading) {
+        return <EventInfoLoading/>
+    }
 
     return (
         <SafeAreaView style={styles.container}>
