@@ -3,10 +3,29 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import QRCode from 'react-native-qrcode-svg';
+import {useMainContext} from "../services/contexts/MainContext";
+import {useEffect, useState} from "react";
 
 
 export default function QRScreen({ route, navigation }) {
-    let logo = require('../../assets/logoApp.png')
+    let logo = require('../../assets/logoApp.png');
+
+    const {getUserData} = useMainContext();
+
+    const [eventName, setEventName] = useState(route.params.eventName);
+
+    const [userName, setUserName] = useState("");
+
+    const [userData, setUserData] = useState({});
+
+    useEffect(() => {
+        getUserData(data => {
+            setUserData(data);
+
+            setUserName(`${data.firstName} ${data.lastName}`);
+        });
+    }, [eventName]);
+
     return (
             <SafeAreaView>
                 <LinearGradient
@@ -16,12 +35,13 @@ export default function QRScreen({ route, navigation }) {
                     style={styles.container}
                 >
                 <Text style={styles.title}>
-                    {route.params.eventName}
+                    {route.params.eventName}{`\n`}{route.params.date} - {route.params.hour}
                 </Text>
-                <Text style={styles.title}>
-                    Mostrá el QR
-                </Text>
-                <View style={styles.qrContainer}>
+
+                    <Text style={styles.subtitle}>{userName}
+                    </Text>
+
+                    <View style={styles.qrContainer}>
                     <QRCode
                             logo={logo}
                             size={180}
@@ -54,12 +74,19 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
     },
     qrContainer: {
-        padding: 15,
+        padding: 10,
         backgroundColor: 'white'
     },
     title: {
         color: 'white',
-        fontSize: 18,
+        fontSize: 24,
+        textAlign: 'center',
+        fontWeight: '600',
+        marginBottom: 55,
+    },
+    subtitle: {
+        color: 'white',
+        fontSize: 20,
         textAlign: 'center',
         fontWeight: '600',
         marginBottom: 55,

@@ -41,7 +41,8 @@ export default function SignInWithGoogle(props) {
         token: googleAuth.accessToken,
         id: userData.id,
         email: userData.email,
-        firstName: userData.given_name
+        firstName: userData.given_name,
+        lastName: userData.family_name
       });
     }
 

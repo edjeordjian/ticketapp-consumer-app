@@ -68,7 +68,9 @@ export default function EventInfo({route, navigation}) {
     }
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
-            'ticketId': event.ticket.id,
+            ticketId: event.ticket.id,
+            date: event.date,
+            hour: event.hour,
             eventName: event.name
         });
     }
