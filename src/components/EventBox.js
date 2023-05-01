@@ -33,6 +33,11 @@ export default function EventBox(props) {
                             <Text style={styles.date}>{event.date}</Text>
                         </View>
                     </View>
+                    {event.distance ?
+                        <Text style={styles.distanceInfo}>Estás a {event.distance}</Text>
+                        :
+                        <></>
+                    }
                 </TouchableOpacity>
             </View>
     )
@@ -80,6 +85,14 @@ const styles = StyleSheet.create({
     infoTextRow: {
         color: '#747474',
         marginLeft: 5
+    },
+    distanceInfo: {
+        color: '#747474',
+        marginLeft: 18,
+        fontWeight: 400,
+        fontSize: 16,
+        marginBottom: 15,
+        marginTop: -10
     },
     date: {
         backgroundColor: '#E6A0FF',
