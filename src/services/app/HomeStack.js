@@ -14,6 +14,7 @@ import {APP_NAME, APP_OWNER} from "../../constants/generalConstants";
 import {Platform} from "react-native";
 import {registerForPushNotifications} from "../helpers/NotificationHelper";
 import {requestLocation} from "../helpers/LocationHelper";
+import ReportEventScreen from '../../screens/ReportEventScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -24,6 +25,7 @@ const eventInfoName = "SeeEvent";
 const qrScreenName = "GetQR";
 const FAQScreenName = "FAQScreen";
 const settingsName = "settingsUser";
+const reportEventScreenName = "ReportEventScreen";
 
 export default function HomeStack() {
     React.useEffect(() => {
@@ -82,6 +84,9 @@ export default function HomeStack() {
                         () => ({tabBarButton: () => null})}
                     />
                     <Tab.Screen name={FAQScreenName} component={FAQScreen} options={
+                        () => ({tabBarButton: () => null})}
+                    />
+                    <Tab.Screen name={reportEventScreenName} component={ReportEventScreen} options={
                         () => ({tabBarButton: () => null})}
                     />
             </Tab.Navigator>

@@ -1,8 +1,9 @@
 import axios from "axios";
 import { BACKEND_HOST } from "../constants/generalConstants";
-import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, EVENT_SIGN_UP_URL, GET_TICKET_URL} from "../constants/URLs";
+import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, EVENT_SIGN_UP_URL, GET_TICKET_URL, GET_REPORT_MOTIVES_URL} from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
+import ReportMotivesResponse from "./responses/ReportMotivesResponse";
 import TagsResponse from "./responses/TagsResponse";
 
 const getHeader = (token) => {
@@ -88,7 +89,7 @@ export default class apiClient {
 
   // ==========================================USER SEARCH==========================================
 
-  getEventsList(onResponse, onError, query, tags, owner) {
+  getEventsList(onResponse, onError, query, tags, owner, latitude, longitud) {
     const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
     let params = {}
     if (query) {
@@ -101,6 +102,11 @@ export default class apiClient {
 
     if (tags) {
         params.tags = tags.join(',')
+    }
+
+    if (longitud && latitude) {
+      params.longitud = longitud
+      params.latitude = latitude
     }
 
     // console.log(params)
@@ -140,4 +146,18 @@ export default class apiClient {
         _onResponse,
         onError);
   }
+
+    // ==========================================REPORT EVENT==========================================
+
+    postReportOfEvent(motive, observation, onResponse, onError) {
+      const _onResponse = (res) => {
+        onResponse(res.data);
+      }
+      const data = {
+        motive: motive,
+        observation: observation
+      }
+      this.call_post(`${BACKEND_HOST}${POST_REPORT_OF_EVENT_URL}`, data, _onResponse, onError);
+    }
+
 }

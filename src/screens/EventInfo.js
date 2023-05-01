@@ -84,6 +84,12 @@ export default function EventInfo({route, navigation}) {
         });
     }
 
+    const navigateToReport = () => {
+        navigation.navigate('ReportEventScreen', {
+            eventId: event.id
+        });
+    }
+
     const qrBtn = () => {
         if (event.ticket.wasUsed) {
             return (
@@ -245,6 +251,13 @@ export default function EventInfo({route, navigation}) {
                             :
                             (<ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>)
                     }
+
+                    <Button
+                        style={styles.btnReportEvent}
+                        onPress={navigateToReport}
+                        textColor={'#03134B'}>
+                        Denunciar
+                    </Button>
                 </View>
 
                 <AwesomeAlert
@@ -393,7 +406,10 @@ const styles = StyleSheet.create({
         width: '90%',
         alignSelf: 'center',
         padding: 2,
-        marginTop: 15,
+        marginTop: 15
+    },
+    btnReportEvent: {
+        alignSelf: 'center',
         marginBottom: 15
     },
 });
