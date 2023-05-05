@@ -1,11 +1,20 @@
+import React from "react";
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import SignInWithGoogle from '../components/SignInGoogleButton';
+import {registerForPushNotifications} from "../services/helpers/NotificationHelper";
+import {useMainContext} from "../services/contexts/MainContext";
 
 
 export default function LogInScreen({ navigation }) {
+    const {saveToken} = useMainContext();
+
+    React.useEffect(() => {
+        registerForPushNotifications().then(token => saveToken(token));
+    }, []);
+
     return (
             <SafeAreaView>
                 <LinearGradient

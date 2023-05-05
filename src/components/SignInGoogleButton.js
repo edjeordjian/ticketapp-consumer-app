@@ -9,7 +9,7 @@ import {getFirebaseUserData} from "../services/helpers/FirebaseService";
 import apiClient from '../services/apiClient';
 
 export default function SignInWithGoogle(props) {
-  const {logIn} = useMainContext();
+  const {logIn, getToken} = useMainContext();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     androidClientId: ANDROID_ID,
@@ -19,6 +19,8 @@ export default function SignInWithGoogle(props) {
   const handleSignInWithGoogle = async (googleAuth) => {
     const userData = await getFirebaseUserData(googleAuth);
 
+    const token = await getToken();
+
     const requestBody = {
       token: googleAuth.accessToken,
       id: userData.id,
@@ -26,7 +28,8 @@ export default function SignInWithGoogle(props) {
       firstName: userData.given_name,
       lastName: userData.family_name,
       pictureUrl: userData.picture,
-      isConsumer: true
+      isConsumer: true,
+      expoToken: token
     };
 
     // await logIn({
