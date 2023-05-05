@@ -2,7 +2,6 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import {APP_NAME, APP_OWNER} from "../../constants/generalConstants";
 import {Platform} from "react-native";
-import {useMainContext} from "../contexts/MainContext";
 
 let registerForPushNotifications = async () => {
     let token;
