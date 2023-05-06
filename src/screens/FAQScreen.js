@@ -17,7 +17,7 @@ export default function FAQScreen({ route, navigation }) {
     }
 
     const navigateToEvent = () => {
-        navigation.navigate('SeeEvent', {
+        navigation.navigate('EventInfo', {
             'eventId': route.params.eventId
         });
     }

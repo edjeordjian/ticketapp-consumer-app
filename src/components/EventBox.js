@@ -6,7 +6,7 @@ export default function EventBox(props) {
     let showImage = props.showImage === undefined ? true : props.showImage;
 
     const navigateToEvent = () => {
-        props.navigation.navigate('SeeEvent', {
+        props.navigation.navigate('EventInfo', {
             'eventId': event.id
         });
     }

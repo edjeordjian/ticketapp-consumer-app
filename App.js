@@ -6,6 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 import HomeStack from "./src/services/app/HomeStack";
 import LogInScreen from "./src/screens/LogInScreen";
+import {registerForPushNotifications} from "./src/services/helpers/NotificationHelper";
 
 
 export default function App() {
@@ -84,6 +85,14 @@ export default function App() {
                     const info = await SecureStore.getItemAsync("user-data");
                     const jsonParse = JSON.parse(info);
                     setData(jsonParse);
+                },
+
+                saveToken: async (token) => {
+                    await SecureStore.setItemAsync("token", token);
+                },
+
+                getToken: async (token) => {
+                   return  await SecureStore.getItemAsync("token");
                 }
             } );
         },
