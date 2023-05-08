@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BACKEND_HOST } from "../constants/generalConstants";
-import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, EVENT_SIGN_UP_URL, GET_TICKET_URL, GET_REPORT_MOTIVES_URL} from "../constants/URLs";
+import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, GET_TICKET_URL, GET_REPORT_MOTIVES_URL} from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
 import ReportMotivesResponse from "./responses/ReportMotivesResponse";
@@ -158,6 +158,13 @@ export default class apiClient {
         observation: observation
       }
       this.call_post(`${BACKEND_HOST}${POST_REPORT_OF_EVENT_URL}`, data, _onResponse, onError);
+    }
+
+    getReportMotivesList(onResponse, onError) {
+      const _onResponse = (res) => {
+        onResponse( new ReportMotivesResponse(res.data));
+      }
+      this.call_get(`${BACKEND_HOST}${GET_REPORT_MOTIVES_URL}`, {}, _onResponse, onError);
     }
 
 }

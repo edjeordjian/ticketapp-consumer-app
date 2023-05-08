@@ -122,10 +122,8 @@ const styles = StyleSheet.create({
         marginBottom:10
     },
     btnGoBack: {
-        width: '40%',
         padding: 2,
-        marginTop: 15,
-        marginBottom: 15,
+        margin: 15,
         borderWidth: 2,
         flex:1,
         borderColor: '#768395'

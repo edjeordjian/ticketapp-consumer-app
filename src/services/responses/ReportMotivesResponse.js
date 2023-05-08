@@ -17,7 +17,7 @@ export default class ReportMotivesResponse {
             {id:2, name: "Es publicidad / Spam, no es un evento real."},
             {id:3, name: "Tiene contenido ofensivo, obsceno o discriminatorio."}
         ]
-        return this._response.report_motives.map((tag, i) => {
+        return this._response.response_entry.map((tag, i) => {
             return this._parseMotive(tag);
         })
     }
