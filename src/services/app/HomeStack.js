@@ -21,17 +21,13 @@ const Tab = createBottomTabNavigator();
 //Screen names
 const detailsName = "EventsList";
 const userEventsName = "userEventsName";
-const eventInfoName = "SeeEvent";
+const eventInfoName = "EventInfo";
 const qrScreenName = "GetQR";
 const FAQScreenName = "FAQScreen";
 const settingsName = "settingsUser";
 const reportEventScreenName = "ReportEventScreen";
 
 export default function HomeStack() {
-    React.useEffect(() => {
-        registerForPushNotifications().then();
-    }, []);
-
     return (
         <Tab.Navigator
                 initialRouteName={detailsName}

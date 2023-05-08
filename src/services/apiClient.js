@@ -91,6 +91,7 @@ export default class apiClient {
 
   getEventsList(onResponse, onError, query, tags, owner, latitude, longitud) {
     const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
+
     let params = {}
     if (query) {
       params.value = query;
@@ -108,8 +109,6 @@ export default class apiClient {
       params.longitud = longitud
       params.latitude = latitude
     }
-
-    // console.log(params)
 
     this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
   }

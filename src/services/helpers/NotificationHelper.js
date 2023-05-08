@@ -3,7 +3,7 @@ import * as Notifications from "expo-notifications";
 import {APP_NAME, APP_OWNER} from "../../constants/generalConstants";
 import {Platform} from "react-native";
 
-let registerForPushNotifications = async ()=>{
+let registerForPushNotifications = async () => {
     let token;
 
     if (Device.isDevice){
@@ -25,8 +25,6 @@ let registerForPushNotifications = async ()=>{
         console.log("Token notifications: ");
 
         console.log(token);
-
-        // Falta guardar el token!
     }
     else {
         alert('Para realizar push notifications se necesita un dispositivo fisico');
@@ -36,8 +34,7 @@ let registerForPushNotifications = async ()=>{
         await Notifications.setNotificationChannelAsync('default', {
             name: 'default',
             importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#FF231F7C',
+            vibrationPattern: [0, 250, 250, 250]
         }).then(nc => console.log("Se inicializó el canal de notificaciones"));
     }
 
