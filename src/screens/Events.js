@@ -154,13 +154,13 @@ export default function Events({ navigation }) {
         setOrderByLocation(!orderByLocation);
         setIsLoading(true);
         const client = new apiClient(userData.token);
-        if (!orderByLocation) {
+        if (orderByLocation) {
             client.getEventsList(onResponse, onError, search, selectedTags);
         } else {
             const location = await getLocation();
             const longitude = location ? location.longitude : undefined;
-            const latitude = latitude ? location.latitude : undefined;
-            client.getEventsList(onResponse, onError, search, selectedTags, latitude, longitude);
+            const latitude = location ? location.latitude : undefined;
+            client.getEventsList(onResponse, onError, search, selectedTags, undefined, latitude, longitude);
         }
     }
 

@@ -89,7 +89,7 @@ export default class apiClient {
 
   // ==========================================USER SEARCH==========================================
 
-  getEventsList(onResponse, onError, query, tags, owner, latitude, longitud) {
+  getEventsList(onResponse, onError, query, tags, owner, latitude, longitude) {
     const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
 
     let params = {}
@@ -105,8 +105,10 @@ export default class apiClient {
         params.tags = tags.join(',')
     }
 
-    if (longitud && latitude) {
-      params.longitud = longitud
+    console.log(longitude);
+
+    if (longitude && latitude) {
+      params.longitude = longitude
       params.latitude = latitude
     }
 
