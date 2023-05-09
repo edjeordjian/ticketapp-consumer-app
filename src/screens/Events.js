@@ -33,6 +33,7 @@ export default function Events({ navigation }) {
     const [loading, setIsLoading] = useState(true);
     const [search, setSearch] = useState(undefined);
     const [userData, setUserData] = useState({});
+    const [location, setUserLocation] = useState({});
     const { getUserData } = useMainContext();
     const [ orderByLocation, setOrderByLocation] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
@@ -107,10 +108,13 @@ export default function Events({ navigation }) {
         }
 
         setRefreshing(true);
+        console.log(location);
+        const latitude = orderByLocation ? location.latitude: undefined;
+        const longitude = orderByLocation ? location.longitude: undefined;
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getEventsList(onResponse, onError, search, selectedTags);
+            client.getEventsList(onResponse, onError, search, selectedTags, undefined, latitude, longitude);
         });
 
       }, []);
@@ -128,7 +132,9 @@ export default function Events({ navigation }) {
 
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, searchString, selectedTags);
+        const latitude = orderByLocation ? location.latitude: undefined;
+        const longitude = orderByLocation ? location.longitude: undefined;
+        client.getEventsList(onResponse, onError, searchString, selectedTags, undefined, latitude, longitude);
     };
 
     const updateTagSearch = async (tagsSelected) => {
@@ -141,8 +147,10 @@ export default function Events({ navigation }) {
         }
         setSelectedTags(tagsSelected);
         setIsLoading(true);
+        const latitude = orderByLocation ? location.latitude: undefined;
+        const longitude = orderByLocation ? location.longitude: undefined;
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, search, tagsSelected);
+        client.getEventsList(onResponse, onError, search, tagsSelected, undefined, latitude, longitude);
     }
 
     const getLocation = async () => {
@@ -160,6 +168,7 @@ export default function Events({ navigation }) {
             const location = await getLocation();
             const longitude = location ? location.longitude : undefined;
             const latitude = location ? location.latitude : undefined;
+            setUserLocation({longitude,latitude});
             client.getEventsList(onResponse, onError, search, selectedTags, undefined, latitude, longitude);
         }
     }
