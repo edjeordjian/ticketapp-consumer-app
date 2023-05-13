@@ -1,11 +1,9 @@
 import React, { useState } from 'react';
-import { TouchableOpacity, StyleSheet, View } from 'react-native';
+import { StyleSheet} from 'react-native';
 import Dropdown from '../../../node_modules/react-native-input-select/src/components/Dropdown/Dropdown';
 import DropdownList from '../../../node_modules/react-native-input-select/src/components/Dropdown/DropdownList';
 import CustomModal from '../../../node_modules/react-native-input-select/src/components/CustomModal';
 import { Input } from '../../../node_modules/react-native-input-select/src/components/Input';
-import CheckBox from '../../../node_modules/react-native-input-select/src/components/CheckBox';
-import { colors } from '../../../node_modules/react-native-input-select/src/styles/colors';
 import { DEFAULT_OPTION_LABEL, DEFAULT_OPTION_VALUE } from '../../../node_modules/react-native-input-select/src/constants';
 
 export const DropdownSelect = ({
@@ -87,22 +85,6 @@ export const DropdownSelect = ({
         }
     };
 
-    const handleSelectAll = () => {
-        setSelectAll((prevVal) => {
-            const selectedValues = [];
-            const filteredOptions = newOptions.filter((item) => !item.disabled); //don't select disabled items
-            if (!prevVal) {
-                for (let i = 0; i < filteredOptions.length; i++) {
-                    selectedValues.push(filteredOptions[i][optionValue]);
-                }
-            }
-
-            setSelectedItems(selectedValues);
-            onValueChange(selectedValues); //send value to parent
-            return !prevVal;
-        });
-    };
-
     /*===========================================
      * Get label handler
      *==========================================*/
@@ -168,7 +150,6 @@ export const DropdownSelect = ({
         setNewOptions(options);
     };
 
-    let primary = primaryColor || colors.gray;
     return (
         <>
             <Dropdown
@@ -188,8 +169,9 @@ export const DropdownSelect = ({
                 dropdownHelperTextStyle={dropdownHelperTextStyle}
                 selectedItemStyle={selectedItemStyle}
                 multipleSelectedItemStyle={multipleSelectedItemStyle}
+                dropdownStyle={dropdownStyle}
                 isMultiple={isMultiple}
-                primaryColor={primary}
+                primaryColor={'#1A55D7'}
                 disabled={disabled}
                 placeholderStyle={placeholderStyle}
                 {...rest}
@@ -225,7 +207,7 @@ export const DropdownSelect = ({
                     selectedItem={selectedItem}
                     handleMultipleSelections={handleMultipleSelections}
                     handleSingleSelection={handleSingleSelection}
-                    primaryColor={primary}
+                    primaryColor={'#1A55D7'}
                     checkboxSize={checkboxSize}
                     checkboxStyle={checkboxStyle}
                     checkboxLabelStyle={checkboxLabelStyle}

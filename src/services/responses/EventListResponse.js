@@ -11,6 +11,7 @@ export default class EventListResponse {
             address : event.address,
             hour : event.time + "hs",
             date : event.date,
+            distance: event.distance,
             imageUri : event.pictures[0]
         }
     }

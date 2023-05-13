@@ -33,7 +33,9 @@ export default function Events({ navigation }) {
     const [loading, setIsLoading] = useState(true);
     const [search, setSearch] = useState(undefined);
     const [userData, setUserData] = useState({});
+    const [location, setUserLocation] = useState({});
     const { getUserData } = useMainContext();
+    const [ orderByLocation, setOrderByLocation] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
 
     const [showAlert, setShowAlert] = useState(false);
@@ -106,10 +108,13 @@ export default function Events({ navigation }) {
         }
 
         setRefreshing(true);
+        console.log(location);
+        const latitude = orderByLocation ? location.latitude: undefined;
+        const longitude = orderByLocation ? location.longitude: undefined;
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getEventsList(onResponse, onError, search, selectedTags);
+            client.getEventsList(onResponse, onError, search, selectedTags, undefined, latitude, longitude);
         });
 
       }, []);
@@ -127,7 +132,9 @@ export default function Events({ navigation }) {
 
         await setIsLoading(true);
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, searchString, selectedTags);
+        const latitude = orderByLocation ? location.latitude: undefined;
+        const longitude = orderByLocation ? location.longitude: undefined;
+        client.getEventsList(onResponse, onError, searchString, selectedTags, undefined, latitude, longitude);
     };
 
     const updateTagSearch = async (tagsSelected) => {
@@ -139,17 +146,31 @@ export default function Events({ navigation }) {
             console.log(error);
         }
         setSelectedTags(tagsSelected);
-        await setIsLoading(true);
+        setIsLoading(true);
+        const latitude = orderByLocation ? location.latitude: undefined;
+        const longitude = orderByLocation ? location.longitude: undefined;
         const client = new apiClient(userData.token);
-        client.getEventsList(onResponse, onError, search, tagsSelected);
+        client.getEventsList(onResponse, onError, search, tagsSelected, undefined, latitude, longitude);
     }
 
-    const getLocation = () => {
-        requestLocation().then(location => {
-            if (location) {
-                alert(`Latitud y longitud: ${location.latitude} ${location.longitude}`);
-            }
-        })
+    const getLocation = async () => {
+        const location = await requestLocation();
+        return location;
+    }
+
+    const orderEventsByLocation = async () => {
+        setOrderByLocation(!orderByLocation);
+        setIsLoading(true);
+        const client = new apiClient(userData.token);
+        if (orderByLocation) {
+            client.getEventsList(onResponse, onError, search, selectedTags);
+        } else {
+            const location = await getLocation();
+            const longitude = location ? location.longitude : undefined;
+            const latitude = location ? location.latitude : undefined;
+            setUserLocation({longitude,latitude});
+            client.getEventsList(onResponse, onError, search, selectedTags, undefined, latitude, longitude);
+        }
     }
 
     return (
@@ -172,6 +193,11 @@ export default function Events({ navigation }) {
                     <Dropdown isMultiple
                               placeholder="Tipo de evento"
                               options={tags}
+                              dropdownStyle={
+                                    {borderWidth: 0, // To remove border, set borderWidth to 0
+                                    borderRadius:15,
+                                    backgroundColor: "white"}
+                              }
                               optionLabel={'name'}
                               optionValue={'id'}
                               selectedValue={selectedTags}
@@ -181,6 +207,12 @@ export default function Events({ navigation }) {
                             primaryColor={'green'}
                     />
                 </View>
+                <Button
+                    style={orderByLocation ? styles.btnOrderWithLocationOn: styles.btnOrderWithLocationOff}
+                    onPress={orderEventsByLocation}
+                    textColor={'#03134B'}>
+                    Más cercanos
+                </Button>
             </LinearGradient>
             <ScrollView 
                 refreshControl={
@@ -233,15 +265,30 @@ const styles = StyleSheet.create({
     searchBarContainer: {
         backgroundColor: '#1A55D7',
         width: '100%',
-        height: 200,
+        height: 220,
         marginBottom: 25,
         display: 'flex',
         alignItems: 'center',
-        zIndex: 100
     },
     scrollContainer: {
-        zIndex: 1,
+        zIndex: 101,
         width: '100%',
         backgroundColor: '#F4F4F4',
-      },
+    },
+    btnOrderWithLocationOff: {
+        backgroundColor: '#A3A3A3',
+        alignSelf: 'center',
+        paddingVertical: 2,
+        paddingHorizontal: 10,
+        marginTop: 15,
+        marginBottom: 15
+    },
+    btnOrderWithLocationOn: {
+        backgroundColor: '#BBCEFF',
+        alignSelf: 'center',
+        paddingVertical: 2,
+        paddingHorizontal: 10,
+        marginTop: 15,
+        marginBottom: 15
+    },
 });
