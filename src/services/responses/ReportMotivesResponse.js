@@ -12,7 +12,7 @@ export default class ReportMotivesResponse {
     }
 
     motives() {
-        return this._response.response_entry.map((tag, i) => {
+        return this._response.report_categories.map((tag, i) => {
             return this._parseMotive(tag);
         })
     }

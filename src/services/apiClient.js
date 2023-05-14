@@ -1,6 +1,14 @@
 import axios from "axios";
 import { BACKEND_HOST } from "../constants/generalConstants";
-import {SIGN_IN_URL, GET_EVENT_URL, GET_EVENTS_URL, GET_TAGS_URL, GET_TICKET_URL, GET_REPORT_MOTIVES_URL} from "../constants/URLs";
+import {
+    SIGN_IN_URL,
+    GET_EVENT_URL,
+    GET_EVENTS_URL,
+    GET_TAGS_URL,
+    GET_TICKET_URL,
+    GET_REPORT_MOTIVES_URL,
+    POST_REPORT_OF_EVENT_URL
+} from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
 import ReportMotivesResponse from "./responses/ReportMotivesResponse";

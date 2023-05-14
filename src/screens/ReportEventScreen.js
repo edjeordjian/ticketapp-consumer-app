@@ -43,6 +43,14 @@ export default function ReportEventScreen({ route, navigation }) {
     }
 
     const reportEvent = () => {
+        const onResponse = (response) => {
+            alert(response.message)
+        }
+
+        const onError = (err) => {
+            alert(err.response.data.error)
+        }
+
         const eventId = route.params.eventId
         const client = new apiClient(userData.token);
         client.postReportOfEvent(eventId, selectedMotives, observation, onResponse, onError);
