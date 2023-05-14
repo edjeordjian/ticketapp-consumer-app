@@ -15,7 +15,7 @@ export default function ReportEventScreen({ route, navigation }) {
     const [motives, setMotives] = useState([]);    
     const [userData, setUserData] = useState({});
     const [observation, setObservation] = useState('');    
-    const [selectedMotive, setselectedMotive] = useState(undefined);
+    const [selectedMotive, setSelectedMotive] = useState(undefined);
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -35,7 +35,7 @@ export default function ReportEventScreen({ route, navigation }) {
     }, []);
 
     const navigateToEvent = () => {
-        setMotives(undefined);
+        setSelectedMotive(undefined);
         setObservation('');
         navigation.navigate('EventInfo', {
             'eventId': route.params.eventId
@@ -43,9 +43,20 @@ export default function ReportEventScreen({ route, navigation }) {
     }
 
     const reportEvent = () => {
+        const onResponse = (response) => {
+            alert(response.message)
+        }
+
+        const onError = (err) => {
+            alert(err.response.data.error)
+        }
+
         const eventId = route.params.eventId
+
         const client = new apiClient(userData.token);
         client.postReportOfEvent(eventId, selectedMotive, observation, onResponse, onError);
+        setObservation("");
+        setSelectedMotive(undefined);
         navigation.navigate('EventInfo', {
             'eventId': eventId
         });
@@ -81,7 +92,7 @@ export default function ReportEventScreen({ route, navigation }) {
                               optionValue={'id'}
                               selectedValue={selectedMotive}
                               onValueChange={(value) => {
-                                setselectedMotive(value);
+                                setSelectedMotive(value);
                         }}
                     />
                 </View>
