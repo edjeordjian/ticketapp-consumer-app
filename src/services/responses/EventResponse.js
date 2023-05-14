@@ -57,6 +57,7 @@ export default class EventResponse {
             agendaEntries: event.agenda.map((e, i) => {
                 return this._parseAgendaEvents(e, i)
             }),
+            hasReportedEvent: event.wasReported,
             latitude: latitude,
             longitude: longitude,
             capacity: event.capacity

@@ -252,12 +252,16 @@ export default function EventInfo({route, navigation}) {
                             (<ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>)
                     }
 
-                    <Button
-                        style={styles.btnReportEvent}
-                        onPress={navigateToReport}
-                        textColor={'#03134B'}>
-                        Denunciar
-                    </Button>
+                    {event.hasReportedEvent ? 
+                        <></>
+                        :
+                        <Button
+                            style={styles.btnReportEvent}
+                            onPress={navigateToReport}
+                            textColor={'#03134B'}>
+                            Denunciar
+                        </Button>
+                    }
                 </View>
 
                 <AwesomeAlert
