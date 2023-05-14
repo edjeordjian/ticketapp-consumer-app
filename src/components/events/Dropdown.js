@@ -169,7 +169,6 @@ export const DropdownSelect = ({
                 dropdownHelperTextStyle={dropdownHelperTextStyle}
                 selectedItemStyle={selectedItemStyle}
                 multipleSelectedItemStyle={multipleSelectedItemStyle}
-                dropdownStyle={dropdownStyle}
                 isMultiple={isMultiple}
                 primaryColor={'#1A55D7'}
                 disabled={disabled}

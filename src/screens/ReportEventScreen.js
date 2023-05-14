@@ -43,14 +43,28 @@ export default function ReportEventScreen({ route, navigation }) {
     }
 
     const reportEvent = () => {
+        const onResponse = (response) => {
+            alert(response.message)
+        }
+
+        const onError = (err) => {
+            alert(err.response.data.error)
+        }
+
         const eventId = route.params.eventId
+
         const client = new apiClient(userData.token);
+
         client.postReportOfEvent(eventId, selectedMotives, observation, onResponse, onError);
+
+        setObservation("");
+
+        setSelectedMotives(undefined);
+
         navigation.navigate('EventInfo', {
             'eventId': eventId
         });
     }
-
 
     return (
         <SafeAreaView style={{backgroundColor: "white", flex: 1}}>
@@ -63,8 +77,8 @@ export default function ReportEventScreen({ route, navigation }) {
                     <Text style={{color:'red'}}> *</Text>
                 </Text>
                 <View style={{width: '100%', marginTop: 10}}>
-                    <Dropdown 
-                            isMultiple
+                    <Dropdown
+                              isMultiple
                               placeholder="Motivos de Denuncia"
                               options={motives}
                               optionLabel={'name'}
