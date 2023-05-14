@@ -150,13 +150,14 @@ export default class apiClient {
 
     // ==========================================REPORT EVENT==========================================
 
-    postReportOfEvent(motive, observation, onResponse, onError) {
+    postReportOfEvent(eventId, motives, observation, onResponse, onError) {
       const _onResponse = (res) => {
         onResponse(res.data);
       }
       const data = {
-        motive: motive,
-        observation: observation
+        categories: motives,
+        text: observation,
+        event_id: eventId
       }
       this.call_post(`${BACKEND_HOST}${POST_REPORT_OF_EVENT_URL}`, data, _onResponse, onError);
     }

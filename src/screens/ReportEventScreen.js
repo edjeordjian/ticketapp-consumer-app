@@ -14,8 +14,8 @@ export default function ReportEventScreen({ route, navigation }) {
     const { getUserData } = useMainContext();
     const [motives, setMotives] = useState([]);    
     const [userData, setUserData] = useState({});
-    const [observation, setObservation] = useState([]);    
-    const [selectedMotive, setSelectedMotive] = useState(undefined);
+    const [observation, setObservation] = useState('');    
+    const [selectedMotives, setSelectedMotives] = useState(undefined);
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -26,7 +26,6 @@ export default function ReportEventScreen({ route, navigation }) {
             console.log(error.response.data.error);
         }
 
-
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
@@ -36,16 +35,19 @@ export default function ReportEventScreen({ route, navigation }) {
     }, []);
 
     const navigateToEvent = () => {
-        navigation.navigate('SeeEvent', {
+        setMotives(undefined);
+        setObservation('');
+        navigation.navigate('EventInfo', {
             'eventId': route.params.eventId
         });
     }
 
     const reportEvent = () => {
+        const eventId = route.params.eventId
         const client = new apiClient(userData.token);
-        client.postReportOfEvent(onResponse, onError);
-        navigation.navigate('SeeEvent', {
-            'eventId': route.params.eventId
+        client.postReportOfEvent(eventId, selectedMotives, observation, onResponse, onError);
+        navigation.navigate('EventInfo', {
+            'eventId': eventId
         });
     }
 
@@ -57,12 +59,13 @@ export default function ReportEventScreen({ route, navigation }) {
                     Denunciar Evento
                 </Text>
                 <Text style={styles.fieldTitle}>
-                    Motivo
+                    Motivos
                     <Text style={{color:'red'}}> *</Text>
                 </Text>
                 <View style={{width: '100%', marginTop: 10}}>
                     <Dropdown 
-                              placeholder="Motivo de Denuncia"
+                            isMultiple
+                              placeholder="Motivos de Denuncia"
                               options={motives}
                               optionLabel={'name'}
                               dropdownStyle={
@@ -74,21 +77,25 @@ export default function ReportEventScreen({ route, navigation }) {
                                 }
                               }
                               optionValue={'id'}
-                              selectedValue={selectedMotive}
+                              selectedValue={selectedMotives}
                               onValueChange={(value) => {
-                                setSelectedMotive(value);
+                                setSelectedMotives(value);
                         }}
                     />
                 </View>
                 <Text style={styles.fieldTitle}>Observación</Text>
                 <TextInput
                     style={styles.inputObservation}
-                    onChangeText={async (val) => {
-                        setObservation(val)
-                        }}
+                    underlineColorAndroid='transparent'
+                    onChangeText={(val) => {
+                        if( val && val.length > 100){
+                            return
+                        }
+                        setObservation(val);
+                    }}
                     value={observation}
                     multiline
-                    numberOfLines={6}
+                    numberOfLines={4}
                     placeholder="Contanos más porque este evento debe ser dado de baja"
                 />
                 <View style={styles.btnsRow}>
@@ -98,7 +105,11 @@ export default function ReportEventScreen({ route, navigation }) {
                         onPress={navigateToEvent}>
                         Volver
                     </Button>
-                    <ModalReportEvent reportEvent={reportEvent}/>
+                    <ModalReportEvent 
+                        isActive={(selectedMotives !== undefined) 
+                                && (selectedMotives.length > 0)
+                                && (observation.length > 0)}
+                        reportEvent={reportEvent}/>
                 </View>
             </ScrollView>
             <StatusBar style="auto" />
@@ -124,16 +135,16 @@ const styles = StyleSheet.create({
     btnGoBack: {
         padding: 2,
         margin: 15,
+        width: 140,
         borderWidth: 2,
-        flex:1,
         borderColor: '#768395'
     },
     btnsRow: {
         display: 'flex', 
         flexDirection: 'row', 
         padding: 25,
-        width: '100%',
-        justifyContent: 'space-between'
+        justifyContent: 'center',
+        alignContent: 'center',
     },
     inputObservation: {
         width: '100%',
@@ -141,6 +152,5 @@ const styles = StyleSheet.create({
         borderColor: '#E4E4F0',
         borderWidth: 2,
         borderRadius: 15,
-        shadowOffset: {width: 0, height: 0},  
     }
 });

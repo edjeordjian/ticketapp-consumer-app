@@ -17,7 +17,10 @@ export default function ModalReportEvent(props) {
 
   return (
     <View style={{ flex: 1}}>
-      <Button style={styles.btnReportEvent} textColor={'white'} onPress={toggleModal}>
+      <Button  
+        style={styles.btnReportEvent} 
+        disabled={!props.isActive}
+        textColor={'white'} onPress={toggleModal}>
          Denunciar
       </Button>
 
@@ -62,9 +65,9 @@ const styles = StyleSheet.create ({
    },
   btnReportEvent: {
     padding: 2,
-    width: '100%',
     marginTop: 15,
     marginBottom: 15,
+    width: 140,
     flex:1,
     backgroundColor: '#FF5252'
   },
