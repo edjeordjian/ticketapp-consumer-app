@@ -15,7 +15,7 @@ export default function ReportEventScreen({ route, navigation }) {
     const [motives, setMotives] = useState([]);    
     const [userData, setUserData] = useState({});
     const [observation, setObservation] = useState('');    
-    const [selectedMotives, setSelectedMotives] = useState(undefined);
+    const [selectedMotive, setselectedMotive] = useState(undefined);
 
     useEffect(() => {
         const onResponse = (response) => {
@@ -45,12 +45,11 @@ export default function ReportEventScreen({ route, navigation }) {
     const reportEvent = () => {
         const eventId = route.params.eventId
         const client = new apiClient(userData.token);
-        client.postReportOfEvent(eventId, selectedMotives, observation, onResponse, onError);
+        client.postReportOfEvent(eventId, selectedMotive, observation, onResponse, onError);
         navigation.navigate('EventInfo', {
             'eventId': eventId
         });
     }
-
 
     return (
         <SafeAreaView style={{backgroundColor: "white", flex: 1}}>
@@ -64,7 +63,6 @@ export default function ReportEventScreen({ route, navigation }) {
                 </Text>
                 <View style={{width: '100%', marginTop: 10}}>
                     <Dropdown 
-                            isMultiple
                               placeholder="Motivos de Denuncia"
                               options={motives}
                               optionLabel={'name'}
@@ -76,10 +74,14 @@ export default function ReportEventScreen({ route, navigation }) {
                                     backgroundColor: "white"
                                 }
                               }
+                              checkboxStyle={{
+                                borderRadius: 30,
+                                padding: 10,
+                              }}
                               optionValue={'id'}
-                              selectedValue={selectedMotives}
+                              selectedValue={selectedMotive}
                               onValueChange={(value) => {
-                                setSelectedMotives(value);
+                                setselectedMotive(value);
                         }}
                     />
                 </View>
@@ -106,8 +108,7 @@ export default function ReportEventScreen({ route, navigation }) {
                         Volver
                     </Button>
                     <ModalReportEvent 
-                        isActive={(selectedMotives !== undefined) 
-                                && (selectedMotives.length > 0)
+                        isActive={(selectedMotive !== undefined) 
                                 && (observation.length > 0)}
                         reportEvent={reportEvent}/>
                 </View>

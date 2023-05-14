@@ -12,6 +12,10 @@ export default class ReportMotivesResponse {
     }
 
     motives() {
+        console.log(this._response);
+        return [
+            {name: 'asdfasdf', id:2},{name: 'holaa', id:3}
+        ]
         return this._response.response_entry.map((tag, i) => {
             return this._parseMotive(tag);
         })

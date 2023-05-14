@@ -155,7 +155,7 @@ export default class apiClient {
         onResponse(res.data);
       }
       const data = {
-        categories: motives,
+        categories: [motives],
         text: observation,
         event_id: eventId
       }
