@@ -70,7 +70,6 @@ export default function ReportEventScreen({ route, navigation }) {
                 </Text>
                 <Text style={styles.fieldTitle}>
                     Motivos
-                    <Text style={{color:'red'}}> *</Text>
                 </Text>
                 <View style={{width: '100%', marginTop: 10}}>
                     <Dropdown 

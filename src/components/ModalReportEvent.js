@@ -28,7 +28,7 @@ export default function ModalReportEvent(props) {
         <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
           <View style={styles.modalBodyContainer}>
             <Text style={styles.text}>
-              Confirmar Denuncia
+              ¿Confirmar denuncia?
             </Text>
 
             <View style={styles.btnsRow}>
@@ -82,11 +82,11 @@ const styles = StyleSheet.create ({
   btnsRow: {
    display: 'flex', 
    flexDirection: 'row', 
-   padding: 25,
+   padding: 5,
    justifyContent: 'space-around'
   },
   optionsBtn: {
-     width: '45%'
+      width: '50%'
   },
   modalBodyContainer: {
     display: 'flex',
