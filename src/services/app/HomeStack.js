@@ -26,11 +26,13 @@ const qrScreenName = "GetQR";
 const FAQScreenName = "FAQScreen";
 const settingsName = "settingsUser";
 const reportEventScreenName = "ReportEventScreen";
+import * as Linking from "expo-linking";
 
-export default function HomeStack() {
+export default function HomeStack({navigation}) {
+    const prefix = Linking.createURL("/");
+
     return (
         <Tab.Navigator
-                initialRouteName={detailsName}
                 screenOptions={({ route }) => ({
                 tabBarActiveTintColor: "white",
                 tabBarInactiveTintColor: "grey",
