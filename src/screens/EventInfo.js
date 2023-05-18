@@ -85,7 +85,7 @@ export default function EventInfo({route, navigation}) {
     }
 
     const addEventToCalendar = async (eventDetails) => {
-        const eventIdInCalendar = await Calendar.createEventAsync("5", eventDetails)
+        const eventIdInCalendar = await Calendar.createEventAsync("1", eventDetails)
         Calendar.openEventInCalendar(eventIdInCalendar);
         setEventIdInCalendar(eventIdInCalendar);
         console.log(eventIdInCalendar);
