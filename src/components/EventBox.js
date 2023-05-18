@@ -3,9 +3,10 @@ import { Feather } from '@expo/vector-icons';
 
 export default function EventBox(props) {
     let event = props.eventInfo;
+    let showImage = props.showImage === undefined ? true : props.showImage;
 
     const navigateToEvent = () => {
-        props.navigation.navigate('SeeEvent', {
+        props.navigation.navigate('EventInfo', {
             'eventId': event.id
         });
     }
@@ -13,7 +14,9 @@ export default function EventBox(props) {
     return (
             <View style={styles.container}>
                 <TouchableOpacity onPress={navigateToEvent}>
-                    <Image source={{uri:event.imageUri}} style={styles.image}/>
+                    {showImage ? 
+                        <Image source={{uri:event.imageUri}} style={styles.image}/>
+                        : <></>}
                     <Text style={styles.nameTitle}>{event.name}</Text>
                     <View style={styles.infoContainer}>
                         <View style={styles.infoPlaceContainer}>
@@ -30,6 +33,11 @@ export default function EventBox(props) {
                             <Text style={styles.date}>{event.date}</Text>
                         </View>
                     </View>
+                    {event.distance ?
+                        <Text style={styles.distanceInfo}>Estás a {event.distance.toFixed(2)}km</Text>
+                        :
+                        <></>
+                    }
                 </TouchableOpacity>
             </View>
     )
@@ -44,6 +52,7 @@ const styles = StyleSheet.create({
         shadowColor: '#171717',  
         shadowOpacity: 0.2,  
         shadowRadius: 3,  
+        marginBottom: 15
     },
     infoContainer: {
         display: 'flex',
@@ -76,6 +85,14 @@ const styles = StyleSheet.create({
     infoTextRow: {
         color: '#747474',
         marginLeft: 5
+    },
+    distanceInfo: {
+        color: '#747474',
+        marginLeft: 18,
+        fontWeight: 400,
+        fontSize: 16,
+        marginBottom: 15,
+        marginTop: -10
     },
     date: {
         backgroundColor: '#E6A0FF',

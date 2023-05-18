@@ -22,6 +22,11 @@ export default {
         "supportsTablet": true
     },
     "android": {
+        "config": {
+            "googleMaps": {
+                "apiKey": "${GOOGLE_MAPS_API_KEY}"
+            }
+        },
         "googleServicesFile": process.env.GOOGLE_SERVICES_JSON === undefined ? "./google-services.json" : process.env.GOOGLE_SERVICES_JSON,
             "adaptiveIcon": {
             "foregroundImage": "./assets/adaptive-icon.png",

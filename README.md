@@ -18,8 +18,8 @@ Recordar cambiar en el .env la url del backend por el túnel de ngrok.
 
 
 ### Notas
-- Al igual que en React Native (con Create React App), todas las variables de ambiente 
-  deben empezar con REACT_APP, y se requiere el reincio de la aplicación para que 
+- Al igual que en React Native (con Create React App), todas las variables de ambiente
+  deben empezar con REACT_APP, y se requiere el reincio de la aplicación para que
   las levante, excepto que se importen con "@env" en vez de con "react-native-dotenv".
 - El equivalente del `<div>` de HTML o React es `<View>`, por lo que el style se puede definir ahí para contener componentes.
 - En vez de usar react-router-dom se usa react-navigator (por ejemplo). En vez de rutas se utiliza un stack de pantallas.
@@ -29,12 +29,15 @@ Recordar cambiar en el .env la url del backend por el túnel de ngrok.
 
 
 ### Para hacer un apk
+RECORDAR:
+- GOOGLE_MAPS_API_KEY
+- Node 18 (o uno reciente, `nvm use 18`)
+
+
 - El apk no tira warning minimizados. Se tira por línea de comando `eas build --profile production --platform android`.
 
 Recordar instalar eas-cli:
 `npm install -g eas-cli`
-
-(y usar Node 18, o uno reciente, `nvm use 18`)
 
 Por cada nuevo secret en el .env o cambio en el mismo:
 `eas secret:push --scope project --env-file .env --force`
@@ -99,9 +102,9 @@ y el package y los intent filters según corresponda.
 
 ### Errores comunes
 - Packager is not running: asegurarse de que el celular y la computadora están en la misma red.
-  Si igual no funciona, reiniciar la red del celular, la red de la computadora, el celular y 
+  Si igual no funciona, reiniciar la red del celular, la red de la computadora, el celular y
   la computadora (ejemplo).
-  
+
 - Tarda mucho en cargar: puede ser por el meet o alguna aplicación así.
 
 - Text strings must be rendered... Falto encerrar entre llaves un condicional del render
@@ -120,11 +123,11 @@ Escaneas la app y no abre nada: abrirlo con expo -c, no con el IDE
   [*] En un useEffect no es hay que hacer un await de llamadas asincrónicas (es un caso
   excepcional).
   [*] En un useEffect, no hay que hacer un return de la función con async.
-  
+
 -Para bajar una app corriendo en un puerto (ejemplo: 4481)
 kill $(lsof -i :4481 | cut -d ' ' -f5)
 
 Para un nuevo proyecto, se recomienda copiar la configuración de index y metro.config (es molesta y hay que buscar cada cosa).
 
 - Un console log devuelve: {"_h":0,"_i":0,"_j":null,"_k":null}
-Es porque falta resolver la promesa.
+  Es porque falta resolver la promesa.
