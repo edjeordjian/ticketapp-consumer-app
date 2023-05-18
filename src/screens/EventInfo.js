@@ -18,19 +18,19 @@ import {BlankLine} from "../components/BlankLine";
 import MapView, {Marker} from "react-native-maps";
 import AwesomeAlert from "react-native-awesome-alerts";
 
+import * as Calendar from "expo-calendar"
+import * as Permissions from "expo-permissions"
+
 
 export default function EventInfo({route, navigation}) {
     const [imageSelected, setImageToShow] = useState(0);
-
     const [event, setEvent] = useState({});
-
     const { getUserData } = useMainContext();
-
     const { width } = useWindowDimensions();
-
     const [alertText, setAlertText] = useState("");
-
     const [showAlert, setShowAlert] = useState(false);
+    const [granted, setGranted] = useState(false);
+    const [eventIdInCalendar, setEventIdInCalendar] = useState(""); 
 
     useEffect(() => {
         getUserData((data) => {
@@ -82,6 +82,41 @@ export default function EventInfo({route, navigation}) {
             eventFAQ: event.faq,
             eventId: event.id
         });
+    }
+
+    const addEventToCalendar = async (eventDetails) => {
+        const eventIdInCalendar = await Calendar.createEventAsync("5", eventDetails)
+        Calendar.openEventInCalendar(eventIdInCalendar);
+        setEventIdInCalendar(eventIdInCalendar);
+        console.log(eventIdInCalendar);
+    }
+
+    const editEventInCalendar = async (eventDetails) => {
+        const eventDetails2 = {
+            startDate: new Date('2023-10-15 07:00'),
+            endDate: new Date('2023-10-15 15:00'),
+            title: 'Se editoo',
+        }
+        const eventIdInCalendar = await Calendar.updateEventAsync("84", eventDetails2)
+        console.log(eventIdInCalendar);
+    }
+
+    const addToCalendar = async () => {
+        const eventDetails = {
+            startDate: new Date('2023-10-14 07:00'),
+            endDate: new Date('2023-10-14 15:00'),
+            title: event.name,
+        }
+        if (granted) {
+            await addEventToCalendar(eventDetails);
+            return;
+        }
+        const {status} = await Permissions.askAsync(Permissions.CALENDAR)
+        if (status === "granted") {
+            setGranted(true);
+            await addEventToCalendar(eventDetails);
+           return;
+        }
     }
 
     const navigateToReport = () => {
@@ -150,6 +185,12 @@ export default function EventInfo({route, navigation}) {
                         buttonColor={'#A5C91B'}
                         textColor={'white'}>
                         FAQ
+                    </Button>
+                    <Button
+                        onPress={addToCalendar}
+                        buttonColor={'#A5C91B'}
+                        textColor={'white'}>
+                        C
                     </Button>
                 </View>
 
