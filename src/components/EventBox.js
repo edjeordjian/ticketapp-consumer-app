@@ -8,7 +8,7 @@ import apiClient from '../services/apiClient';
 export default function EventBox(props) {
     let event = props.eventInfo;
     let showImage = props.showImage === undefined ? true : props.showImage;
-    const [isFavorite, setIsFavorite] = useState(event.isFavorite);
+    const [isFavourite, setIsFavourite] = useState(event.isFavourite);
 
     const navigateToEvent = () => {
         props.navigation.navigate('EventInfo', {
@@ -26,12 +26,12 @@ export default function EventBox(props) {
 
     const setFavourite = async () => {
         const eventId = event.id;
-        setIsFavorite(!isFavorite);
+        setIsFavourite(!isFavourite);
         const client = new apiClient(props.userToken);
-        //await client.postFavorite(eventId, isFavorite, onResponse, onError);
+        //await client.postFavorite(eventId, isFavourite, onResponse, onError);
     }
 
-    const favouriteIcon = isFavorite ?
+    const favouriteIcon = isFavourite ?
             <TouchableOpacity onPress={setFavourite} style={styles.favouriteContainerUp}>
                 <AntDesign name="heart" size={24} color="#FE5454"/>
             </TouchableOpacity>

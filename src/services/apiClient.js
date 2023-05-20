@@ -181,12 +181,12 @@ export default class apiClient {
     
     // ==========================================FAVORITES==========================================
 
-    postFavorite(eventId, isFavorite, onResponse, onError) {
+    postFavorite(eventId, isFavourite, onResponse, onError) {
       const _onResponse = (res) => {
         onResponse(res.data);
       }
       const data = {
-        is_favorite: isFavorite,
+        is_favourite: isFavourite,
         event_id: eventId
       }
       this.call_post(`${BACKEND_HOST}${POST_FAVORITE_URL}`, data, _onResponse, onError);
