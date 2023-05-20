@@ -42,6 +42,7 @@ export default class EventResponse {
         return {
             id: event.id,
             name: event.name,
+            isFavorite: true,
             address: event.address,
             description: event.description,
             hour: event.time + "hs",
