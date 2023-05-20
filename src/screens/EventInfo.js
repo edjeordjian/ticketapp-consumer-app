@@ -69,6 +69,7 @@ export default function EventInfo({route, navigation}) {
 
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
+            eventId: route.params.eventId,
             ticketId: event.ticket.id,
             date: event.date,
             hour: event.hour,
@@ -144,23 +145,25 @@ export default function EventInfo({route, navigation}) {
                     <Text style={styles.title}>
                         {event.name}
                     </Text>
+                </View>
 
-                    <View style={styles.btnsContainer}>
+                <BlankLine/>
 
-                        <TouchableOpacity 
-                            onPress={() => console.log('Compartiendo')}
-                            style={styles.shareBtn}>
-                            <Feather name="share-2" size={24} color="white" />
-                        </TouchableOpacity>
+                <View style={styles.btnsContainer}>
 
-                        <Button
-                            onPress={navigateToFAQ}
-                            buttonColor={'#A5C91B'}
-                            textColor={'white'}>
-                            FAQ
-                        </Button>
+                    <TouchableOpacity
+                        onPress={() => console.log('Compartiendo')}
+                        style={styles.shareBtn}>
+                        <Feather name="share-2" size={24} color="white" />
+                    </TouchableOpacity>
 
-                    </View>
+                    <Button
+                        onPress={navigateToFAQ}
+                        buttonColor={'#A5C91B'}
+                        textColor={'white'}>
+                        FAQ
+                    </Button>
+
                 </View>
 
                 <View style={styles.infoContainer}>
@@ -282,7 +285,6 @@ export default function EventInfo({route, navigation}) {
                     closeOnHardwareBackPress={true}
                     showCancelButton={false}
                     showConfirmButton={true}
-                    cancelText="Cancelar"
                     confirmText="Aceptar"
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}
@@ -428,9 +430,9 @@ const styles = StyleSheet.create({
     },
     btnsContainer: {
         display: 'flex', 
-        flexDirection: 'row', 
-        justifyContent: 'center', 
-        alignItems: 'center'
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
     },
     shareBtn: {
         backgroundColor: '#A5C91B', 

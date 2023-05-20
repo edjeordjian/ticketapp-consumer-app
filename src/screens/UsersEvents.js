@@ -26,7 +26,9 @@ export default function UsersEvents({ navigation }) {
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
         }
 
         getUserData((data) => {
@@ -40,11 +42,16 @@ export default function UsersEvents({ navigation }) {
     const onRefresh = useCallback(() => {
         const onResponse = (response) => {
             setEvents(response.events());
+
             setRefreshing(false);
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
+            setRefreshing(false);
         }
 
         setRefreshing(true);
@@ -71,7 +78,10 @@ export default function UsersEvents({ navigation }) {
                 style={styles.searchBarContainer}
             >
                 <Text style={styles.nextEventText}>Próximo evento</Text>
-                <EventBox key={event.id} userToken={userData.token} eventInfo={event} navigation={navigation}/>
+                <EventBox key={event.id}
+                          userToken={userData.token}
+                          eventInfo={event}
+                          navigation={navigation}/>
             </LinearGradient>
             <Text style={styles.allEventsText}>Eventos reservados</Text>
             <ScrollView
