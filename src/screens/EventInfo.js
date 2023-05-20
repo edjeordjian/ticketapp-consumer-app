@@ -145,12 +145,22 @@ export default function EventInfo({route, navigation}) {
                         {event.name}
                     </Text>
 
-                    <Button
-                        onPress={navigateToFAQ}
-                        buttonColor={'#A5C91B'}
-                        textColor={'white'}>
-                        FAQ
-                    </Button>
+                    <View style={styles.btnsContainer}>
+
+                        <TouchableOpacity 
+                            onPress={() => console.log('Compartiendo')}
+                            style={styles.shareBtn}>
+                            <Feather name="share-2" size={24} color="white" />
+                        </TouchableOpacity>
+
+                        <Button
+                            onPress={navigateToFAQ}
+                            buttonColor={'#A5C91B'}
+                            textColor={'white'}>
+                            FAQ
+                        </Button>
+
+                    </View>
                 </View>
 
                 <View style={styles.infoContainer}>
@@ -416,4 +426,20 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 15
     },
+    btnsContainer: {
+        display: 'flex', 
+        flexDirection: 'row', 
+        justifyContent: 'center', 
+        alignItems: 'center'
+    },
+    shareBtn: {
+        backgroundColor: '#A5C91B', 
+        marginRight: 10, 
+        height: 40, 
+        width: 40,
+        borderRadius: 20,
+        display: 'flex', 
+        justifyContent:'center',
+        alignItems: 'center'
+    }
 });
