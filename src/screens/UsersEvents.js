@@ -71,7 +71,7 @@ export default function UsersEvents({ navigation }) {
                 style={styles.searchBarContainer}
             >
                 <Text style={styles.nextEventText}>Próximo evento</Text>
-                <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
+                <EventBox key={event.id} userToken={userData.token} eventInfo={event} navigation={navigation}/>
             </LinearGradient>
             <Text style={styles.allEventsText}>Eventos reservados</Text>
             <ScrollView
@@ -88,7 +88,8 @@ export default function UsersEvents({ navigation }) {
                 :
                     events.map((event,i) => {
                         return (
-                            <EventBox key={event.id} showImage={false} eventInfo={event} navigation={navigation}/>
+                            <EventBox key={event.id} userToken = {userData.token}
+                            showImage={false} eventInfo={event} navigation={navigation}/>
                         );
                     })
                 }

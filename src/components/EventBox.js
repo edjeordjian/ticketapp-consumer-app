@@ -1,9 +1,14 @@
 import { StyleSheet, Text, Image, View, TouchableOpacity } from 'react-native';
 import { Feather } from '@expo/vector-icons';
+import { AntDesign } from '@expo/vector-icons';
+import { useState } from 'react';
+import apiClient from '../services/apiClient';
+
 
 export default function EventBox(props) {
     let event = props.eventInfo;
     let showImage = props.showImage === undefined ? true : props.showImage;
+    const [isFavourite, setIsFavourite] = useState(event.isFavourite);
 
     const navigateToEvent = () => {
         props.navigation.navigate('EventInfo', {
@@ -11,12 +16,39 @@ export default function EventBox(props) {
         });
     }
 
+    const onResponse = (res) => {
+        console.log(res);
+    }
+
+    const onError = (res) => {
+        console.log(res);
+    }
+
+    const setFavourite = async () => {
+        const eventId = event.id;
+        setIsFavourite(!isFavourite);
+        const client = new apiClient(props.userToken);
+        //await client.postFavorite(eventId, isFavourite, onResponse, onError);
+    }
+
+    const favouriteIcon = isFavourite ?
+            <TouchableOpacity onPress={setFavourite} style={styles.favouriteContainerUp}>
+                <AntDesign name="heart" size={24} color="#FE5454"/>
+            </TouchableOpacity>
+                :
+            <TouchableOpacity onPress={setFavourite} style={styles.favouriteContainerDown}>
+                <Feather name="heart" size={24} color="black" />
+            </TouchableOpacity>
+
     return (
             <View style={styles.container}>
                 <TouchableOpacity onPress={navigateToEvent}>
-                    {showImage ? 
+                    <View style={styles.imageContainer}>
+                        {favouriteIcon}
+                        {showImage ? 
                         <Image source={{uri:event.imageUri}} style={styles.image}/>
                         : <></>}
+                    </View>
                     <Text style={styles.nameTitle}>{event.name}</Text>
                     <View style={styles.infoContainer}>
                         <View style={styles.infoPlaceContainer}>
@@ -71,6 +103,36 @@ const styles = StyleSheet.create({
     },
     dateContainer: {
         flex:1,
+    },
+    imageContainer: {
+        height: 150,
+        position: 'relative',
+        width: '100%',
+        borderRadius: 25
+    },
+    favouriteContainerDown: {
+        backgroundColor: '#D9D9D9',
+        position: 'absolute',
+        zIndex: 5,
+        right: 0,
+        height: 40,
+        width: 40,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
+    favouriteContainerUp: {
+        backgroundColor: '#FFC7C7',
+        position: 'absolute',
+        zIndex: 5,
+        right: 0,
+        height: 40,
+        width: 40,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
     },
     image: {
         width: '100%',
