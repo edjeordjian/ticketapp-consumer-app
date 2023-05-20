@@ -66,7 +66,7 @@ export default function EventBox(props) {
                         </View>
                     </View>
                     {event.distance ?
-                        <Text style={styles.distanceInfo}>Estás a {event.distance.toFixed(2)}km</Text>
+                        <Text style={styles.distanceInfo}>Estás a {event.distance.toFixed(1)}km</Text>
                         :
                         <></>
                     }
