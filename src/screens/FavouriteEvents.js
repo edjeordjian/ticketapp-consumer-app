@@ -100,6 +100,14 @@ export default function FavouriteEvents({ navigation }) {
 
       }, []);
 
+    const onFavouriteChange = (eventId) => {
+        console.log(eventId);
+        setEvents((current) =>
+            current.filter(
+            (event) => event.id !== eventId)
+        );
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <LinearGradient
@@ -128,6 +136,7 @@ export default function FavouriteEvents({ navigation }) {
                                 <EventBox 
                                     key={event.id} 
                                     userToken = {userData.token}
+                                    onFavouriteChange={onFavouriteChange}
                                     eventInfo={event} 
                                     navigation={navigation}/>
                             </View>
