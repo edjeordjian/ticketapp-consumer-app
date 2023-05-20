@@ -7,7 +7,8 @@ import {
     GET_TAGS_URL,
     GET_TICKET_URL,
     GET_REPORT_MOTIVES_URL,
-    POST_REPORT_OF_EVENT_URL
+    POST_REPORT_OF_EVENT_URL,
+    POST_FAVORITE_URL
 } from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
@@ -175,6 +176,20 @@ export default class apiClient {
         onResponse( new ReportMotivesResponse(res.data));
       }
       this.call_get(`${BACKEND_HOST}${GET_REPORT_MOTIVES_URL}`, {}, _onResponse, onError);
+    }
+
+    
+    // ==========================================FAVORITES==========================================
+
+    postFavorite(eventId, isFavourite, onResponse, onError) {
+      const _onResponse = (res) => {
+        onResponse(res.data);
+      }
+      const data = {
+        is_favourite: isFavourite,
+        event_id: eventId
+      }
+      this.call_post(`${BACKEND_HOST}${POST_FAVORITE_URL}`, data, _onResponse, onError);
     }
 
 }

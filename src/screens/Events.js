@@ -228,7 +228,11 @@ export default function Events({ navigation }) {
                 : 
                     events.map((event,i) => {
                         return (
-                            <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
+                            <EventBox 
+                                key={event.id} 
+                                userToken = {userData.token}
+                                eventInfo={event} 
+                                navigation={navigation}/>
                         );
                     })
                 }
