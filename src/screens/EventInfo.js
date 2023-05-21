@@ -18,6 +18,7 @@ import {BlankLine} from "../components/BlankLine";
 import MapView, {Marker} from "react-native-maps";
 import AwesomeAlert from "react-native-awesome-alerts";
 import {A} from "@expo/html-elements";
+import {REDIRECT_HOST} from "../constants/generalConstants";
 
 
 export default function EventInfo({route, navigation}) {
@@ -152,11 +153,25 @@ export default function EventInfo({route, navigation}) {
 
                 <View style={styles.btnsContainer}>
 
+                    {/*
                     <TouchableOpacity
                         onPress={() => console.log('Compartiendo')}
                         style={styles.shareBtn}>
                         <Feather name="share-2" size={24} color="white" />
                     </TouchableOpacity>
+                    */}
+
+                    <BlankLine/>
+
+                        <A href={`whatsapp://send?text=${REDIRECT_HOST}/EventInfo/${event.id}`}
+                           data-action="share/whatsapp/share">Whatsapp</A>
+
+                    <BlankLine/>
+
+                    <A href={`https://telegram.me/share/url?url=${REDIRECT_HOST}/EventInfo/${event.id}`}
+                    >Telgram</A>
+
+                    <BlankLine number={2}/>
 
                     <Button
                         onPress={navigateToFAQ}
@@ -184,16 +199,6 @@ export default function EventInfo({route, navigation}) {
                         <Text style={styles.date}>{event.date}</Text>
                     </View>
                 </View>
-
-                <BlankLine/>
-
-                <A href={`whatsapp://send?text=exp://192.168.0.6:19000/--/EventInfo/${event.id}`} data-action="share/whatsapp/share">Compartir Wpp</A>
-
-                <BlankLine/>
-
-                <A href={`https://telegram.me/share/url?url=exp://192.168.0.6:19000/--/EventInfo/${event.id}`}>Compartir Telgram</A>
-
-                <BlankLine number={2}/>
 
                 { (event.latitude) ? (
                     <View style={{justifyContent: 'center', alignItems: 'center'}}>
