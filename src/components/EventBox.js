@@ -28,6 +28,9 @@ export default function EventBox(props) {
         const eventId = event.id;
         setIsFavourite(!isFavourite);
         const client = new apiClient(props.userToken);
+        if (props.onFavouriteChange) {
+            props.onFavouriteChange(eventId);
+        }
         //await client.postFavorite(eventId, isFavourite, onResponse, onError);
     }
 
