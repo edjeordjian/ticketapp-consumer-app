@@ -45,6 +45,10 @@ export default function EventInfo({route, navigation}) {
         };
     }, [route.params.eventId]);
 
+    const getEventText = () => {
+        return `¡Vení a ${event.name}! \n ${REDIRECT_HOST}/EventInfo/${event.id}`
+    }
+
     const onResponseGetEvent = (response) => {
         setEvent(response.event());
         setImageToShow(0);
@@ -163,7 +167,7 @@ export default function EventInfo({route, navigation}) {
 
                     <BlankLine/>
 
-                        <A href={`whatsapp://send?text=${REDIRECT_HOST}/EventInfo/${event.id}`}
+                        <A href={`whatsapp://send?text=${getEventText()}`}
                            data-action="share/whatsapp/share">Whatsapp</A>
 
                     <BlankLine/>
