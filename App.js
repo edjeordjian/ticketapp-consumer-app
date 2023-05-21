@@ -7,12 +7,48 @@ import * as SecureStore from 'expo-secure-store';
 import HomeStack from "./src/services/app/HomeStack";
 import LogInScreen from "./src/screens/LogInScreen";
 import {registerForPushNotifications} from "./src/services/helpers/NotificationHelper";
+import * as Linking from "expo-linking";
+import UsersEvents from "./src/screens/UsersEvents";
 
 
 export default function App() {
     const initialState = () => {
         return {}
     };
+
+    const prefix = Linking.createURL("/");
+
+    const linking = {
+        prefixes: [prefix],
+        config: {
+            screens: {
+                HomeNavStack: {
+                    screens: {
+                        EventInfo: {
+                            path: 'EventInfo/:eventId',
+                            parse:{
+                                eventId: (id) => `${id}`
+                            }
+                        }
+                    },
+                },
+            }
+        }
+    };
+
+    const openDeepLink = async () => {
+        const deepLink = await Linking.getInitialURL()
+
+        console.log('DeepLink URL:', deepLink);
+
+        if (deepLink) {
+            await Linking.openURL(deepLink);
+        }
+    }
+
+    const onNavigationReady = async () => {
+        await openDeepLink()
+    }
 
     const reducer = ( appState = initialState(),
                       action = {} ) => {
@@ -40,29 +76,6 @@ export default function App() {
     };
 
     const [appState, dispatch] = useReducer(reducer, reducer());
-
-    useEffect(() => {
-        const bootstrapAsync = async () => {
-            let userData;
-
-            try {
-                userData = await SecureStore.getItemAsync("user-data");
-            } catch (err) {
-                alert(err);
-                return;
-            }
-            if (userData === null) {
-                await MainContext.signOut();
-            } /*else {
-                dispatch({
-                    type: 'RESTORE_TOKEN',
-                    userData: JSON.parse(userData)
-                });
-            }*/
-        }
-
-        bootstrapAsync().then();
-    }, []);
 
     const context = useMemo( () => {
             return ( {
@@ -100,16 +113,41 @@ export default function App() {
 
     const AuthStack = createNativeStackNavigator();
 
+    useEffect(() => {
+        const bootstrapAsync = async () => {
+            let userData;
+
+            try {
+                userData = await SecureStore.getItemAsync("user-data");
+            } catch (err) {
+                alert(err);
+                return;
+            }
+            if (userData === null) {
+                await MainContext.signOut();
+            } else {
+                dispatch({
+                    type: 'RESTORE_TOKEN',
+                    userData: JSON.parse(userData)
+                });
+            }
+        }
+
+        bootstrapAsync().then();
+    }, []);
+
     return (
         <MainContext.Provider value={context}>
             <PaperProvider>
-                <NavigationContainer>
+                <NavigationContainer  onReady={onNavigationReady} linking={linking}>
                     <AuthStack.Navigator screenOptions={{headerShown: false}}>
                         <>
                             {
                                 (appState.isLoggedIn) ? (
+                                    <>
                                     <AuthStack.Screen name='HomeNavStack'
                                                       component={HomeStack}/>
+                                   </>
                                 ) : (
                                     <>
                                         <AuthStack.Screen name='LogInScreen'
