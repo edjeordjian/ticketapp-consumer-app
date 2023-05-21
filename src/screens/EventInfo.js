@@ -156,7 +156,6 @@ export default function EventInfo({route, navigation}) {
                 <BlankLine/>
 
                 <View style={styles.btnsContainer}>
-
                     {/*
                     <TouchableOpacity
                         onPress={() => console.log('Compartiendo')}
@@ -165,15 +164,23 @@ export default function EventInfo({route, navigation}) {
                     </TouchableOpacity>
                     */}
 
+                    <A href={`whatsapp://send?text=${getEventText()}`} data-action="share/whatsapp/share">
+                        <Button
+                            buttonColor={'#A5C91B'}
+                            textColor={'white'}>
+                            Whatsapp
+                        </Button>
+                    </A>
+
                     <BlankLine/>
 
-                        <A href={`whatsapp://send?text=${getEventText()}`}
-                           data-action="share/whatsapp/share">Whatsapp</A>
-
-                    <BlankLine/>
-
-                    <A href={`https://telegram.me/share/url?url=${REDIRECT_HOST}/EventInfo/${event.id}`}
-                    >Telgram</A>
+                    <A href={`https://telegram.me/share/url?url=${REDIRECT_HOST}/EventInfo/${event.id}`}>
+                        <Button
+                            buttonColor={'#A5C91B'}
+                            textColor={'white'}>
+                            Telegram
+                        </Button>
+                    </A>
 
                     <BlankLine number={2}/>
 
