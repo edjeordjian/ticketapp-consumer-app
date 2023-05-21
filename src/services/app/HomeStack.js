@@ -15,6 +15,7 @@ import {Platform} from "react-native";
 import {registerForPushNotifications} from "../helpers/NotificationHelper";
 import {requestLocation} from "../helpers/LocationHelper";
 import ReportEventScreen from '../../screens/ReportEventScreen';
+import FavouriteEvents from '../../screens/FavouriteEvents';
 
 const Tab = createBottomTabNavigator();
 
@@ -22,6 +23,7 @@ const Tab = createBottomTabNavigator();
 const detailsName = "EventsList";
 const userEventsName = "userEventsName";
 const eventInfoName = "EventInfo";
+const favouriteEventsName = "FavouriteEvents";
 const qrScreenName = "GetQR";
 const FAQScreenName = "FAQScreen";
 const settingsName = "settingsUser";
@@ -55,15 +57,17 @@ export default function HomeStack() {
                         iconName = 'list'
                     } else if (rn === userEventsName) {
                         iconName = 'user';
+                    } else if (rn === favouriteEventsName) {
+                        iconName = 'heart';
                     } else if (rn === settingsName) {
                         iconName = 'log-out';
                     }
 
                     if (!focused) {
-                    return <Feather name={iconName} size={size} color={color}/>;
+                        return <Feather name={iconName} size={size} color={color}/>;
                     }
-                    return <Feather padding={10} name={iconName} size={size} 
-                            color={color} backgroundColor={'#A5C91B'} style={{borderRadius: 50}}/>
+                        return <Feather padding={10} name={iconName} size={size} 
+                                color={color} backgroundColor={'#A5C91B'} style={{borderRadius: 50}}/>
                 },
                     headerShown: false,
                     headerBackTitleVisible: false,
@@ -71,6 +75,7 @@ export default function HomeStack() {
                 >
                     <Tab.Screen name={detailsName} component={Events} />
                     <Tab.Screen name={userEventsName} component={UsersEvents} />
+                    <Tab.Screen  name={favouriteEventsName} component={FavouriteEvents} />
                     <Tab.Screen  name={settingsName} component={UserProfileScreen} />
 
                     <Tab.Screen name={eventInfoName} component={EventInfo} options={
