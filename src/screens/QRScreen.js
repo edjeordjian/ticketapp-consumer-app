@@ -36,7 +36,7 @@ export default function QRScreen({ route, navigation }) {
                 >
                 <Text style={styles.title}>
                     {route.params.eventName}
-                    {`\n`}{route.params.date} - {route.params.hour}
+                    {`\n\n`}{route.params.date} - {route.params.hour}
                     {`\n\n`}{route.params.address.split(",")[0]}
                     {`\n`}{route.params.address.split(",")[1]}
                 </Text>
@@ -85,18 +85,18 @@ const styles = StyleSheet.create({
         fontSize: 24,
         textAlign: 'center',
         fontWeight: '600',
-        marginBottom: 55,
+        marginBottom: 20,
     },
     subtitle: {
         color: 'white',
         fontSize: 20,
         textAlign: 'center',
         fontWeight: '600',
-        marginBottom: 55,
+        marginBottom: 20,
     },
     text: {
         color: 'white',
-        marginTop: 55,
+        marginTop: 40,
         fontSize: 15,
         width: '70%',
         textAlign: 'center'

@@ -58,8 +58,6 @@ export default function Events({ navigation }) {
 
     const hideAlert = () => {
         setShowAlert(false);
-
-        navigation.goBack();
     }
 
     useEffect(() => {
@@ -104,7 +102,11 @@ export default function Events({ navigation }) {
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
+            setRefreshing(false);
         }
 
         setRefreshing(true);
@@ -125,6 +127,10 @@ export default function Events({ navigation }) {
             setEvents(response.events());
         }
         const onError = (error) => {
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
             console.log(error);
         }
 
@@ -143,6 +149,10 @@ export default function Events({ navigation }) {
             setEvents(response.events());
         }
         const onError = (error) => {
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
             console.log(error);
         }
         setSelectedTags(tagsSelected);
@@ -245,7 +255,6 @@ export default function Events({ navigation }) {
                     closeOnHardwareBackPress={true}
                     showCancelButton={false}
                     showConfirmButton={true}
-                    cancelText="Cancelar"
                     confirmText="Aceptar"
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}

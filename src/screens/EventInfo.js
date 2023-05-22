@@ -17,6 +17,8 @@ import { Button } from 'react-native-paper';
 import {BlankLine} from "../components/BlankLine";
 import MapView, {Marker} from "react-native-maps";
 import AwesomeAlert from "react-native-awesome-alerts";
+import {A} from "@expo/html-elements";
+import {REDIRECT_HOST} from "../constants/generalConstants";
 
 
 export default function EventInfo({route, navigation}) {
@@ -42,6 +44,10 @@ export default function EventInfo({route, navigation}) {
           setEvent({});
         };
     }, [route.params.eventId]);
+
+    const getEventText = () => {
+        return `¡Vení a ${event.name}! \n ${REDIRECT_HOST}/EventInfo/${event.id}`
+    }
 
     const onResponseGetEvent = (response) => {
         setEvent(response.event());
@@ -69,6 +75,7 @@ export default function EventInfo({route, navigation}) {
 
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
+            eventId: route.params.eventId,
             ticketId: event.ticket.id,
             date: event.date,
             hour: event.hour,
@@ -144,23 +151,46 @@ export default function EventInfo({route, navigation}) {
                     <Text style={styles.title}>
                         {event.name}
                     </Text>
+                </View>
 
-                    <View style={styles.btnsContainer}>
+                <BlankLine/>
 
-                        <TouchableOpacity 
-                            onPress={() => console.log('Compartiendo')}
-                            style={styles.shareBtn}>
-                            <Feather name="share-2" size={24} color="white" />
-                        </TouchableOpacity>
+                <View style={styles.btnsContainer}>
+                    {/*
+                    <TouchableOpacity
+                        onPress={() => console.log('Compartiendo')}
+                        style={styles.shareBtn}>
+                        <Feather name="share-2" size={24} color="white" />
+                    </TouchableOpacity>
+                    */}
 
+                    <A href={`whatsapp://send?text=${getEventText()}`} data-action="share/whatsapp/share">
                         <Button
-                            onPress={navigateToFAQ}
                             buttonColor={'#A5C91B'}
                             textColor={'white'}>
-                            FAQ
+                            Whatsapp
                         </Button>
+                    </A>
 
-                    </View>
+                    <BlankLine/>
+
+                    <A href={`https://telegram.me/share/url?url=${REDIRECT_HOST}/EventInfo/${event.id}`}>
+                        <Button
+                            buttonColor={'#A5C91B'}
+                            textColor={'white'}>
+                            Telegram
+                        </Button>
+                    </A>
+
+                    <BlankLine number={2}/>
+
+                    <Button
+                        onPress={navigateToFAQ}
+                        buttonColor={'#A5C91B'}
+                        textColor={'white'}>
+                        FAQ
+                    </Button>
+
                 </View>
 
                 <View style={styles.infoContainer}>
@@ -282,7 +312,6 @@ export default function EventInfo({route, navigation}) {
                     closeOnHardwareBackPress={true}
                     showCancelButton={false}
                     showConfirmButton={true}
-                    cancelText="Cancelar"
                     confirmText="Aceptar"
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}
@@ -428,9 +457,9 @@ const styles = StyleSheet.create({
     },
     btnsContainer: {
         display: 'flex', 
-        flexDirection: 'row', 
-        justifyContent: 'center', 
-        alignItems: 'center'
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
     },
     shareBtn: {
         backgroundColor: '#A5C91B', 
