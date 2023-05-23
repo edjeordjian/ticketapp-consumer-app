@@ -97,6 +97,8 @@ export default function EventInfo({route, navigation}) {
         });
     }
 
+    const isEventActive = event.stateName !== 'Cancelado' && event.stateName !== 'Suspendido'
+
     const qrBtn = () => {
         if (event.ticket.wasUsed) {
             return (
@@ -137,11 +139,18 @@ export default function EventInfo({route, navigation}) {
                         }}>
                             <Entypo name="chevron-right" size={35} color="white"/>
                         </TouchableOpacity>
-                        <View style={styles.capacityBox}>
-                            <Text style={styles.capacityBoxText}>
-                                {capacityText}
-                            </Text>
-                        </View>
+                        {
+                            isEventActive ?
+                            <View style={styles.capacityBox}>
+                                <Text style={styles.capacityBoxText}>
+                                    {capacityText}
+                                </Text>
+                            </View>
+                            :
+                            <View style={styles.warningBox}>
+                                <Text style={styles.warningBoxText}>CANCELADO</Text>
+                            </View>
+                        }
                     </View>
                     :
                     <></>
@@ -285,14 +294,16 @@ export default function EventInfo({route, navigation}) {
 
                     <Agenda agendaEntries={event.agendaEntries}/>
 
-                    {
+                    {isEventActive ? 
                         (event.ticket && event.ticket.id) ?
                             (qrBtn())
                             :
                             (<ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>)
+                            :
+                            <></>
                     }
 
-                    {event.hasReportedEvent ? 
+                    {event.hasReportedEvent || !isEventActive ? 
                         <></>
                         :
                         <Button
@@ -398,6 +409,23 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 20,
         marginTop: 270,
         zIndex: 100, 
+    },
+    warningBox: {
+        backgroundColor: 'black',
+        position: 'absolute',
+        width: '100%',
+        height: 90,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        right: 0,
+        marginTop: 210,
+        zIndex: 100, 
+    },
+    warningBoxText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: "600"
     },
     capacityBoxText: {
         color: 'white'
