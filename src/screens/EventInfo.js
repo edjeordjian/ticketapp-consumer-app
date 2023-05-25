@@ -80,7 +80,7 @@ export default function EventInfo({route, navigation}) {
     }
 
     const copyToClipboard = async () => {
-        const shareLink = `{REDIRECT_HOST}/EventInfo/${event.id}`
+        const shareLink = `${REDIRECT_HOST}/EventInfo/${event.id}`
         await Clipboard.setStringAsync(shareLink);
         setShowCopyAlert(true);
     }

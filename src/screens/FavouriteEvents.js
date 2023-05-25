@@ -92,6 +92,7 @@ export default function FavouriteEvents({ navigation }) {
         }
 
         setRefreshing(true);
+
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
@@ -101,7 +102,6 @@ export default function FavouriteEvents({ navigation }) {
       }, []);
 
     const onFavouriteChange = (eventId) => {
-        console.log(eventId);
         setEvents((current) =>
             current.filter(
             (event) => event.id !== eventId)

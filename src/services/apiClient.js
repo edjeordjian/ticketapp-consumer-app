@@ -189,12 +189,18 @@ export default class apiClient {
         is_favourite: isFavourite,
         event_id: eventId
       }
+
       this.call_post(`${BACKEND_HOST}${POST_FAVORITE_URL}`, data, _onResponse, onError);
     }
 
     getFavouritesEventsList(onResponse, onError) {
       const _onResponse = (res) => {onResponse( new EventListResponse(res.data))}
-      const params = {only_favourites: true}
+      const params = {
+          only_favourites: true
+      }
+
+      console.log(params);
+
       this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
     }
 

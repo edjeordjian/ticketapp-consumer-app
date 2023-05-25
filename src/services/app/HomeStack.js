@@ -75,9 +75,14 @@ export default function HomeStack({navigation}) {
                     headerBackTitleVisible: false,
                     })}
                 >
-                    <Tab.Screen name={detailsName} component={Events} />
+                    <Tab.Screen name={detailsName} component={Events} options={
+                        () => ({unmountOnBlur: true})} />
+
                     <Tab.Screen name={userEventsName} component={UsersEvents} />
-                    <Tab.Screen  name={favouriteEventsName} component={FavouriteEvents} />
+
+                    <Tab.Screen  name={favouriteEventsName} component={FavouriteEvents}  options={
+                        () => ({unmountOnBlur: true})}/>
+
                     <Tab.Screen  name={settingsName} component={UserProfileScreen} />
 
                     <Tab.Screen name={eventInfoName} component={EventInfo} options={

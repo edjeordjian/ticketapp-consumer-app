@@ -110,7 +110,7 @@ export default function Events({ navigation }) {
         }
 
         setRefreshing(true);
-        console.log(location);
+        setEvents([]);
         const latitude = orderByLocation ? location.latitude: undefined;
         const longitude = orderByLocation ? location.longitude: undefined;
         getUserData((data) => {
