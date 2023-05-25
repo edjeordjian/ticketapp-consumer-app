@@ -20,6 +20,9 @@ import AwesomeAlert from "react-native-awesome-alerts";
 import {A} from "@expo/html-elements";
 import {REDIRECT_HOST} from "../constants/generalConstants";
 
+import * as Clipboard from 'expo-clipboard';
+import { FontAwesome5 } from '@expo/vector-icons';
+
 
 export default function EventInfo({route, navigation}) {
     const [imageSelected, setImageToShow] = useState(0);
@@ -33,6 +36,9 @@ export default function EventInfo({route, navigation}) {
     const [alertText, setAlertText] = useState("");
 
     const [showAlert, setShowAlert] = useState(false);
+
+    const [showCopyAlert, setShowCopyAlert] = useState(false);
+
 
     useEffect(() => {
         getUserData((data) => {
@@ -71,6 +77,12 @@ export default function EventInfo({route, navigation}) {
             const client = new apiClient(data.token);
             client.getEventTicket(onResponseGetEvent, onError, data.id, route.params.eventId);
         });
+    }
+
+    const copyToClipboard = async () => {
+        const shareLink = `{REDIRECT_HOST}/EventInfo/${event.id}`
+        await Clipboard.setStringAsync(shareLink);
+        setShowCopyAlert(true);
     }
 
     const navigateToQR = () => {
@@ -165,33 +177,24 @@ export default function EventInfo({route, navigation}) {
                 <BlankLine/>
 
                 <View style={styles.btnsContainer}>
-                    {/*
-                    <TouchableOpacity
-                        onPress={() => console.log('Compartiendo')}
-                        style={styles.shareBtn}>
-                        <Feather name="share-2" size={24} color="white" />
+
+                    <TouchableOpacity onPress={copyToClipboard} style={styles.shareBtn}>
+                        <FontAwesome5 name="copy" size={22} color="white" />
                     </TouchableOpacity>
-                    */}
 
                     <A href={`whatsapp://send?text=${getEventText()}`} data-action="share/whatsapp/share">
-                        <Button
-                            buttonColor={'#A5C91B'}
-                            textColor={'white'}>
-                            Whatsapp
-                        </Button>
+                        <View style={styles.shareBtn}>
+                            <FontAwesome5 name="whatsapp" size={22} color="white" />
+                        </View>
                     </A>
-
-                    <BlankLine/>
 
                     <A href={`https://telegram.me/share/url?url=${REDIRECT_HOST}/EventInfo/${event.id}`}>
-                        <Button
-                            buttonColor={'#A5C91B'}
-                            textColor={'white'}>
-                            Telegram
-                        </Button>
+                        <View
+                            style={styles.shareBtn}
+                            buttonColor={'#A5C91B'}>
+                            <FontAwesome5 name="telegram-plane" size={22} color="white" />
+                        </View>
                     </A>
-
-                    <BlankLine number={2}/>
 
                     <Button
                         onPress={navigateToFAQ}
@@ -327,6 +330,20 @@ export default function EventInfo({route, navigation}) {
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}
                     onConfirmPressed={hideAlert}
+                />
+
+                <AwesomeAlert
+                    show={showCopyAlert}
+                    showProgress={false}
+                    title={"Link al evento copiado!"}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={() => setShowCopyAlert(false)}
+                    onConfirmPressed={() => setShowCopyAlert(false)}
                 />
             </ScrollView>
             <StatusBar style="auto"/>
@@ -486,8 +503,10 @@ const styles = StyleSheet.create({
     btnsContainer: {
         display: 'flex', 
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'flex-end',
         alignItems: 'center',
+        gap: 5,
+        marginRight: 15
     },
     shareBtn: {
         backgroundColor: '#A5C91B', 
