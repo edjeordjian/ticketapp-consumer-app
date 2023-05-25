@@ -7,6 +7,7 @@ export default class EventListResponse {
     _parseEvent(event) {
         return {
             id: event.id,
+            isFavourite: event.is_favourite,
             name: event.name,
             address : event.address,
             hour : event.time + "hs",

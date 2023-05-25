@@ -17,9 +17,15 @@ import { Button } from 'react-native-paper';
 import {BlankLine} from "../components/BlankLine";
 import MapView, {Marker} from "react-native-maps";
 import AwesomeAlert from "react-native-awesome-alerts";
+import {A} from "@expo/html-elements";
+import {REDIRECT_HOST} from "../constants/generalConstants";
+
+import * as Clipboard from 'expo-clipboard';
+import { FontAwesome5 } from '@expo/vector-icons';
 
 import * as Calendar from "expo-calendar"
 import * as Permissions from "expo-permissions"
+import ModalSaveCalendar from '../components/ModalSaveCalendar';
 
 
 export default function EventInfo({route, navigation}) {
@@ -32,6 +38,9 @@ export default function EventInfo({route, navigation}) {
     const [granted, setGranted] = useState(false);
     const [eventIdInCalendar, setEventIdInCalendar] = useState(""); 
 
+    const [showCopyAlert, setShowCopyAlert] = useState(false);
+
+
     useEffect(() => {
         getUserData((data) => {
             const client = new apiClient(data.token);
@@ -42,6 +51,10 @@ export default function EventInfo({route, navigation}) {
           setEvent({});
         };
     }, [route.params.eventId]);
+
+    const getEventText = () => {
+        return `¡Vení a ${event.name}! \n ${REDIRECT_HOST}/EventInfo/${event.id}`
+    }
 
     const onResponseGetEvent = (response) => {
         setEvent(response.event());
@@ -67,8 +80,15 @@ export default function EventInfo({route, navigation}) {
         });
     }
 
+    const copyToClipboard = async () => {
+        const shareLink = `{REDIRECT_HOST}/EventInfo/${event.id}`
+        await Clipboard.setStringAsync(shareLink);
+        setShowCopyAlert(true);
+    }
+
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
+            eventId: route.params.eventId,
             ticketId: event.ticket.id,
             date: event.date,
             hour: event.hour,
@@ -91,20 +111,24 @@ export default function EventInfo({route, navigation}) {
         console.log(eventIdInCalendar);
     }
 
-    const editEventInCalendar = async (eventDetails) => {
-        const eventDetails2 = {
-            startDate: new Date('2023-10-15 07:00'),
-            endDate: new Date('2023-10-15 15:00'),
-            title: 'Se editoo',
-        }
-        const eventIdInCalendar = await Calendar.updateEventAsync("84", eventDetails2)
-        console.log(eventIdInCalendar);
-    }
+    // const editEventInCalendar = async (eventDetails) => {
+    //     const eventDetails2 = {
+    //         startDate: new Date('2023-10-15 07:00'),
+    //         endDate: new Date('2023-10-15 15:00'),
+    //         title: 'Se editoo',
+    //     }
+    //     const eventIdInCalendar = await Calendar.updateEventAsync("84", eventDetails2)
+    //     console.log(eventIdInCalendar);
+    // }
 
     const addToCalendar = async () => {
+        const [day, month, year] = event.date.split('/');
+        const [hours, minutes] = event.time.split(':');
+        const start = new Date(+year, +month - 1, +day, +hours, +minutes);
+        const end = new Date(+year, +month - 1, +day, +hours, +minutes);
         const eventDetails = {
-            startDate: new Date('2023-10-14 07:00'),
-            endDate: new Date('2023-10-14 15:00'),
+            startDate: start,
+            endDate: end,
             title: event.name,
         }
         if (granted) {
@@ -124,6 +148,8 @@ export default function EventInfo({route, navigation}) {
             eventId: event.id
         });
     }
+
+    const isEventActive = event.stateName !== 'Cancelado' && event.stateName !== 'Suspendido'
 
     const qrBtn = () => {
         if (event.ticket.wasUsed) {
@@ -165,11 +191,18 @@ export default function EventInfo({route, navigation}) {
                         }}>
                             <Entypo name="chevron-right" size={35} color="white"/>
                         </TouchableOpacity>
-                        <View style={styles.capacityBox}>
-                            <Text style={styles.capacityBoxText}>
-                                {capacityText}
-                            </Text>
-                        </View>
+                        {
+                            isEventActive ?
+                            <View style={styles.capacityBox}>
+                                <Text style={styles.capacityBoxText}>
+                                    {capacityText}
+                                </Text>
+                            </View>
+                            :
+                            <View style={styles.warningBox}>
+                                <Text style={styles.warningBoxText}>CANCELADO</Text>
+                            </View>
+                        }
                     </View>
                     :
                     <></>
@@ -179,6 +212,32 @@ export default function EventInfo({route, navigation}) {
                     <Text style={styles.title}>
                         {event.name}
                     </Text>
+                </View>
+
+                <BlankLine/>
+
+                <View style={styles.btnsContainer}>
+                    
+
+                    <ModalSaveCalendar addToCalendar={addToCalendar}/>
+
+                    <TouchableOpacity onPress={copyToClipboard} style={styles.shareBtn}>
+                        <FontAwesome5 name="copy" size={22} color="white" />
+                    </TouchableOpacity>
+
+                    <A href={`whatsapp://send?text=${getEventText()}`} data-action="share/whatsapp/share">
+                        <View style={styles.shareBtn}>
+                            <FontAwesome5 name="whatsapp" size={22} color="white" />
+                        </View>
+                    </A>
+
+                    <A href={`https://telegram.me/share/url?url=${REDIRECT_HOST}/EventInfo/${event.id}`}>
+                        <View
+                            style={styles.shareBtn}
+                            buttonColor={'#A5C91B'}>
+                            <FontAwesome5 name="telegram-plane" size={22} color="white" />
+                        </View>
+                    </A>
 
                     <Button
                         onPress={navigateToFAQ}
@@ -186,12 +245,8 @@ export default function EventInfo({route, navigation}) {
                         textColor={'white'}>
                         FAQ
                     </Button>
-                    <Button
-                        onPress={addToCalendar}
-                        buttonColor={'#A5C91B'}
-                        textColor={'white'}>
-                        C
-                    </Button>
+
+
                 </View>
 
                 <View style={styles.infoContainer}>
@@ -286,14 +341,16 @@ export default function EventInfo({route, navigation}) {
 
                     <Agenda agendaEntries={event.agendaEntries}/>
 
-                    {
+                    {isEventActive ? 
                         (event.ticket && event.ticket.id) ?
                             (qrBtn())
                             :
                             (<ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>)
+                            :
+                            <></>
                     }
 
-                    {event.hasReportedEvent ? 
+                    {event.hasReportedEvent || !isEventActive ? 
                         <></>
                         :
                         <Button
@@ -313,11 +370,24 @@ export default function EventInfo({route, navigation}) {
                     closeOnHardwareBackPress={true}
                     showCancelButton={false}
                     showConfirmButton={true}
-                    cancelText="Cancelar"
                     confirmText="Aceptar"
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}
                     onConfirmPressed={hideAlert}
+                />
+
+                <AwesomeAlert
+                    show={showCopyAlert}
+                    showProgress={false}
+                    title={"Link al evento copiado!"}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={() => setShowCopyAlert(false)}
+                    onConfirmPressed={() => setShowCopyAlert(false)}
                 />
             </ScrollView>
             <StatusBar style="auto"/>
@@ -401,6 +471,23 @@ const styles = StyleSheet.create({
         marginTop: 270,
         zIndex: 100, 
     },
+    warningBox: {
+        backgroundColor: 'black',
+        position: 'absolute',
+        width: '100%',
+        height: 90,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        right: 0,
+        marginTop: 210,
+        zIndex: 100, 
+    },
+    warningBoxText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: "600"
+    },
     capacityBoxText: {
         color: 'white'
     },
@@ -457,4 +544,22 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 15
     },
+    btnsContainer: {
+        display: 'flex', 
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        gap: 5,
+        marginRight: 15
+    },
+    shareBtn: {
+        backgroundColor: '#A5C91B', 
+        marginRight: 10, 
+        height: 40, 
+        width: 40,
+        borderRadius: 20,
+        display: 'flex', 
+        justifyContent:'center',
+        alignItems: 'center'
+    }
 });

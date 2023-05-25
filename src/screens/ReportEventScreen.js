@@ -8,6 +8,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ModalReportEvent from '../components/ModalReportEvent';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
+import AwesomeAlert from "react-native-awesome-alerts";
+import * as React from "react";
 
 
 export default function ReportEventScreen({ route, navigation }) {
@@ -17,13 +19,22 @@ export default function ReportEventScreen({ route, navigation }) {
     const [observation, setObservation] = useState('');    
     const [selectedMotive, setSelectedMotive] = useState(undefined);
 
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertText, setAlertText] = useState("");
+
+    const hideAlert = () => {
+        setShowAlert(false);
+    }
+
+    const onError = (error) => {
+        setAlertText(error.response.data.error);
+
+        setShowAlert(true);
+    }
+
     useEffect(() => {
         const onResponse = (response) => {
             setMotives(response.motives());
-        }
-    
-        const onError = (error) => {
-            console.log(error.response.data.error);
         }
 
         getUserData((data) => {
@@ -44,11 +55,9 @@ export default function ReportEventScreen({ route, navigation }) {
 
     const reportEvent = () => {
         const onResponse = (response) => {
-            alert(response.message)
-        }
+            setAlertText(response.message);
 
-        const onError = (err) => {
-            alert(err.response.data.error)
+            setShowAlert(true);
         }
 
         const eventId = route.params.eventId
@@ -114,14 +123,27 @@ export default function ReportEventScreen({ route, navigation }) {
                     <Button 
                         style={styles.btnGoBack} 
                         textColor={'#768395'}
-                        onPress={navigateToEvent}>
-                        Volver
+                        onPress={navigateToEvent}>Volver
                     </Button>
                     <ModalReportEvent 
                         isActive={(selectedMotive !== undefined) 
                                 && (observation.length > 0)}
                         reportEvent={reportEvent}/>
                 </View>
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title={alertText}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={hideAlert}
+                    onConfirmPressed={hideAlert}
+                />
             </ScrollView>
             <StatusBar style="auto" />
         </SafeAreaView>
@@ -146,7 +168,7 @@ const styles = StyleSheet.create({
     btnGoBack: {
         padding: 2,
         margin: 15,
-        width: 140,
+        width: 100,
         borderWidth: 2,
         borderColor: '#768395'
     },

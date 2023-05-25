@@ -9,6 +9,9 @@ import { useMainContext } from '../services/contexts/MainContext';
 import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import EventInfoLoading from "./EventInfoLoading";
+import {A} from "@expo/html-elements";
+import {BlankLine} from "../components/BlankLine";
+import * as Linking from "expo-linking";
 
 
 export default function UsersEvents({ navigation }) {
@@ -18,7 +21,6 @@ export default function UsersEvents({ navigation }) {
     const { getUserData } = useMainContext();
     const [refreshing, setRefreshing] = useState(false);
 
-
     useEffect(() => {
         const onResponse = (response) => {
             setIsLoading(false);
@@ -26,7 +28,9 @@ export default function UsersEvents({ navigation }) {
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
         }
 
         getUserData((data) => {
@@ -40,11 +44,16 @@ export default function UsersEvents({ navigation }) {
     const onRefresh = useCallback(() => {
         const onResponse = (response) => {
             setEvents(response.events());
+
             setRefreshing(false);
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
+            setRefreshing(false);
         }
 
         setRefreshing(true);
@@ -71,8 +80,12 @@ export default function UsersEvents({ navigation }) {
                 style={styles.searchBarContainer}
             >
                 <Text style={styles.nextEventText}>Próximo evento</Text>
-                <EventBox key={event.id} eventInfo={event} navigation={navigation}/>
+                <EventBox key={event.id}
+                          userToken={userData.token}
+                          eventInfo={event}
+                          navigation={navigation}/>
             </LinearGradient>
+
             <Text style={styles.allEventsText}>Eventos reservados</Text>
             <ScrollView
                 refreshControl={
@@ -88,7 +101,8 @@ export default function UsersEvents({ navigation }) {
                 :
                     events.map((event,i) => {
                         return (
-                            <EventBox key={event.id} showImage={false} eventInfo={event} navigation={navigation}/>
+                            <EventBox key={event.id} userToken = {userData.token}
+                            showImage={false} eventInfo={event} navigation={navigation}/>
                         );
                     })
                 }
