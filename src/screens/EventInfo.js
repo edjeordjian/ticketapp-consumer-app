@@ -23,19 +23,20 @@ import {REDIRECT_HOST} from "../constants/generalConstants";
 import * as Clipboard from 'expo-clipboard';
 import { FontAwesome5 } from '@expo/vector-icons';
 
+import * as Calendar from "expo-calendar"
+import * as Permissions from "expo-permissions"
+import ModalSaveCalendar from '../components/ModalSaveCalendar';
+
 
 export default function EventInfo({route, navigation}) {
     const [imageSelected, setImageToShow] = useState(0);
-
     const [event, setEvent] = useState({});
-
     const { getUserData } = useMainContext();
-
     const { width } = useWindowDimensions();
-
     const [alertText, setAlertText] = useState("");
-
     const [showAlert, setShowAlert] = useState(false);
+    const [granted, setGranted] = useState(false);
+    const [eventIdInCalendar, setEventIdInCalendar] = useState(""); 
 
     const [showCopyAlert, setShowCopyAlert] = useState(false);
 
@@ -101,6 +102,45 @@ export default function EventInfo({route, navigation}) {
             eventFAQ: event.faq,
             eventId: event.id
         });
+    }
+
+    const addEventToCalendar = async (eventDetails) => {
+        const eventIdInCalendar = await Calendar.createEventAsync("1", eventDetails)
+        Calendar.openEventInCalendar(eventIdInCalendar);
+        setEventIdInCalendar(eventIdInCalendar);
+        console.log(eventIdInCalendar);
+    }
+
+    // const editEventInCalendar = async (eventDetails) => {
+    //     const eventDetails2 = {
+    //         startDate: new Date('2023-10-15 07:00'),
+    //         endDate: new Date('2023-10-15 15:00'),
+    //         title: 'Se editoo',
+    //     }
+    //     const eventIdInCalendar = await Calendar.updateEventAsync("84", eventDetails2)
+    //     console.log(eventIdInCalendar);
+    // }
+
+    const addToCalendar = async () => {
+        const [day, month, year] = event.date.split('/');
+        const [hours, minutes] = event.time.split(':');
+        const start = new Date(+year, +month - 1, +day, +hours, +minutes);
+        const end = new Date(+year, +month - 1, +day, +hours, +minutes);
+        const eventDetails = {
+            startDate: start,
+            endDate: end,
+            title: event.name,
+        }
+        if (granted) {
+            await addEventToCalendar(eventDetails);
+            return;
+        }
+        const {status} = await Permissions.askAsync(Permissions.CALENDAR)
+        if (status === "granted") {
+            setGranted(true);
+            await addEventToCalendar(eventDetails);
+           return;
+        }
     }
 
     const navigateToReport = () => {
@@ -177,6 +217,9 @@ export default function EventInfo({route, navigation}) {
                 <BlankLine/>
 
                 <View style={styles.btnsContainer}>
+                    
+
+                    <ModalSaveCalendar addToCalendar={addToCalendar}/>
 
                     <TouchableOpacity onPress={copyToClipboard} style={styles.shareBtn}>
                         <FontAwesome5 name="copy" size={22} color="white" />
@@ -202,6 +245,7 @@ export default function EventInfo({route, navigation}) {
                         textColor={'white'}>
                         FAQ
                     </Button>
+
 
                 </View>
 

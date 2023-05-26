@@ -45,6 +45,7 @@ export default class EventResponse {
             isFavourite: true,
             address: event.address,
             description: event.description,
+            time: event.time,
             hour: event.time + "hs",
             date: event.date,
             labels: event.types_names,

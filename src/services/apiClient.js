@@ -114,8 +114,6 @@ export default class apiClient {
         params.tags = tags.join(',')
     }
 
-    console.log(longitude);
-
     if (longitude && latitude) {
       params.longitude = longitude
       params.latitude = latitude
