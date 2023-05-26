@@ -26,6 +26,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import * as Calendar from "expo-calendar"
 import * as Permissions from "expo-permissions"
 import ModalSaveCalendar from '../components/ModalSaveCalendar';
+import {EVENT_SCHEDULED_LBL} from "../constants/messages";
 
 
 export default function EventInfo({route, navigation}) {
@@ -36,10 +37,10 @@ export default function EventInfo({route, navigation}) {
     const [alertText, setAlertText] = useState("");
     const [showAlert, setShowAlert] = useState(false);
     const [granted, setGranted] = useState(false);
+    const [goBackAfterAlert, setGoBackAfterAlert] = useState(true);
     const [eventIdInCalendar, setEventIdInCalendar] = useState(""); 
 
     const [showCopyAlert, setShowCopyAlert] = useState(false);
-
 
     useEffect(() => {
         getUserData((data) => {
@@ -70,7 +71,11 @@ export default function EventInfo({route, navigation}) {
     const hideAlert = () => {
         setShowAlert(false);
 
-        navigation.goBack();
+        if (goBackAfterAlert) {
+            navigation.goBack();
+        } else {
+            setGoBackAfterAlert(true);
+        }
     }
 
     const getEventTicket = async () => {
@@ -105,10 +110,35 @@ export default function EventInfo({route, navigation}) {
     }
 
     const addEventToCalendar = async (eventDetails) => {
-        const eventIdInCalendar = await Calendar.createEventAsync("1", eventDetails)
-        Calendar.openEventInCalendar(eventIdInCalendar);
+        setGoBackAfterAlert(false);
+
+        const calendars = await Calendar.getCalendarsAsync();
+
+        const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
+
+        const eventIdInCalendar = await Calendar.createEventAsync(defaultCalendar.id, eventDetails);
+
         setEventIdInCalendar(eventIdInCalendar);
-        console.log(eventIdInCalendar);
+
+        //Calendar.openEventInCalendar(eventIdInCalendar);
+
+        const onSuccessfullResponse = (response) => {
+            setAlertText(response.data.message);
+
+            setShowAlert(true);
+        }
+
+        await getUserData((data) => {
+            const client = new apiClient(data.token);
+
+            const requestBody = {
+                userId: data.id,
+                eventId: event.id,
+                scheduleId: eventIdInCalendar
+            }
+
+            client.postEventCalendarSchedule(requestBody, onSuccessfullResponse, onError);
+        });
     }
 
     // const editEventInCalendar = async (eventDetails) => {
@@ -217,13 +247,7 @@ export default function EventInfo({route, navigation}) {
                 <BlankLine/>
 
                 <View style={styles.btnsContainer}>
-                    
-
-                    <ModalSaveCalendar addToCalendar={addToCalendar}/>
-
-                    <TouchableOpacity onPress={copyToClipboard} style={styles.shareBtn}>
-                        <FontAwesome5 name="copy" size={22} color="white" />
-                    </TouchableOpacity>
+                    <ModalSaveCalendar style={{flex: 1}} addToCalendar={addToCalendar}/>
 
                     <A href={`whatsapp://send?text=${getEventText()}`} data-action="share/whatsapp/share">
                         <View style={styles.shareBtn}>
@@ -239,14 +263,17 @@ export default function EventInfo({route, navigation}) {
                         </View>
                     </A>
 
+                    <TouchableOpacity onPress={copyToClipboard} style={styles.shareBtn}>
+                        <FontAwesome5 name="copy" size={22} color="white" />
+                    </TouchableOpacity>
+
                     <Button
+                        style={{flex: 1}}
                         onPress={navigateToFAQ}
                         buttonColor={'#A5C91B'}
                         textColor={'white'}>
                         FAQ
                     </Button>
-
-
                 </View>
 
                 <View style={styles.infoContainer}>
@@ -549,10 +576,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
         alignItems: 'center',
+        flex: 5,
         gap: 5,
         marginRight: 15
     },
     shareBtn: {
+        flex: 1,
         backgroundColor: '#A5C91B', 
         marginRight: 10, 
         height: 40, 

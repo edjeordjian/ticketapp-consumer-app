@@ -8,7 +8,7 @@ import {
     GET_TICKET_URL,
     GET_REPORT_MOTIVES_URL,
     POST_REPORT_OF_EVENT_URL,
-    POST_FAVORITE_URL
+    POST_FAVORITE_URL, EVENT_CALENDAR_SCHEDULE_URL
 } from "../constants/URLs";
 import EventListResponse from "./responses/EventListResponse";
 import EventResponse from "./responses/EventResponse";
@@ -81,7 +81,7 @@ export default class apiClient {
         });
   }
 
-  // ==========================================USER SEARCH==========================================
+  // ==========================================USER LOG IN==========================================
 
   logIn(requestBody, onResponse, onError) {
     console.log(`${BACKEND_HOST}${SIGN_IN_URL}`);
@@ -178,7 +178,6 @@ export default class apiClient {
 
     
     // ==========================================FAVORITES==========================================
-
     postFavorite(eventId, isFavourite, onResponse, onError) {
       const _onResponse = (res) => {
         onResponse(res.data);
@@ -202,4 +201,12 @@ export default class apiClient {
       this.call_get(`${BACKEND_HOST}${GET_EVENTS_URL}`, params, _onResponse, onError);
     }
 
+
+    // ==========================================FAVORITES==========================================
+    postEventCalendarSchedule(body, onResponse, onError) {
+        this.call_post(`${BACKEND_HOST}${EVENT_CALENDAR_SCHEDULE_URL}`,
+            body,
+            onResponse,
+            onError);
+    }
 }

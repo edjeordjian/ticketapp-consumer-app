@@ -8,3 +8,4 @@ export const GET_REPORT_MOTIVES_URL=  "/reports/categories";
 export const POST_REPORT_OF_EVENT_URL=  "/event/report";
 export const GET_TICKET_URL = "/event/signup";
 export const POST_FAVORITE_URL = "/event/favourite";
+export const EVENT_CALENDAR_SCHEDULE_URL = `${GET_EVENT_URL}/calendar/schedule`;
