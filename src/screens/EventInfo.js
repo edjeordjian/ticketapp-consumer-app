@@ -247,7 +247,17 @@ export default function EventInfo({route, navigation}) {
                 <BlankLine/>
 
                 <View style={styles.btnsContainer}>
-                    <ModalSaveCalendar style={{flex: 1}} addToCalendar={addToCalendar}/>
+                    <View>
+                    </View>
+
+                    {
+                        isEventActive && event.ticket && event.ticket.id
+                            ? (
+                                 <ModalSaveCalendar style={{flex: 1}} addToCalendar={addToCalendar}/>
+                            )
+                            :
+                            <></>
+                    }
 
                     <A href={`whatsapp://send?text=${getEventText()}`} data-action="share/whatsapp/share">
                         <View style={styles.shareBtn}>
