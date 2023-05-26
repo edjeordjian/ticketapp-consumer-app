@@ -96,9 +96,7 @@ export default function UsersEvents({ navigation }) {
                 }
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
-                {loading ?
-                    <EventBoxPlaceHolder/>
-                :
+                {
                     events.map((event,i) => {
                         return (
                             <EventBox key={event.id} userToken = {userData.token}

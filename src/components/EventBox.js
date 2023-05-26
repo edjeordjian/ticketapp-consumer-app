@@ -21,7 +21,7 @@ export default function EventBox(props) {
     }
 
     const onError = (res) => {
-        console.log(error.response.data.error);
+        console.log(res.response.data.error);
     }
 
     const setFavourite = async () => {

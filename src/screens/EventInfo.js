@@ -230,7 +230,7 @@ export default function EventInfo({route, navigation}) {
                             </View>
                             :
                             <View style={styles.warningBox}>
-                                <Text style={styles.warningBoxText}>CANCELADO</Text>
+                                <Text style={styles.warningBoxText}>{event.stateName.toUpperCase()}</Text>
                             </View>
                         }
                     </View>

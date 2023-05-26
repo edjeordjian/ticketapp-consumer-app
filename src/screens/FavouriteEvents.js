@@ -13,6 +13,7 @@ import * as Notifications from 'expo-notifications';
 import * as React from "react";
 import AwesomeAlert from "react-native-awesome-alerts";
 import { Text } from 'react-native-paper';
+import EventInfoLoading from "./EventInfoLoading";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -108,6 +109,10 @@ export default function FavouriteEvents({ navigation }) {
         );
     }
 
+    if (loading) {
+        return <EventInfoLoading/>
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <LinearGradient
@@ -127,9 +132,7 @@ export default function FavouriteEvents({ navigation }) {
                 }
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
-                {loading ? 
-                    <EventBoxPlaceHolder/>
-                : 
+                {
                     events.map((event,i) => {
                         return (
                             <View style={styles.eventContainer}>
