@@ -66,15 +66,18 @@ export default function EventInfo({route, navigation}) {
     }
 
     const setCalendarData = async () => {
-            /* console.log("##################");
-            console.log(route.params.doNotRemoveCalendarEvent);
-            console.log(route.params.eventInCalendarId);
-            */
-
             if (route.params.doNotRemoveCalendarEvent) {
                 await addToCalendar(false);
-            } else if (route.params.eventInCalendarId) {
-                await deleteEventInCalendar(route.params.eventInCalendarId);
+            } else if (route.params.eventInCalendarId !== undefined && route.params.eventInCalendarId !== null) {
+                await deleteEventInCalendar(route.params.eventInCalendarId).then(async res => {
+                    if (route.params.recreateEventInCalendar) {
+                        console.log("Recreated event in calendar");
+
+                        await addToCalendar(false);
+                    }
+                }).catch(err => {
+                    console.log(err);
+                });
             }
     }
 
