@@ -21,22 +21,25 @@ export default function EventBox(props) {
     }
 
     const onError = (res) => {
-        console.log(res);
+        console.log(res.response.data.error);
     }
 
     const setFavourite = async () => {
         const eventId = event.id;
-        setIsFavourite(!isFavourite);
         const client = new apiClient(props.userToken);
         if (props.onFavouriteChange) {
             props.onFavouriteChange(eventId);
         }
-        //await client.postFavorite(eventId, isFavourite, onResponse, onError);
+
+        await client.postFavorite(eventId, ! isFavourite, onResponse, onError);
+
+        setIsFavourite(!isFavourite);
     }
 
     const favouriteIcon = isFavourite ?
             <TouchableOpacity onPress={setFavourite} style={styles.favouriteContainerUp}>
-                <AntDesign name="heart" size={24} color="#FE5454"/>
+                {/*<AntDesign name="heart" size={24} color="#FE5454"/>*/}
+                <Feather name="heart" size={24} color="#FE5454" />
             </TouchableOpacity>
                 :
             <TouchableOpacity onPress={setFavourite} style={styles.favouriteContainerDown}>

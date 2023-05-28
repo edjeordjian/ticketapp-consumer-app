@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { StyleSheet} from 'react-native';
 import Dropdown from '../../../node_modules/react-native-input-select/src/components/Dropdown/Dropdown';
 import DropdownList from '../../../node_modules/react-native-input-select/src/components/Dropdown/DropdownList';
@@ -37,6 +37,7 @@ export const DropdownSelect = ({
                                    checkboxLabelStyle,
                                    listHeaderComponent,
                                    listFooterComponent,
+                                   emptyOptions,
                                    ...rest
                                }) => {
     const [newOptions, setNewOptions] = useState(options ? options : []);
@@ -149,6 +150,12 @@ export const DropdownSelect = ({
         setSearchValue('');
         setNewOptions(options);
     };
+
+    useEffect(() => {
+        if (emptyOptions) {
+            setSelectedItems([]);
+        }
+    }, [emptyOptions]);
 
     return (
         <>

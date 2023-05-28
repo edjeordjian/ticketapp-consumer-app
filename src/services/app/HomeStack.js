@@ -8,12 +8,6 @@ import QRScreen from '../../screens/QRScreen';
 import UsersEvents from '../../screens/UsersEvents';
 import FAQScreen from '../../screens/FAQScreen';
 
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications'
-import {APP_NAME, APP_OWNER} from "../../constants/generalConstants";
-import {Platform} from "react-native";
-import {registerForPushNotifications} from "../helpers/NotificationHelper";
-import {requestLocation} from "../helpers/LocationHelper";
 import ReportEventScreen from '../../screens/ReportEventScreen';
 import FavouriteEvents from '../../screens/FavouriteEvents';
 
@@ -75,9 +69,14 @@ export default function HomeStack({navigation}) {
                     headerBackTitleVisible: false,
                     })}
                 >
-                    <Tab.Screen name={detailsName} component={Events} />
+                    <Tab.Screen name={detailsName} component={Events} options={
+                        () => ({unmountOnBlur: true})} />
+
                     <Tab.Screen name={userEventsName} component={UsersEvents} />
-                    <Tab.Screen  name={favouriteEventsName} component={FavouriteEvents} />
+
+                    <Tab.Screen  name={favouriteEventsName} component={FavouriteEvents}  options={
+                        () => ({unmountOnBlur: true})}/>
+
                     <Tab.Screen  name={settingsName} component={UserProfileScreen} />
 
                     <Tab.Screen name={eventInfoName} component={EventInfo} options={

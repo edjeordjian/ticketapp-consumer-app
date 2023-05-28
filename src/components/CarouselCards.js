@@ -8,7 +8,7 @@ export const ITEM_WIDTH = Math.round(SLIDER_WIDTH * 0.8)
 
 const CarouselCardItem = ({ item, index }) => {
   return (
-    <TouchableOpacity onPress={() => console.log('asdf')} style={styles.internalContainer}>
+    <TouchableOpacity style={styles.internalContainer}>
                     <Image
                     source={{ uri: item.imgUrl }}
                     style={styles.image}

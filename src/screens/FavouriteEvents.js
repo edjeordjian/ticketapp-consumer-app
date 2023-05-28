@@ -13,6 +13,7 @@ import * as Notifications from 'expo-notifications';
 import * as React from "react";
 import AwesomeAlert from "react-native-awesome-alerts";
 import { Text } from 'react-native-paper';
+import EventInfoLoading from "./EventInfoLoading";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -34,6 +35,7 @@ export default function FavouriteEvents({ navigation }) {
 
     const onResponse = (response) => {
         setIsLoading(false);
+
         setEvents(response.events());
     }
 
@@ -41,12 +43,12 @@ export default function FavouriteEvents({ navigation }) {
         setAlertText(error.response.data.error);
 
         setShowAlert(true);
+
+        setIsLoading(false);
     }
 
     const hideAlert = () => {
         setShowAlert(false);
-
-        navigation.goBack();
     }
 
     useEffect(() => {
@@ -84,14 +86,20 @@ export default function FavouriteEvents({ navigation }) {
     const onRefresh = useCallback(() => {
         const onResponse = (response) => {
             setEvents(response.events());
+
             setRefreshing(false);
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
+            setRefreshing(false);
         }
 
         setRefreshing(true);
+
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
@@ -101,11 +109,14 @@ export default function FavouriteEvents({ navigation }) {
       }, []);
 
     const onFavouriteChange = (eventId) => {
-        console.log(eventId);
         setEvents((current) =>
             current.filter(
             (event) => event.id !== eventId)
         );
+    }
+
+    if (loading) {
+        return <EventInfoLoading/>
     }
 
     return (
@@ -127,9 +138,7 @@ export default function FavouriteEvents({ navigation }) {
                 }
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
-                {loading ? 
-                    <EventBoxPlaceHolder/>
-                : 
+                {
                     events.map((event,i) => {
                         return (
                             <View style={styles.eventContainer}>

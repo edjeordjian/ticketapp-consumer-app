@@ -6,12 +6,9 @@ import EventBox from '../components/EventBox';
 import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
-import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
 import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import EventInfoLoading from "./EventInfoLoading";
-import {A} from "@expo/html-elements";
-import {BlankLine} from "../components/BlankLine";
-import * as Linking from "expo-linking";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 
 export default function UsersEvents({ navigation }) {
@@ -21,18 +18,28 @@ export default function UsersEvents({ navigation }) {
     const { getUserData } = useMainContext();
     const [refreshing, setRefreshing] = useState(false);
 
+    const [alertText, setAlertText] = useState("");
+    const [showAlert, setShowAlert] = useState(false);
+
+    const onResponse = (response) => {
+        setIsLoading(false);
+
+        setEvents(response.events());
+    }
+
+    const onError = (error) => {
+        setAlertText(error.response.data.error);
+
+        setShowAlert(true);
+
+        setIsLoading(false);
+    }
+
+    const hideAlert = () => {
+        setShowAlert(false);
+    }
+
     useEffect(() => {
-        const onResponse = (response) => {
-            setIsLoading(false);
-            setEvents(response.events());
-        }
-
-        const onError = (error) => {
-            setAlertText(error.response.data.error);
-
-            setShowAlert(true);
-        }
-
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
@@ -57,6 +64,7 @@ export default function UsersEvents({ navigation }) {
         }
 
         setRefreshing(true);
+
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
@@ -96,9 +104,7 @@ export default function UsersEvents({ navigation }) {
                 }
                 contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}
                 style={styles.scrollContainer}>
-                {loading ?
-                    <EventBoxPlaceHolder/>
-                :
+                {
                     events.map((event,i) => {
                         return (
                             <EventBox key={event.id} userToken = {userData.token}
@@ -106,6 +112,20 @@ export default function UsersEvents({ navigation }) {
                         );
                     })
                 }
+
+                <AwesomeAlert
+                    show={showAlert}
+                    showProgress={false}
+                    title={alertText}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={hideAlert}
+                    onConfirmPressed={hideAlert}
+                />
             </ScrollView>
             <StatusBar style="auto" />
       </SafeAreaView>
