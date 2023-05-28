@@ -13,7 +13,6 @@ import Dropdown from '../components/events/Dropdown';
 
 import * as Notifications from 'expo-notifications';
 import * as React from "react";
-import {registerForPushNotifications} from "../services/helpers/NotificationHelper";
 import {requestLocation} from "../services/helpers/LocationHelper";
 import {Button} from "react-native-paper";
 import AwesomeAlert from "react-native-awesome-alerts";

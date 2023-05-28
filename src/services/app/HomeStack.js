@@ -8,12 +8,6 @@ import QRScreen from '../../screens/QRScreen';
 import UsersEvents from '../../screens/UsersEvents';
 import FAQScreen from '../../screens/FAQScreen';
 
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications'
-import {APP_NAME, APP_OWNER} from "../../constants/generalConstants";
-import {Platform} from "react-native";
-import {registerForPushNotifications} from "../helpers/NotificationHelper";
-import {requestLocation} from "../helpers/LocationHelper";
 import ReportEventScreen from '../../screens/ReportEventScreen';
 import FavouriteEvents from '../../screens/FavouriteEvents';
 

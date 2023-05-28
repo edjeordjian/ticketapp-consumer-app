@@ -26,7 +26,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import * as Calendar from "expo-calendar"
 import * as Permissions from "expo-permissions"
 import ModalSaveCalendar from '../components/ModalSaveCalendar';
-import {EVENT_SCHEDULED_LBL} from "../constants/messages";
+import {CALENDAR_NOT_FOUND_ERR_LBL, EVENT_SCHEDULED_LBL} from "../constants/messages";
 
 
 export default function EventInfo({route, navigation}) {
@@ -57,9 +57,16 @@ export default function EventInfo({route, navigation}) {
         return `¡Vení a ${event.name}! \n ${REDIRECT_HOST}/EventInfo/${event.id}`
     }
 
-    const onResponseGetEvent = (response) => {
+    const onResponseGetEvent = async (response) => {
         setEvent(response.event());
+
         setImageToShow(0);
+
+        if (route.params.deleteEventInCalendar) {
+            await deleteEventInCalendar(route.params.eventInCalendarId);
+        } else if (route.params.eventInCalendarId) {
+            await addToCalendar(route.params.eventInCalendarId);
+        }
     }
 
     const onError = (error) => {
@@ -109,12 +116,38 @@ export default function EventInfo({route, navigation}) {
         });
     }
 
+    const deleteEventInCalendar = async (eventInCalendarId) => {
+        const calendars = await Calendar.getCalendarsAsync();
+
+        const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
+
+        if (! defaultCalendar) {
+            setAlertText(CALENDAR_NOT_FOUND_ERR_LBL);
+
+            setShowAlert(true);
+
+            return;
+        }
+
+        const result = await Calendar.deleteEventAsync(eventInCalendarId);
+
+        console.log(result);
+    }
+
     const addEventToCalendar = async (eventDetails) => {
         setGoBackAfterAlert(false);
 
         const calendars = await Calendar.getCalendarsAsync();
 
         const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
+
+        if (! defaultCalendar) {
+            setAlertText(CALENDAR_NOT_FOUND_ERR_LBL);
+
+            setShowAlert(true);
+
+            return;
+        }
 
         const eventIdInCalendar = await Calendar.createEventAsync(defaultCalendar.id, eventDetails);
 
@@ -265,7 +298,7 @@ export default function EventInfo({route, navigation}) {
                         </View>
                     </A>
 
-                    <A href={`https://telegram.me/share/url?url=${REDIRECT_HOST}/EventInfo/${event.id}`}>
+                    <A href={`https://telegram.me/share/url?text=${getEventText()}`}>
                         <View
                             style={styles.shareBtn}
                             buttonColor={'#A5C91B'}>

@@ -6,9 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import * as SecureStore from 'expo-secure-store';
 import HomeStack from "./src/services/app/HomeStack";
 import LogInScreen from "./src/screens/LogInScreen";
-import {registerForPushNotifications} from "./src/services/helpers/NotificationHelper";
 import * as Linking from "expo-linking";
-import UsersEvents from "./src/screens/UsersEvents";
 
 
 export default function App() {
