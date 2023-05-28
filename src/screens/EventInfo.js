@@ -45,7 +45,7 @@ export default function EventInfo({route, navigation}) {
     useEffect(() => {
         getUserData((data) => {
             const client = new apiClient(data.token);
-            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
+            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);;
         });
 
         return () => {
@@ -53,20 +53,35 @@ export default function EventInfo({route, navigation}) {
         };
     }, [route.params.eventId]);
 
+    useEffect(() => {
+        if (! event.id) {
+            return;
+        }
+
+        setCalendarData().then();
+    }, [event])
+
     const getEventText = () => {
         return `¡Vení a ${event.name}! \n ${REDIRECT_HOST}/EventInfo/${event.id}`
     }
 
-    const onResponseGetEvent = async (response) => {
-        setEvent(response.event());
+    const setCalendarData = async () => {
+            /* console.log("##################");
+            console.log(route.params.doNotRemoveCalendarEvent);
+            console.log(route.params.eventInCalendarId);
+            */
 
+            if (route.params.doNotRemoveCalendarEvent) {
+                await addToCalendar(false);
+            } else if (route.params.eventInCalendarId) {
+                await deleteEventInCalendar(route.params.eventInCalendarId);
+            }
+    }
+
+    const onResponseGetEvent = async (response) => {
         setImageToShow(0);
 
-        if (route.params.deleteEventInCalendar) {
-            await deleteEventInCalendar(route.params.eventInCalendarId);
-        } else if (route.params.eventInCalendarId) {
-            await addToCalendar(route.params.eventInCalendarId);
-        }
+        setEvent(response.event());
     }
 
     const onError = (error) => {
@@ -122,19 +137,19 @@ export default function EventInfo({route, navigation}) {
         const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
 
         if (! defaultCalendar) {
-            setAlertText(CALENDAR_NOT_FOUND_ERR_LBL);
-
-            setShowAlert(true);
+            console.log(CALENDAR_NOT_FOUND_ERR_LBL);
 
             return;
         }
 
         const result = await Calendar.deleteEventAsync(eventInCalendarId);
 
+        console.log("Event deletion");
+
         console.log(result);
     }
 
-    const addEventToCalendar = async (eventDetails) => {
+    const addEventToCalendar = async (eventDetails, withMessage = true) => {
         setGoBackAfterAlert(false);
 
         const calendars = await Calendar.getCalendarsAsync();
@@ -156,6 +171,10 @@ export default function EventInfo({route, navigation}) {
         //Calendar.openEventInCalendar(eventIdInCalendar);
 
         const onSuccessfullResponse = (response) => {
+            if (!withMessage) {
+                return;
+            }
+
             setAlertText(response.data.message);
 
             setShowAlert(true);
@@ -184,7 +203,7 @@ export default function EventInfo({route, navigation}) {
     //     console.log(eventIdInCalendar);
     // }
 
-    const addToCalendar = async () => {
+    const addToCalendar = async (withMessage = true) => {
         const [day, month, year] = event.date.split('/');
         const [hours, minutes] = event.time.split(':');
         const start = new Date(+year, +month - 1, +day, +hours, +minutes);
@@ -195,13 +214,13 @@ export default function EventInfo({route, navigation}) {
             title: event.name,
         }
         if (granted) {
-            await addEventToCalendar(eventDetails);
+            await addEventToCalendar(eventDetails, withMessage);
             return;
         }
         const {status} = await Permissions.askAsync(Permissions.CALENDAR)
         if (status === "granted") {
             setGranted(true);
-            await addEventToCalendar(eventDetails);
+            await addEventToCalendar(eventDetails, withMessage);
            return;
         }
     }

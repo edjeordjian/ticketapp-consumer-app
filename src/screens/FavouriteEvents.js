@@ -35,6 +35,7 @@ export default function FavouriteEvents({ navigation }) {
 
     const onResponse = (response) => {
         setIsLoading(false);
+
         setEvents(response.events());
     }
 
@@ -42,12 +43,12 @@ export default function FavouriteEvents({ navigation }) {
         setAlertText(error.response.data.error);
 
         setShowAlert(true);
+
+        setIsLoading(false);
     }
 
     const hideAlert = () => {
         setShowAlert(false);
-
-        navigation.goBack();
     }
 
     useEffect(() => {
@@ -85,11 +86,16 @@ export default function FavouriteEvents({ navigation }) {
     const onRefresh = useCallback(() => {
         const onResponse = (response) => {
             setEvents(response.events());
+
             setRefreshing(false);
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
+            setRefreshing(false);
         }
 
         setRefreshing(true);
