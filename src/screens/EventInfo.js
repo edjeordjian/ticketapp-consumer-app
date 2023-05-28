@@ -17,25 +17,35 @@ import { Button } from 'react-native-paper';
 import {BlankLine} from "../components/BlankLine";
 import MapView, {Marker} from "react-native-maps";
 import AwesomeAlert from "react-native-awesome-alerts";
+import {A} from "@expo/html-elements";
+import {REDIRECT_HOST} from "../constants/generalConstants";
+
+import * as Clipboard from 'expo-clipboard';
+import { FontAwesome5 } from '@expo/vector-icons';
+
+import * as Calendar from "expo-calendar"
+import * as Permissions from "expo-permissions"
+import ModalSaveCalendar from '../components/ModalSaveCalendar';
+import {CALENDAR_NOT_FOUND_ERR_LBL, EVENT_SCHEDULED_LBL} from "../constants/messages";
 
 
 export default function EventInfo({route, navigation}) {
     const [imageSelected, setImageToShow] = useState(0);
-
     const [event, setEvent] = useState({});
-
     const { getUserData } = useMainContext();
-
     const { width } = useWindowDimensions();
-
     const [alertText, setAlertText] = useState("");
-
     const [showAlert, setShowAlert] = useState(false);
+    const [granted, setGranted] = useState(false);
+    const [goBackAfterAlert, setGoBackAfterAlert] = useState(true);
+    const [eventIdInCalendar, setEventIdInCalendar] = useState(""); 
+
+    const [showCopyAlert, setShowCopyAlert] = useState(false);
 
     useEffect(() => {
         getUserData((data) => {
             const client = new apiClient(data.token);
-            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);
+            client.getEventInfo(route.params.eventId, onResponseGetEvent, onError);;
         });
 
         return () => {
@@ -43,9 +53,38 @@ export default function EventInfo({route, navigation}) {
         };
     }, [route.params.eventId]);
 
-    const onResponseGetEvent = (response) => {
-        setEvent(response.event());
+    useEffect(() => {
+        if (! event.id) {
+            return;
+        }
+
+        setCalendarData().then();
+    }, [event])
+
+    const getEventText = () => {
+        return `¡Vení a ${event.name}! \n ${REDIRECT_HOST}/EventInfo/${event.id}`
+    }
+
+    const setCalendarData = async () => {
+            if (route.params.doNotRemoveCalendarEvent) {
+                await addToCalendar(false);
+            } else if (route.params.eventInCalendarId !== undefined && route.params.eventInCalendarId !== null) {
+                await deleteEventInCalendar(route.params.eventInCalendarId).then(async res => {
+                    if (route.params.recreateEventInCalendar) {
+                        console.log("Recreated event in calendar");
+
+                        await addToCalendar(false);
+                    }
+                }).catch(err => {
+                    console.log(err);
+                });
+            }
+    }
+
+    const onResponseGetEvent = async (response) => {
         setImageToShow(0);
+
+        setEvent(response.event());
     }
 
     const onError = (error) => {
@@ -57,7 +96,11 @@ export default function EventInfo({route, navigation}) {
     const hideAlert = () => {
         setShowAlert(false);
 
-        navigation.goBack();
+        if (goBackAfterAlert) {
+            navigation.goBack();
+        } else {
+            setGoBackAfterAlert(true);
+        }
     }
 
     const getEventTicket = async () => {
@@ -67,8 +110,15 @@ export default function EventInfo({route, navigation}) {
         });
     }
 
+    const copyToClipboard = async () => {
+        const shareLink = `${REDIRECT_HOST}/EventInfo/${event.id}`
+        await Clipboard.setStringAsync(shareLink);
+        setShowCopyAlert(true);
+    }
+
     const navigateToQR = () => {
         navigation.navigate('GetQR', {
+            eventId: route.params.eventId,
             ticketId: event.ticket.id,
             date: event.date,
             hour: event.hour,
@@ -84,11 +134,107 @@ export default function EventInfo({route, navigation}) {
         });
     }
 
+    const deleteEventInCalendar = async (eventInCalendarId) => {
+        const calendars = await Calendar.getCalendarsAsync();
+
+        const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
+
+        if (! defaultCalendar) {
+            console.log(CALENDAR_NOT_FOUND_ERR_LBL);
+
+            return;
+        }
+
+        const result = await Calendar.deleteEventAsync(eventInCalendarId);
+
+        console.log("Event deletion");
+
+        console.log(result);
+    }
+
+    const addEventToCalendar = async (eventDetails, withMessage = true) => {
+        setGoBackAfterAlert(false);
+
+        const calendars = await Calendar.getCalendarsAsync();
+
+        const defaultCalendar = calendars.find((cal) => cal.allowsModifications);
+
+        if (! defaultCalendar) {
+            setAlertText(CALENDAR_NOT_FOUND_ERR_LBL);
+
+            setShowAlert(true);
+
+            return;
+        }
+
+        const eventIdInCalendar = await Calendar.createEventAsync(defaultCalendar.id, eventDetails);
+
+        setEventIdInCalendar(eventIdInCalendar);
+
+        //Calendar.openEventInCalendar(eventIdInCalendar);
+
+        const onSuccessfullResponse = (response) => {
+            if (!withMessage) {
+                return;
+            }
+
+            setAlertText(response.data.message);
+
+            setShowAlert(true);
+        }
+
+        await getUserData((data) => {
+            const client = new apiClient(data.token);
+
+            const requestBody = {
+                userId: data.id,
+                eventId: event.id,
+                scheduleId: eventIdInCalendar
+            }
+
+            client.postEventCalendarSchedule(requestBody, onSuccessfullResponse, onError);
+        });
+    }
+
+    // const editEventInCalendar = async (eventDetails) => {
+    //     const eventDetails2 = {
+    //         startDate: new Date('2023-10-15 07:00'),
+    //         endDate: new Date('2023-10-15 15:00'),
+    //         title: 'Se editoo',
+    //     }
+    //     const eventIdInCalendar = await Calendar.updateEventAsync("84", eventDetails2)
+    //     console.log(eventIdInCalendar);
+    // }
+
+    const addToCalendar = async (withMessage = true) => {
+        const [day, month, year] = event.date.split('/');
+        const [hours, minutes] = event.time.split(':');
+        const start = new Date(+year, +month - 1, +day, +hours, +minutes);
+        const end = new Date(+year, +month - 1, +day, +hours, +minutes);
+        const eventDetails = {
+            startDate: start,
+            endDate: end,
+            title: event.name,
+        }
+        if (granted) {
+            await addEventToCalendar(eventDetails, withMessage);
+            return;
+        }
+        const {status} = await Permissions.askAsync(Permissions.CALENDAR)
+        if (status === "granted") {
+            setGranted(true);
+            await addEventToCalendar(eventDetails, withMessage);
+           return;
+        }
+    }
+
     const navigateToReport = () => {
         navigation.navigate('ReportEventScreen', {
             eventId: event.id
         });
     }
+
+    const isEventActive = event.stateName !== 'Cancelado' && event.stateName !== 'Suspendido'
 
     const qrBtn = () => {
         if (event.ticket.wasUsed) {
@@ -130,11 +276,18 @@ export default function EventInfo({route, navigation}) {
                         }}>
                             <Entypo name="chevron-right" size={35} color="white"/>
                         </TouchableOpacity>
-                        <View style={styles.capacityBox}>
-                            <Text style={styles.capacityBoxText}>
-                                {capacityText}
-                            </Text>
-                        </View>
+                        {
+                            isEventActive ?
+                            <View style={styles.capacityBox}>
+                                <Text style={styles.capacityBoxText}>
+                                    {capacityText}
+                                </Text>
+                            </View>
+                            :
+                            <View style={styles.warningBox}>
+                                <Text style={styles.warningBoxText}>{event.stateName.toUpperCase()}</Text>
+                            </View>
+                        }
                     </View>
                     :
                     <></>
@@ -144,8 +297,43 @@ export default function EventInfo({route, navigation}) {
                     <Text style={styles.title}>
                         {event.name}
                     </Text>
+                </View>
+
+                <BlankLine/>
+
+                <View style={styles.btnsContainer}>
+                    <View>
+                    </View>
+
+                    {
+                        isEventActive && event.ticket && event.ticket.id
+                            ? (
+                                 <ModalSaveCalendar style={{flex: 1}} addToCalendar={addToCalendar}/>
+                            )
+                            :
+                            <></>
+                    }
+
+                    <A href={`whatsapp://send?text=${getEventText()}`} data-action="share/whatsapp/share">
+                        <View style={styles.shareBtn}>
+                            <FontAwesome5 name="whatsapp" size={22} color="white" />
+                        </View>
+                    </A>
+
+                    <A href={`https://telegram.me/share/url?text=${getEventText()}`}>
+                        <View
+                            style={styles.shareBtn}
+                            buttonColor={'#A5C91B'}>
+                            <FontAwesome5 name="telegram-plane" size={22} color="white" />
+                        </View>
+                    </A>
+
+                    <TouchableOpacity onPress={copyToClipboard} style={styles.shareBtn}>
+                        <FontAwesome5 name="copy" size={22} color="white" />
+                    </TouchableOpacity>
 
                     <Button
+                        style={{flex: 1}}
                         onPress={navigateToFAQ}
                         buttonColor={'#A5C91B'}
                         textColor={'white'}>
@@ -245,14 +433,16 @@ export default function EventInfo({route, navigation}) {
 
                     <Agenda agendaEntries={event.agendaEntries}/>
 
-                    {
+                    {isEventActive ? 
                         (event.ticket && event.ticket.id) ?
                             (qrBtn())
                             :
                             (<ModalGetEvent getEventTicket={getEventTicket} capacity={event.capacity}/>)
+                            :
+                            <></>
                     }
 
-                    {event.hasReportedEvent ? 
+                    {event.hasReportedEvent || !isEventActive ? 
                         <></>
                         :
                         <Button
@@ -272,11 +462,24 @@ export default function EventInfo({route, navigation}) {
                     closeOnHardwareBackPress={true}
                     showCancelButton={false}
                     showConfirmButton={true}
-                    cancelText="Cancelar"
                     confirmText="Aceptar"
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}
                     onConfirmPressed={hideAlert}
+                />
+
+                <AwesomeAlert
+                    show={showCopyAlert}
+                    showProgress={false}
+                    title={"Link al evento copiado!"}
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={false}
+                    showConfirmButton={true}
+                    confirmText="Aceptar"
+                    confirmButtonColor="#DD6B55"
+                    onCancelPressed={() => setShowCopyAlert(false)}
+                    onConfirmPressed={() => setShowCopyAlert(false)}
                 />
             </ScrollView>
             <StatusBar style="auto"/>
@@ -360,6 +563,23 @@ const styles = StyleSheet.create({
         marginTop: 270,
         zIndex: 100, 
     },
+    warningBox: {
+        backgroundColor: 'black',
+        position: 'absolute',
+        width: '100%',
+        height: 90,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        right: 0,
+        marginTop: 210,
+        zIndex: 100, 
+    },
+    warningBoxText: {
+        color: 'white',
+        fontSize: 18,
+        fontWeight: "600"
+    },
     capacityBoxText: {
         color: 'white'
     },
@@ -416,4 +636,24 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginBottom: 15
     },
+    btnsContainer: {
+        display: 'flex', 
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        alignItems: 'center',
+        flex: 5,
+        gap: 5,
+        marginRight: 15
+    },
+    shareBtn: {
+        flex: 1,
+        backgroundColor: '#A5C91B', 
+        marginRight: 10, 
+        height: 40, 
+        width: 40,
+        borderRadius: 20,
+        display: 'flex', 
+        justifyContent:'center',
+        alignItems: 'center'
+    }
 });

@@ -1,25 +1,37 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import EventBox from '../components/EventBox';
 import { useCallback, useEffect, useState } from 'react';
 import apiClient from '../services/apiClient';
 import { useMainContext } from '../services/contexts/MainContext';
-import { RefreshControl, ScrollView } from 'react-native-gesture-handler';
-import EventInfoLoading from "./EventInfoLoading";
+import EventBoxPlaceHolder from '../components/EventBoxPlaceHolder';
+
+import * as Notifications from 'expo-notifications';
+import * as React from "react";
 import AwesomeAlert from "react-native-awesome-alerts";
+import { Text } from 'react-native-paper';
+import EventInfoLoading from "./EventInfoLoading";
 
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+    }),
+});
 
-export default function UsersEvents({ navigation }) {
+export default function FavouriteEvents({ navigation }) {
     const [events, setEvents] = useState([]);
     const [loading, setIsLoading] = useState(true);
     const [userData, setUserData] = useState({});
     const { getUserData } = useMainContext();
     const [refreshing, setRefreshing] = useState(false);
 
-    const [alertText, setAlertText] = useState("");
     const [showAlert, setShowAlert] = useState(false);
+    const [alertText, setAlertText] = useState("");
 
     const onResponse = (response) => {
         setIsLoading(false);
@@ -43,10 +55,33 @@ export default function UsersEvents({ navigation }) {
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getUsersEventsList(onResponse, onError, data.id);
+            client.getFavouritesEventsList(onResponse, onError);
         });
 
     }, []);
+
+    useEffect(() => {
+        const subcriptionNotificationReceived = Notifications.addNotificationReceivedListener(
+            async notification => {
+                const {params} = notification.request.content.data;
+            } );
+
+        const subcriptionNotificationClicked = Notifications.addNotificationResponseReceivedListener(notification => {
+            const {type,
+                params,
+                screenName} = notification.notification
+                                          .request
+                                          .content
+                                          .data;
+
+            navigation.navigate(screenName, params);
+        });
+
+        return () => {
+            subcriptionNotificationClicked.remove();
+            subcriptionNotificationReceived.remove();
+        };
+    }, [navigation]);
 
     const onRefresh = useCallback(() => {
         const onResponse = (response) => {
@@ -68,12 +103,17 @@ export default function UsersEvents({ navigation }) {
         getUserData((data) => {
             setUserData(data);
             const client = new apiClient(data.token);
-            client.getUsersEventsList(onResponse, onError, data.id);
+            client.getFavouritesEventsList(onResponse, onError);
         });
 
       }, []);
 
-    const event = loading || (events[0] === undefined) ? {} : events[0];
+    const onFavouriteChange = (eventId) => {
+        setEvents((current) =>
+            current.filter(
+            (event) => event.id !== eventId)
+        );
+    }
 
     if (loading) {
         return <EventInfoLoading/>
@@ -87,15 +127,9 @@ export default function UsersEvents({ navigation }) {
                 end={{ x: 1, y: 1 }}
                 style={styles.searchBarContainer}
             >
-                <Text style={styles.nextEventText}>Próximo evento</Text>
-                <EventBox key={event.id}
-                          userToken={userData.token}
-                          eventInfo={event}
-                          navigation={navigation}/>
+                <Text style={styles.title}>Tus favoritos</Text>
             </LinearGradient>
-
-            <Text style={styles.allEventsText}>Eventos reservados</Text>
-            <ScrollView
+            <ScrollView 
                 refreshControl={
                     <RefreshControl
                     refreshing={refreshing}
@@ -107,8 +141,14 @@ export default function UsersEvents({ navigation }) {
                 {
                     events.map((event,i) => {
                         return (
-                            <EventBox key={event.id} userToken = {userData.token}
-                            showImage={false} eventInfo={event} navigation={navigation}/>
+                            <View style={styles.eventContainer}>
+                                <EventBox 
+                                    key={event.id} 
+                                    userToken = {userData.token}
+                                    onFavouriteChange={onFavouriteChange}
+                                    eventInfo={event} 
+                                    navigation={navigation}/>
+                            </View>
                         );
                     })
                 }
@@ -121,6 +161,7 @@ export default function UsersEvents({ navigation }) {
                     closeOnHardwareBackPress={true}
                     showCancelButton={false}
                     showConfirmButton={true}
+                    cancelText="Cancelar"
                     confirmText="Aceptar"
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}
@@ -136,36 +177,38 @@ export default function UsersEvents({ navigation }) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
       backgroundColor: '#F4F4F4',
       width: '100%',
     },
-    searchBarContainer: {
-        backgroundColor: '#1A55D7',
-        width: '100%',
-        height: 400,
-        marginBottom: 25,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    nextEventText: {
+    title: {
         color: 'white', 
         fontWeight: '700', 
         alignSelf: 'flex-start',
         fontSize: 18,
         marginBottom: 15,
-        marginLeft: '5%'
+        marginLeft: '5%',
+        marginTop: 22
     },
-    allEventsText: {
-        color: '#4D4D4D', 
-        fontWeight: '700', 
-        alignSelf: 'flex-start',
-        fontSize: 18,
-        marginBottom: 15,
-        marginLeft: '5%'
+    eventContainer: {
+        marginTop: 10, 
+        width: '100%', 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center'
+    },
+    searchBarContainer: {
+        backgroundColor: '#1A55D7',
+        width: '100%',
+        height: 180,
+        marginBottom: 25,
+        display: 'flex',
+        alignItems: 'center',
     },
     scrollContainer: {
+        zIndex: 101,
         width: '100%',
-        backgroundColor: '#F4F4F4',
-      },
+        marginTop: -130
+    },
 });

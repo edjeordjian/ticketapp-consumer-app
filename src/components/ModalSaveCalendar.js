@@ -1,47 +1,49 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Modal from "react-native-modal";
 import { Button } from "react-native-paper";
 
-export default function ModalReportEvent(props) {
+
+import { FontAwesome5 } from '@expo/vector-icons'
+
+export default function ModalSaveCalendar(props) {
   const [isModalVisible, setModalVisible] = useState(false);
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
   };
 
-  const reportEvent = async () => {
+  const createEvent = async () => {
      toggleModal();
-     props.reportEvent();
+     props.addToCalendar();
   }
 
   return (
     <View style={{ flex: 1}}>
-      <Button  
-        style={styles.btnReportEvent} 
-        disabled={!props.isActive}
-        textColor={'white'} onPress={toggleModal}>
-         Denunciar
-      </Button>
+        <TouchableOpacity onPress={toggleModal} style={styles.shareBtn}>
+          <FontAwesome5 name="calendar" size={22} color="white" />
+        </TouchableOpacity>
 
       <Modal isVisible={isModalVisible}>
         <View style={{ flex: 1, display: 'flex', justifyContent: 'center', alignContent: 'center' }}>
           <View style={styles.modalBodyContainer}>
             <Text style={styles.text}>
-              ¿Confirmar denuncia?
+            ¿Querés guardar la fecha del evento en tu calendario?
             </Text>
 
             <View style={styles.btnsRow}>
               <Button mode="outlined" 
                       textColor={'black'} 
                       style={styles.optionsBtn}
-                      onPress={toggleModal}>Cancelar
+                      onPress={toggleModal}>
+                    Cancelar
               </Button>
               <Button mode="contained" 
-                      buttonColor={'#FF5252'} 
+                      buttonColor={'#1A55D7'} 
                       textColor={'white'} 
                       style={styles.optionsBtn}
-                      onPress={reportEvent}>Confirmar
+                      onPress={createEvent}>
+                    Agendar
               </Button>
             </View>
           </View>
@@ -61,15 +63,15 @@ const styles = StyleSheet.create ({
       color: '#708BA6',
       fontSize: 25,
       textAlign: 'center',
-      marginTop: 45
+      marginTop: 25
    },
-  btnReportEvent: {
-    padding: 2,
-    marginTop: 15,
-    marginBottom: 15,
-    width: 100,
-    flex:1,
-    backgroundColor: '#FF5252'
+   btnGetEvent: {
+      backgroundColor: '#1A55D7',
+      width: '90%',
+      alignSelf: 'center',
+      padding: 2,
+      marginTop: 15,
+      marginBottom: 15
   },
   btnSoldEvent: {
     backgroundColor: 'grey',
@@ -82,17 +84,28 @@ const styles = StyleSheet.create ({
   btnsRow: {
    display: 'flex', 
    flexDirection: 'row', 
-   padding: 5,
+   padding: 25,
    justifyContent: 'space-around'
   },
   optionsBtn: {
-      width: '50%'
+     width: '45%'
+  },
+  shareBtn: {
+    backgroundColor: '#A5C91B', 
+    flex:1,
+    height: 40, 
+    width: 40,
+    borderRadius: 20,
+    display: 'flex', 
+    justifyContent:'center',
+    alignItems: 'center',
+    marginLeft: 15,
   },
   modalBodyContainer: {
     display: 'flex',
     height: 300, 
     backgroundColor: 'white',
     justifyContent: "space-around",
-    padding: 25
+    padding: 15
   }
 })

@@ -13,7 +13,6 @@ import Dropdown from '../components/events/Dropdown';
 
 import * as Notifications from 'expo-notifications';
 import * as React from "react";
-import {registerForPushNotifications} from "../services/helpers/NotificationHelper";
 import {requestLocation} from "../services/helpers/LocationHelper";
 import {Button} from "react-native-paper";
 import AwesomeAlert from "react-native-awesome-alerts";
@@ -36,10 +35,10 @@ export default function Events({ navigation }) {
     const [location, setUserLocation] = useState({});
     const { getUserData } = useMainContext();
     const [ orderByLocation, setOrderByLocation] = useState(false);
-    const [refreshing, setRefreshing] = useState(false);
-
     const [showAlert, setShowAlert] = useState(false);
     const [alertText, setAlertText] = useState("");
+    const [refreshing, setRefreshing] = useState(false);
+    const [emptySelection, setEmptySelection] = useState(false);
 
     const onResponse = (response) => {
         setIsLoading(false);
@@ -58,8 +57,6 @@ export default function Events({ navigation }) {
 
     const hideAlert = () => {
         setShowAlert(false);
-
-        navigation.goBack();
     }
 
     useEffect(() => {
@@ -104,11 +101,15 @@ export default function Events({ navigation }) {
         }
 
         const onError = (error) => {
-            console.log(error);
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
+            setRefreshing(false);
         }
 
         setRefreshing(true);
-        console.log(location);
+        setEvents([]);
         const latitude = orderByLocation ? location.latitude: undefined;
         const longitude = orderByLocation ? location.longitude: undefined;
         getUserData((data) => {
@@ -125,6 +126,10 @@ export default function Events({ navigation }) {
             setEvents(response.events());
         }
         const onError = (error) => {
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
             console.log(error);
         }
 
@@ -140,9 +145,16 @@ export default function Events({ navigation }) {
     const updateTagSearch = async (tagsSelected) => {
         const onResponse = (response) => {
             setIsLoading(false);
+
+            setEmptySelection(false);
+
             setEvents(response.events());
         }
         const onError = (error) => {
+            setAlertText(error.response.data.error);
+
+            setShowAlert(true);
+
             console.log(error);
         }
         setSelectedTags(tagsSelected);
@@ -151,6 +163,12 @@ export default function Events({ navigation }) {
         const longitude = orderByLocation ? location.longitude: undefined;
         const client = new apiClient(userData.token);
         client.getEventsList(onResponse, onError, search, tagsSelected, undefined, latitude, longitude);
+    }
+
+    const emptyCategories = async () => {
+        setEmptySelection(true);
+
+        await updateTagSearch(undefined);
     }
 
     const getLocation = async () => {
@@ -189,24 +207,48 @@ export default function Events({ navigation }) {
                     inputContainerStyle={{backgroundColor:'white'}}
                     containerStyle={{backgroundColor: 'white', width: '90%', marginTop: 15, borderRadius:15}}
                 />
-                <View style={{width: '90%', marginTop: 10}}>
-                    <Dropdown isMultiple
-                              placeholder="Tipo de evento"
-                              options={tags}
-                              dropdownStyle={
-                                    {borderWidth: 0, // To remove border, set borderWidth to 0
-                                    borderRadius:15,
-                                    backgroundColor: "white"}
-                              }
-                              optionLabel={'name'}
-                              optionValue={'id'}
-                              selectedValue={selectedTags}
-                              onValueChange={(value) => {
-                                updateTagSearch(value).then();
-                            }}
-                            primaryColor={'green'}
-                    />
+
+                <View style={{
+                    display: 'flex',
+                    flexDirection: 'row'
+                }}>
+                    <View style={{
+                        width: '75%',
+                        marginTop: 10
+                    }}>
+                            <Dropdown isMultiple
+                                      placeholder="Tipo de evento"
+                                      options={tags}
+                                      dropdownStyle={
+                                            {borderWidth: 0, // To remove border, set borderWidth to 0
+                                            borderRadius:15,
+                                            backgroundColor: "white"}
+                                      }
+                                      optionLabel={'name'}
+                                      optionValue={'id'}
+                                      selectedValue={selectedTags}
+                                      onValueChange={(value) => {
+                                        updateTagSearch(value).then();
+                                    }}
+                                    primaryColor={'green'}
+                                    emptyOptions={emptySelection}
+                            />
+                    </View>
+
+                    <View style={{
+                        width: '15%',
+                        marginTop: 20
+                    }}>
+                        <Button labelStyle={{
+                            color: "red",
+                            fontSize: 20
+                        }}
+                        onPress={emptyCategories}
+                        >🗑️
+                        </Button>
+                    </View>
                 </View>
+
                 <Button
                     style={orderByLocation ? styles.btnOrderWithLocationOn: styles.btnOrderWithLocationOff}
                     onPress={orderEventsByLocation}
@@ -245,7 +287,6 @@ export default function Events({ navigation }) {
                     closeOnHardwareBackPress={true}
                     showCancelButton={false}
                     showConfirmButton={true}
-                    cancelText="Cancelar"
                     confirmText="Aceptar"
                     confirmButtonColor="#DD6B55"
                     onCancelPressed={hideAlert}

@@ -34,7 +34,8 @@ RECORDAR:
 - Node 18 (o uno reciente, `nvm use 18`)
 
 
-- El apk no tira warning minimizados. Se tira por línea de comando `eas build --profile production --platform android`.
+- El apk no tira warning minimizados. Se tira por línea de comando 
+  `eas build --profile production --platform android`.
 
 Recordar instalar eas-cli:
 `npm install -g eas-cli`

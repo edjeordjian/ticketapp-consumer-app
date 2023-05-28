@@ -21,19 +21,25 @@ export default function EventBox(props) {
     }
 
     const onError = (res) => {
-        console.log(res);
+        console.log(res.response.data.error);
     }
 
     const setFavourite = async () => {
         const eventId = event.id;
-        setIsFavourite(!isFavourite);
         const client = new apiClient(props.userToken);
-        //await client.postFavorite(eventId, isFavourite, onResponse, onError);
+        if (props.onFavouriteChange) {
+            props.onFavouriteChange(eventId);
+        }
+
+        await client.postFavorite(eventId, ! isFavourite, onResponse, onError);
+
+        setIsFavourite(!isFavourite);
     }
 
     const favouriteIcon = isFavourite ?
             <TouchableOpacity onPress={setFavourite} style={styles.favouriteContainerUp}>
-                <AntDesign name="heart" size={24} color="#FE5454"/>
+                {/*<AntDesign name="heart" size={24} color="#FE5454"/>*/}
+                <Feather name="heart" size={24} color="#FE5454" />
             </TouchableOpacity>
                 :
             <TouchableOpacity onPress={setFavourite} style={styles.favouriteContainerDown}>
@@ -43,10 +49,12 @@ export default function EventBox(props) {
     return (
             <View style={styles.container}>
                 <TouchableOpacity onPress={navigateToEvent}>
-                    <View style={styles.imageContainer}>
-                        {favouriteIcon}
+                    <View style={showImage ? styles.imageContainer : styles.noImageContainer}>
                         {showImage ? 
-                        <Image source={{uri:event.imageUri}} style={styles.image}/>
+                        <>
+                            {favouriteIcon}
+                            <Image source={{uri:event.imageUri}} style={styles.image}/>
+                        </>
                         : <></>}
                     </View>
                     <Text style={styles.nameTitle}>{event.name}</Text>
@@ -66,7 +74,7 @@ export default function EventBox(props) {
                         </View>
                     </View>
                     {event.distance ?
-                        <Text style={styles.distanceInfo}>Estás a {event.distance.toFixed(2)}km</Text>
+                        <Text style={styles.distanceInfo}>Estás a {event.distance.toFixed(1)}km</Text>
                         :
                         <></>
                     }
@@ -106,6 +114,12 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         height: 150,
+        position: 'relative',
+        width: '100%',
+        borderRadius: 25
+    },
+    noImageContainer: {
+        height: 20,
         position: 'relative',
         width: '100%',
         borderRadius: 25

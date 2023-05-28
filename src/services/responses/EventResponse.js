@@ -45,9 +45,10 @@ export default class EventResponse {
             isFavourite: true,
             address: event.address,
             description: event.description,
+            time: event.time,
             hour: event.time + "hs",
             date: event.date,
-            labels:  event.types_names,
+            labels: event.types_names,
             ticket: event.ticket ? {
                 wasUsed: event.ticket.wasUsed,
                 id: event.ticket.id
@@ -61,7 +62,8 @@ export default class EventResponse {
             hasReportedEvent: event.wasReported,
             latitude: latitude,
             longitude: longitude,
-            capacity: event.capacity
+            capacity: event.capacity,
+            stateName: event.state.name
         }
     }
 
