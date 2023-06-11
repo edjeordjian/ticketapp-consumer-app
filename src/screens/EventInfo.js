@@ -284,7 +284,7 @@ export default function EventInfo({route, navigation}) {
                                 </Text>
                             </View>
                             :
-                            <View style={styles.warningBox}>
+                            <View style={event.stateName === 'Cancelado' ? styles.warningBoxCancelled : styles.warningBoxSuspended}>
                                 <Text style={styles.warningBoxText}>{event.stateName.toUpperCase()}</Text>
                             </View>
                         }
@@ -333,7 +333,7 @@ export default function EventInfo({route, navigation}) {
                     </TouchableOpacity>
 
                     <Button
-                        style={{flex: 1}}
+                        style={{width: 30}}
                         onPress={navigateToFAQ}
                         buttonColor={'#A5C91B'}
                         textColor={'white'}>
@@ -563,8 +563,20 @@ const styles = StyleSheet.create({
         marginTop: 270,
         zIndex: 100, 
     },
-    warningBox: {
+    warningBoxCancelled: {
         backgroundColor: 'black',
+        position: 'absolute',
+        width: '100%',
+        height: 90,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        right: 0,
+        marginTop: 210,
+        zIndex: 100, 
+    },
+    warningBoxSuspended: {
+        backgroundColor: '#472183',
         position: 'absolute',
         width: '100%',
         height: 90,
@@ -643,10 +655,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         flex: 5,
         gap: 5,
+        marginLeft: 5,
         marginRight: 15
     },
     shareBtn: {
-        flex: 1,
         backgroundColor: '#A5C91B', 
         marginRight: 10, 
         height: 40, 
